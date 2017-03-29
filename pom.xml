@@ -110,5 +110,6 @@
 	<modules>
 		<module>ontimize-jee-dms-common</module>
 		<module>ontimize-jee-dms-server</module>
+		<module>ontimize-jee-dms-desktopclient</module>
 	</modules>
 </project>
