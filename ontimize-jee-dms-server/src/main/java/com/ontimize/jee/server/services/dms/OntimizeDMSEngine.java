@@ -12,14 +12,13 @@ import com.ontimize.db.EntityResult;
 import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
-import com.ontimize.jee.common.services.dms.IDMSService;
 import com.ontimize.jee.common.tools.CheckingTools;
 import com.ontimize.jee.server.configuration.OntimizeConfiguration;
 
 /**
  * The Ontimize standard DMS implementation. Splitted implementation over helpers.
  */
-public class OntimizeDMSEngine implements IDMSService {
+public class OntimizeDMSEngine implements IDMSServiceServer {
 
 	/** The Constant ACTIVE. */
 	public static final String			ACTIVE		= "Y";
@@ -83,8 +82,26 @@ public class OntimizeDMSEngine implements IDMSService {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
 	@Override
+	public Path fileGetPath(Object fileId) throws OntimizeJEERuntimeException {
+		return this.fileHelper.fileGetPath(fileId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
+	 */
+	@Override
 	public InputStream fileGetContentOfVersion(Object fileVersionId) {
 		return this.fileHelper.fileGetContentOfVersion(fileVersionId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
+	 */
+	@Override
+	public Path fileGetPathOfVersion(Object fileVersionId) throws OntimizeJEERuntimeException {
+		return this.fileHelper.fileGetPathOfVersion(fileVersionId);
 	}
 
 	/*

@@ -1,6 +1,7 @@
 package com.ontimize.jee.server.services.dms;
 
 import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +18,6 @@ import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
 import com.ontimize.jee.common.security.PermissionsProviderSecured;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
-import com.ontimize.jee.common.services.dms.IDMSService;
 import com.ontimize.jee.common.tools.CheckingTools;
 import com.ontimize.jee.server.spring.namespace.OntimizeDMSConfiguration;
 
@@ -26,17 +26,17 @@ import com.ontimize.jee.server.spring.namespace.OntimizeDMSConfiguration;
  */
 @Service("DMSService")
 @Lazy(value = true)
-public class DMSServiceImpl implements IDMSService, ApplicationContextAware {
+public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAware {
 
 	/** The implementation. */
-	private IDMSService	engine;
+	private IDMSServiceServer engine;
 
 	/**
 	 * Gets the engine.
 	 *
 	 * @return the engine
 	 */
-	protected IDMSService getEngine() {
+	protected IDMSServiceServer getEngine() {
 		CheckingTools.failIfNull(this.engine, "Not engine defined for dms.");
 		return this.engine;
 	}
@@ -47,7 +47,7 @@ public class DMSServiceImpl implements IDMSService, ApplicationContextAware {
 	 * @param engine
 	 *            the engine
 	 */
-	public void setEngine(IDMSService engine) {
+	public void setEngine(IDMSServiceServer engine) {
 		this.engine = engine;
 	}
 
@@ -75,10 +75,28 @@ public class DMSServiceImpl implements IDMSService, ApplicationContextAware {
 	 * (non-Javadoc)
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
+	@Override
+	public Path fileGetPath(Object fileId) throws OntimizeJEERuntimeException {
+		return this.getEngine().fileGetPath(fileId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
+	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
 	public InputStream fileGetContentOfVersion(Object fileVersionId) {
 		return this.getEngine().fileGetContentOfVersion(fileVersionId);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
+	 */
+	@Override
+	public Path fileGetPathOfVersion(Object fileVersionId) throws OntimizeJEERuntimeException {
+		return this.getEngine().fileGetPathOfVersion(fileVersionId);
 	}
 
 	/*

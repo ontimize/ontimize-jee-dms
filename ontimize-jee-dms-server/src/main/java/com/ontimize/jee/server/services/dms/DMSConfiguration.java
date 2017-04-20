@@ -1,6 +1,5 @@
 package com.ontimize.jee.server.services.dms;
 
-import com.ontimize.jee.common.services.dms.IDMSService;
 import com.ontimize.jee.common.tools.CheckingTools;
 
 /**
@@ -9,14 +8,14 @@ import com.ontimize.jee.common.tools.CheckingTools;
 public class DMSConfiguration {
 
 	/** The engine. */
-	private IDMSService	engine;
+	private IDMSServiceServer engine;
 
 	/**
 	 * Gets the engine.
 	 *
 	 * @return the engine
 	 */
-	public IDMSService getEngine() {
+	public IDMSServiceServer getEngine() {
 		CheckingTools.failIfNull(this.engine, "No dms engine defined");
 		return this.engine;
 	}
@@ -27,7 +26,7 @@ public class DMSConfiguration {
 	 * @param engine
 	 *            the engine
 	 */
-	public void setEngine(IDMSService engine) {
+	public void setEngine(IDMSServiceServer engine) {
 		this.engine = engine;
 	}
 }

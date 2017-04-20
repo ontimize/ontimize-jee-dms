@@ -2,7 +2,6 @@ package com.ontimize.jee.server.services.dms;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +18,7 @@ import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.tools.CheckingTools;
+import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.FileTools;
 import com.ontimize.jee.server.dao.DefaultOntimizeDaoHelper;
 import com.ontimize.jee.server.services.dms.dao.IDMSCategoryDao;
@@ -32,7 +32,7 @@ import com.ontimize.jee.server.services.dms.dao.IDMSRelatedDocumentDao;
  */
 @Component
 @Lazy(value = true)
-public class DMSServiceDocumentHelper {
+public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 
 	@Autowired
 	DefaultOntimizeDaoHelper			daoHelper;
@@ -83,12 +83,12 @@ public class DMSServiceDocumentHelper {
 		// Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		// UserInformation userInfo = (UserInformation) authentication.getPrincipal();
 		// userInfo.getUsername();
-		if (av.get(DMSNaming.DOCUMENT_OWNER_ID) == null) {
-			((Map<Object, Object>) av).put(DMSNaming.DOCUMENT_OWNER_ID, Integer.valueOf(1));
+		if (av.get(this.getColumnHelper().getDocumentOwnerColumn()) == null) {
+			((Map<Object, Object>) av).put(this.getColumnHelper().getDocumentOwnerColumn(), Integer.valueOf(1));
 		}
 		EntityResult res = this.daoHelper.insert(this.documentDao, av);
 
-		DocumentIdentifier result = new DocumentIdentifier(res.get(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT));
+		DocumentIdentifier result = new DocumentIdentifier(res.get(this.getColumnHelper().getDocumentIdColumn()));
 		return result;
 	}
 
@@ -103,7 +103,7 @@ public class DMSServiceDocumentHelper {
 	public void documentUpdate(Object documentId, Map<?, ?> attributesValues) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		this.daoHelper.update(this.documentDao, attributesValues, kv);
 	}
 
@@ -117,36 +117,35 @@ public class DMSServiceDocumentHelper {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		// borramos las propiedades
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		this.documentPropertyDao.unsafeDelete(kv);
 		// borramos las relaciones
 		kv = new HashMap<>();
-		kv.put(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER, documentId);
+		kv.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), documentId);
 		this.relatedDocumentDao.unsafeDelete(kv);
 		kv = new HashMap<>();
-		kv.put(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD, documentId);
+		kv.put(this.getColumnHelper().getDocumentRelatedChildColumn(), documentId);
 		this.relatedDocumentDao.unsafeDelete(kv);
 		kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		this.categoryDao.unsafeDelete(kv);
 
 		// borramos los ficheros
-		EntityResult resFiles = this.documentGetFiles(documentId, new HashMap<>(), Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE }));
-		List<?> vDocumentId = (List<?>) resFiles.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+		EntityResult resFiles = this.documentGetFiles(documentId, new HashMap<>(), EntityResultTools.attributes(this.getColumnHelper().getFileIdColumn()));
+		List<?> vDocumentId = (List<?>) resFiles.get(this.getColumnHelper().getFileIdColumn());
 		List<Path> toDelete = new ArrayList<>();
 		if (vDocumentId != null) {
 			for (Object fileId : vDocumentId) {
 
-				EntityResult res = this.serviceFileHelper.fileGetVersions(fileId, new HashMap<>(),
-						Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION }));
-				Vector<?> fileVersionIds = (Vector<?>) res.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+				EntityResult res = this.serviceFileHelper.fileGetVersions(fileId, new HashMap<>(), EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn()));
+				Vector<?> fileVersionIds = (Vector<?>) res.get(this.getColumnHelper().getVersionIdColumn());
 
 				// borramos las versiones, sin borrar los ficheros
 				List<Path> toDeletePartial = this.serviceFileHelper.deleteFileVersionsWithoutDeleteFiles(fileId, fileVersionIds);
 
 				// borramos el fichero
 				Map<String, Object> kvFile = new HashMap<>();
-				kvFile.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
+				kvFile.put(this.getColumnHelper().getFileIdColumn(), fileId);
 				this.daoHelper.delete(this.documentFileDao, kvFile);
 
 				toDelete.addAll(toDeletePartial);
@@ -154,7 +153,7 @@ public class DMSServiceDocumentHelper {
 		}
 		// Borramos el documento
 		kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		this.daoHelper.delete(this.documentDao, kv);
 
 		// si todo fue bien y no se va a hacer rollback, borramos
@@ -179,9 +178,9 @@ public class DMSServiceDocumentHelper {
 		int i = 0;
 		for (Entry<String, String> entry : properties.entrySet()) {
 			Map<String, Object> av = new HashMap<>();
-			av.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
-			av.put(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY, entry.getKey());
-			av.put(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE, entry.getValue());
+			av.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
+			av.put(this.getColumnHelper().getPropertyKeyColumn(), entry.getKey());
+			av.put(this.getColumnHelper().getPropertyValueColumn(), entry.getValue());
 			batch[i++] = av;
 		}
 		this.documentPropertyDao.insertBatch(batch);
@@ -203,8 +202,8 @@ public class DMSServiceDocumentHelper {
 		}
 
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
-		kv.put(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY, new SearchValue(SearchValue.IN, propertyKeys));
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
+		kv.put(this.getColumnHelper().getPropertyKeyColumn(), new SearchValue(SearchValue.IN, propertyKeys));
 		this.documentPropertyDao.unsafeDelete(kv);
 	}
 
@@ -221,16 +220,13 @@ public class DMSServiceDocumentHelper {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(propertyKey, DMSNaming.ERROR_PROPERTY_KEY_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
-		kv.put(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY, propertyKey);
-		EntityResult rs = this.daoHelper
-				.query(this.documentPropertyDao,
-						kv,
-						Arrays.asList(new String[] { DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY, DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY, DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE }));
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
+		kv.put(this.getColumnHelper().getPropertyKeyColumn(), propertyKey);
+		EntityResult rs = this.daoHelper.query(this.documentPropertyDao, kv, this.getColumnHelper().getPropertyColumns());
 		if (rs.calculateRecordNumber() == 0) {
 			return null;
 		}
-		return (String) rs.getRecordValues(0).get(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE);
+		return (String) rs.getRecordValues(0).get(this.getColumnHelper().getPropertyValueColumn());
 	}
 
 	/**
@@ -244,16 +240,13 @@ public class DMSServiceDocumentHelper {
 	 */
 	public Map<String, String> documentGetProperties(Object documentId, Map<?, ?> kv) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
-		((Map<Object, Object>) kv).put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
-		EntityResult rs = this.daoHelper
-				.query(this.documentPropertyDao,
-						kv,
-						Arrays.asList(new String[] { DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY, DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY, DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE }));
+		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
+		EntityResult rs = this.daoHelper.query(this.documentPropertyDao, kv, this.getColumnHelper().getPropertyColumns());
 		Map<String, String> res = new HashMap<>();
 		int nregs = rs.calculateRecordNumber();
 		for (int i = 0; i < nregs; i++) {
 			Map<?, ?> record = rs.getRecordValues(i);
-			res.put((String) record.get(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY), (String) record.get(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE));
+			res.put((String) record.get(this.getColumnHelper().getPropertyKeyColumn()), (String) record.get(this.getColumnHelper().getPropertyValueColumn()));
 		}
 		return res;
 	}
@@ -271,7 +264,7 @@ public class DMSServiceDocumentHelper {
 	 */
 	public EntityResult documentGetFiles(Object documentId, Map<?, ?> kv, List<?> attributes) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
-		((Map<Object, Object>) kv).put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		return this.daoHelper.query(this.documentFileDao, kv, attributes);
 	}
 
@@ -290,7 +283,7 @@ public class DMSServiceDocumentHelper {
 	 */
 	public EntityResult documentGetAllFiles(Object documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
-		((Map<Object, Object>) kv).put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		return this.daoHelper.query(this.documentFileDao, kv, attributes, "allfiles");
 	}
 
@@ -304,11 +297,8 @@ public class DMSServiceDocumentHelper {
 	public EntityResult getRelatedDocument(Object documentId) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER, documentId);
-		return this.daoHelper
-				.query(this.relatedDocumentDao,
-						kv,
-						Arrays.asList(new String[] { DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD, DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER, DMSNaming.RELATED_DOCUMENT_ID_DMS_RELATED_DOCUMENT }));
+		kv.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), documentId);
+		return this.daoHelper.query(this.relatedDocumentDao, kv, this.getColumnHelper().getDocumentRelatedColumns());
 	}
 
 	/**
@@ -323,8 +313,8 @@ public class DMSServiceDocumentHelper {
 		CheckingTools.failIfNull(masterDocumentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(childDocumentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> av = new HashMap<>();
-		av.put(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER, masterDocumentId);
-		av.put(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD, childDocumentId);
+		av.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), masterDocumentId);
+		av.put(this.getColumnHelper().getDocumentRelatedChildColumn(), childDocumentId);
 		this.daoHelper.insert(this.relatedDocumentDao, av);
 	}
 }

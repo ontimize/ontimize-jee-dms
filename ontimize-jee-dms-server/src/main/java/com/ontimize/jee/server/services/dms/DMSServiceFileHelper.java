@@ -9,7 +9,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -33,7 +32,9 @@ import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.tools.CheckingTools;
+import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.FileTools;
+import com.ontimize.jee.common.tools.MapTools;
 import com.ontimize.jee.server.dao.DefaultOntimizeDaoHelper;
 import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileDao;
 import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileVersionDao;
@@ -41,7 +42,7 @@ import com.ontimize.jee.server.spring.namespace.OntimizeDMSConfiguration;
 
 @Component
 @Lazy(value = true)
-public class DMSServiceFileHelper {
+public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 
 	@Autowired
 	DefaultOntimizeDaoHelper				daoHelper;
@@ -54,7 +55,7 @@ public class DMSServiceFileHelper {
 
 	/** The ontimize configuration. */
 	@Autowired
-	protected OntimizeDMSConfiguration ontimizeDMSConfiguration;
+	protected OntimizeDMSConfiguration		ontimizeDMSConfiguration;
 
 	/** The document file version dao. */
 	@Autowired
@@ -71,15 +72,21 @@ public class DMSServiceFileHelper {
 	 * @return the input stream
 	 */
 	public InputStream fileGetContent(Object fileId) {
-		CheckingTools.failIfNull(fileId, DMSNaming.ERROR_FILE_ID_MANDATORY);
-		Map<String, Object> kv = new HashMap<String, Object>();
-		kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
-		kv.put(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, OntimizeDMSEngine.ACTIVE);
-		EntityResult res = this.daoHelper.query(this.documentFileVersionDao, kv, Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION }));
-		CheckingTools.failIf(res.calculateRecordNumber() != 1, DMSNaming.ERROR_ACTIVE_VERSION_NOT_FOUND);
-		Object versionId = res.getRecordValues(0).get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+		Object versionId = this.getCurrentFileVersion(fileId);
 		CheckingTools.failIfNull(versionId, DMSNaming.ERROR_FILE_ID_MANDATORY);
 		return this.fileGetContentOfVersion(versionId);
+	}
+
+	/**
+	 * Returns the file physical path.
+	 *
+	 * @param fileId
+	 * @return the file path
+	 */
+	public Path fileGetPath(Object fileId) {
+		Object versionId = this.getCurrentFileVersion(fileId);
+		CheckingTools.failIfNull(versionId, DMSNaming.ERROR_FILE_ID_MANDATORY);
+		return this.fileGetPathOfVersion(versionId);
 	}
 
 	/**
@@ -99,6 +106,16 @@ public class DMSServiceFileHelper {
 	}
 
 	/**
+	 * Returns the file physical path.
+	 *
+	 * @param fileVersionId
+	 * @return the file path
+	 */
+	public Path fileGetPathOfVersion(Object fileVersionId) {
+		return this.getPhysicalFileFor(fileVersionId);
+	}
+
+	/**
 	 * File insert.
 	 *
 	 * @param documentId
@@ -110,17 +127,17 @@ public class DMSServiceFileHelper {
 	 * @return the object
 	 */
 	public DocumentIdentifier fileInsert(Object documentId, Map<?, ?> av, InputStream is) {
-		String fileName = (String) av.get(DMSNaming.DOCUMENT_FILE_NAME);
+		String fileName = (String) av.get(this.getColumnHelper().getFileNameColumn());
 		CheckingTools.failIfNull(fileName, DMSNaming.ERROR_FILE_NAME_MANDATORY);
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 
 		// insertamos en la tabla de ficheros
 		Map<Object, Object> avFile = new HashMap<>();
 		avFile.putAll(av);// Pass other columns (extended implementations)
-		avFile.put(DMSNaming.DOCUMENT_FILE_NAME, fileName);
-		avFile.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, documentId);
+		avFile.put(this.getColumnHelper().getFileNameColumn(), fileName);
+		avFile.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		EntityResult res = this.daoHelper.insert(this.documentFileDao, avFile);
-		Object fileId = res.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+		Object fileId = res.get(this.getColumnHelper().getFileIdColumn());
 		CheckingTools.failIfNull(fileName, DMSNaming.ERROR_ERROR_CREATING_FILE);
 
 		// insertamos en las versiones
@@ -151,23 +168,23 @@ public class DMSServiceFileHelper {
 		if (is == null) {
 			// Obtenemos el id de la versión actual
 			Map<String, Object> kv = new HashMap<>();
-			kv.put(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, OntimizeDMSEngine.ACTIVE);
-			kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
-			EntityResult er = this.daoHelper.query(this.documentFileVersionDao, kv, Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION }));
+			kv.put(this.getColumnHelper().getVersionActiveColumn(), OntimizeDMSEngine.ACTIVE);
+			kv.put(this.getColumnHelper().getFileIdColumn(), fileId);
+			EntityResult er = this.daoHelper.query(this.documentFileVersionDao, kv, EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn()));
 			CheckingTools.failIf(er.calculateRecordNumber() != 1, DMSNaming.ERROR_ACTIVE_VERSION_NOT_FOUND);
-			Object currentVersionId = er.getRecordValues(0).get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+			Object currentVersionId = er.getRecordValues(0).get(this.getColumnHelper().getVersionIdColumn());
 			this.updateCurrentVersionAttributes(fileId, currentVersionId, attributesValues);
 
 			return new DocumentIdentifier(null, fileId, currentVersionId);// FIXME Consider to catch documentId
 		} else {
 			// En este caso hay que crear una nueva versión
 			// Si viene el nombre del fichero lo actualizamos en la tabla de ficheros
-			String fileName = (String) attributesValues.remove(DMSNaming.DOCUMENT_FILE_NAME);
+			String fileName = (String) attributesValues.remove(this.getColumnHelper().getFileNameColumn());
 			if (fileName != null) {
 				Map<String, Object> kv = new HashMap<>();
-				kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
+				kv.put(this.getColumnHelper().getFileIdColumn(), fileId);
 				Map<String, Object> avUpdate = new HashMap<>();
-				avUpdate.put(DMSNaming.DOCUMENT_FILE_NAME, fileName);
+				avUpdate.put(this.getColumnHelper().getFileNameColumn(), fileName);
 				this.daoHelper.update(this.documentFileDao, avUpdate, kv);
 			}
 			Object versionId = this.createNewVersionForFile(fileId, attributesValues, is);
@@ -206,15 +223,15 @@ public class DMSServiceFileHelper {
 	 */
 	public void fileDelete(Object fileId) {
 		CheckingTools.failIfNull(fileId, DMSNaming.ERROR_FILE_ID_MANDATORY);
-		EntityResult res = this.fileGetVersions(fileId, new HashMap<>(), Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION }));
-		Vector<?> fileVersionIds = (Vector<?>) res.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+		EntityResult res = this.fileGetVersions(fileId, new HashMap<>(), EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn()));
+		Vector<?> fileVersionIds = (Vector<?>) res.get(this.getColumnHelper().getVersionIdColumn());
 
 		// borramos las versiones, sin borrar los ficheros
 		List<Path> toDelete = this.deleteFileVersionsWithoutDeleteFiles(fileId, fileVersionIds);
 
 		// borramos el fichero
 		Map<String, Object> kvFile = new HashMap<>();
-		kvFile.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
+		kvFile.put(this.getColumnHelper().getFileIdColumn(), fileId);
 		this.daoHelper.delete(this.documentFileDao, kvFile);
 		// si todo fue bien y no se va a hacer rollback, borramos
 		for (Path file : toDelete) {
@@ -235,7 +252,7 @@ public class DMSServiceFileHelper {
 	 */
 	public EntityResult fileVersionQuery(Object fileVersionId, List<?> attributes) throws OntimizeJEERuntimeException {
 		HashMap<String, Object> kv = new HashMap<String, Object>();
-		kv.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, fileVersionId);
+		kv.put(this.getColumnHelper().getVersionIdColumn(), fileVersionId);
 		return this.daoHelper.query(this.documentFileVersionDao, kv, attributes);
 	}
 
@@ -252,7 +269,7 @@ public class DMSServiceFileHelper {
 	 */
 	public EntityResult fileGetVersions(Object fileId, Map<?, ?> kv, List<?> attributes) {
 		CheckingTools.failIfNull(fileId, DMSNaming.ERROR_FILE_ID_MANDATORY);
-		((Map<Object, Object>) kv).put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
+		((Map<Object, Object>) kv).put(this.getColumnHelper().getFileIdColumn(), fileId);
 		return this.daoHelper.query(this.documentFileVersionDao, kv, attributes);
 	}
 
@@ -265,16 +282,15 @@ public class DMSServiceFileHelper {
 	 * @return
 	 */
 	public void fileRecoverPreviousVersion(Object fileId, boolean acceptNotPreviousVersion) {
-		EntityResult availableVersions = this.fileGetVersions(fileId, new HashMap(), Arrays.asList(
-				new String[] { DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, DMSNaming.DOCUMENT_FILE_VERSION_VERSION, DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE }));
+		EntityResult availableVersions = this.fileGetVersions(fileId, new HashMap(), this.getColumnHelper().getVersionColumns());
 		if ((!acceptNotPreviousVersion && (availableVersions == null)) || (availableVersions.calculateRecordNumber() < 2)) {
 			throw new OntimizeJEERuntimeException("E_NOT_AVAILABLE_VERSIONS_TO_RECOVER");
 		}
 
 		// Detect current version and previous
-		Vector vId = (Vector) availableVersions.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
-		Vector vActive = (Vector) availableVersions.get(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE);
-		Vector<Number> vVersion = (Vector<Number>) availableVersions.get(DMSNaming.DOCUMENT_FILE_VERSION_VERSION);
+		Vector vId = (Vector) availableVersions.get(this.getColumnHelper().getVersionIdColumn());
+		Vector vActive = (Vector) availableVersions.get(this.getColumnHelper().getVersionActiveColumn());
+		Vector<Number> vVersion = (Vector<Number>) availableVersions.get(this.getColumnHelper().getVersionVersionColumn());
 		int currentVersionIdx = vActive.indexOf(OntimizeDMSEngine.ACTIVE);
 		if (currentVersionIdx < 0) {
 			throw new OntimizeJEERuntimeException("E_NOT_CURRENT_ACTIVE_VERSION");
@@ -299,9 +315,9 @@ public class DMSServiceFileHelper {
 		if (previousVersionIdx >= 0) {
 			// Mark previous version as current active
 			HashMap kv = new HashMap<>();
-			kv.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, vId.get(previousVersionIdx));
+			kv.put(this.getColumnHelper().getVersionIdColumn(), vId.get(previousVersionIdx));
 			Map<String, Object> avUpdate = new HashMap<>();
-			avUpdate.put(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, OntimizeDMSEngine.ACTIVE);
+			avUpdate.put(this.getColumnHelper().getVersionActiveColumn(), OntimizeDMSEngine.ACTIVE);
 			this.daoHelper.update(this.documentFileVersionDao, avUpdate, kv);
 		}
 
@@ -324,20 +340,20 @@ public class DMSServiceFileHelper {
 	protected Path getPhysicalFileFor(Object idVersion) {
 		CheckingTools.failIfNull(idVersion, DMSNaming.ERROR_FILE_VERSION_ID_IS_MANDATORY);
 		Map<String, Object> kvVersion = new HashMap<>();
-		kvVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, idVersion);
+		kvVersion.put(this.getColumnHelper().getVersionIdColumn(), idVersion);
 		EntityResult res = this.daoHelper.query(this.documentFileVersionDao, kvVersion,
-				Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_VERSION, DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE }));
+				EntityResultTools.attributes(this.getColumnHelper().getVersionVersionColumn(), this.getColumnHelper().getFileIdColumn()));
 		CheckingTools.failIf(res.calculateRecordNumber() != 1, DMSNaming.ERROR_FILE_VERSION_NOT_FOUND);
 		Hashtable<?, ?> rv = res.getRecordValues(0);
-		Object fileId = rv.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+		Object fileId = rv.get(this.getColumnHelper().getFileIdColumn());
 
 		Map<String, Object> kvFile = new HashMap<>();
-		kvFile.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
-		res = this.daoHelper.query(this.documentFileDao, kvFile, Arrays.asList(new String[] { DMSNaming.DOCUMENT_ID_DMS_DOCUMENT }), "allfiles");
+		kvFile.put(this.getColumnHelper().getFileIdColumn(), fileId);
+		res = this.daoHelper.query(this.documentFileDao, kvFile, EntityResultTools.attributes(this.getColumnHelper().getDocumentIdColumn()), "allfiles");
 		CheckingTools.failIf(res.calculateRecordNumber() != 1, DMSNaming.ERROR_FILE_NOT_FOUND);
 
 		rv = res.getRecordValues(0);
-		Object documentId = rv.get(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
+		Object documentId = rv.get(this.getColumnHelper().getDocumentIdColumn());
 		return this.getPhysicalFileFor(documentId, fileId, idVersion);
 	}
 
@@ -419,7 +435,7 @@ public class DMSServiceFileHelper {
 	protected Path deleteFileVersionWithoutDeleteFile(Object fileId, Object idVersion) {
 		Map<String, Object> kvVersion = new HashMap<>();
 		Path physicalFileFor = this.getPhysicalFileFor(idVersion);
-		kvVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, idVersion);
+		kvVersion.put(this.getColumnHelper().getVersionIdColumn(), idVersion);
 		this.daoHelper.delete(this.documentFileVersionDao, kvVersion);
 		return physicalFileFor;
 	}
@@ -435,9 +451,9 @@ public class DMSServiceFileHelper {
 	 *            the attributes values
 	 */
 	protected void updateCurrentVersionAttributes(Object fileId, Object currentVersionId, Map<?, ?> attributesValues) {
-		List<String> columnsDocumentFile = Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_NAME });
-		List<String> columnsDocumentFileVersion = Arrays.asList(
-				new String[] { DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH, DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION, DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL });
+		// Split columns for FILE and for VERSION daos
+		List<String> columnsDocumentFile = this.getColumnHelper().getFileColumns();
+		List<String> columnsDocumentFileVersion = this.getColumnHelper().getVersionColumns();
 		Map<String, Object> avFile = new HashMap<>();
 		Map<String, Object> avVersion = new HashMap<>();
 		for (Entry<?, ?> entry : attributesValues.entrySet()) {
@@ -448,13 +464,35 @@ public class DMSServiceFileHelper {
 				avVersion.put((String) entry.getKey(), entry.getValue());
 			}
 		}
+		if (avFile.isEmpty() && avVersion.isEmpty()){
+			throw new OntimizeJEERuntimeException("dms.E_NO_DATA_TO_UPDATE");
+		}
+
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
+		kv.put(this.getColumnHelper().getFileIdColumn(), fileId);
 		this.daoHelper.update(this.documentFileDao, avFile, kv);
 
 		kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, currentVersionId);
+		kv.put(this.getColumnHelper().getVersionIdColumn(), currentVersionId);
 		this.daoHelper.update(this.documentFileVersionDao, avVersion, kv);
+	}
+
+	/**
+	 * Returns current active version of a file
+	 *
+	 * @param fileId
+	 *            the file id
+	 * @return the current file version
+	 */
+	protected Object getCurrentFileVersion(Object fileId) {
+		CheckingTools.failIfNull(fileId, DMSNaming.ERROR_FILE_ID_MANDATORY);
+		Map<String, Object> kv = new HashMap<String, Object>();
+		kv.put(this.getColumnHelper().getFileIdColumn(), fileId);
+		kv.put(this.getColumnHelper().getVersionActiveColumn(), OntimizeDMSEngine.ACTIVE);
+		EntityResult res = this.daoHelper.query(this.documentFileVersionDao, kv, EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn()));
+		CheckingTools.failIf(res.calculateRecordNumber() != 1, DMSNaming.ERROR_ACTIVE_VERSION_NOT_FOUND);
+		Object versionId = res.getRecordValues(0).get(this.getColumnHelper().getVersionIdColumn());
+		return versionId;
 	}
 
 	/**
@@ -469,22 +507,22 @@ public class DMSServiceFileHelper {
 
 		// cogemos la referencia a la versión actual
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
-		EntityResult er = this.fileQuery(kv, Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, DMSNaming.DOCUMENT_FILE_VERSION_VERSION }));
+		kv.put(this.getColumnHelper().getFileIdColumn(), fileId);
+		EntityResult er = this.fileQuery(kv, EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn(), this.getColumnHelper().getVersionVersionColumn()));
 		CheckingTools.failIf(er.calculateRecordNumber() > 1, DMSNaming.ERROR_ACTIVE_VERSION_NOT_FOUND);
 
 		// Si existe la marcamos como no activa y sumamos 1 a la versión que vamos a insertar
 		if (er.calculateRecordNumber() == 1) {
 			Map<?, ?> record = er.getRecordValues(0);
-			Object oldVersionId = record.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+			Object oldVersionId = record.get(this.getColumnHelper().getVersionIdColumn());
 			if (oldVersionId != null) {
-				Number oldVersion = (Number) record.get(DMSNaming.DOCUMENT_FILE_VERSION_VERSION);
+				Number oldVersion = (Number) record.get(this.getColumnHelper().getVersionVersionColumn());
 				fileVersion = Long.valueOf(oldVersion.longValue() + 1);
 
 				kv = new HashMap<>();
-				kv.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, oldVersionId);
+				kv.put(this.getColumnHelper().getVersionIdColumn(), oldVersionId);
 				Map<String, Object> avUpdate = new HashMap<>();
-				avUpdate.put(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, OntimizeDMSEngine.INACTIVE);
+				avUpdate.put(this.getColumnHelper().getVersionActiveColumn(), OntimizeDMSEngine.INACTIVE);
 				this.daoHelper.update(this.documentFileVersionDao, avUpdate, kv);
 			}
 		}
@@ -551,12 +589,12 @@ public class DMSServiceFileHelper {
 		Object fileVersion = null;
 
 		// Si recibimos la versión por parte del usuario utilizamos esa, siempre y cuando no exista ya
-		if (attributes.containsKey(DMSNaming.DOCUMENT_FILE_VERSION_VERSION)) {
-			fileVersion = attributes.get(DMSNaming.DOCUMENT_FILE_VERSION_VERSION);
+		if (attributes.containsKey(this.getColumnHelper().getVersionVersionColumn())) {
+			fileVersion = attributes.get(this.getColumnHelper().getVersionVersionColumn());
 			// Check if conflict
 			Map<Object, Object> kvCheck = new HashMap<>();
-			kvCheck.put(DMSNaming.DOCUMENT_FILE_VERSION_VERSION, fileVersion);
-			EntityResult resVersions = this.fileGetVersions(fileId, kvCheck, Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_VERSION }));
+			kvCheck.put(this.getColumnHelper().getVersionVersionColumn(), fileVersion);
+			EntityResult resVersions = this.fileGetVersions(fileId, kvCheck, EntityResultTools.attributes(this.getColumnHelper().getVersionVersionColumn()));
 			CheckingTools.failIf(resVersions.calculateRecordNumber() > 0, DMSNaming.ERROR_VERSION_ALREADY_EXISTS);
 		} else {
 			fileVersion = this.getCurrentFileVersionAndDeprecate(fileId);
@@ -565,20 +603,17 @@ public class DMSServiceFileHelper {
 		CheckingTools.failIfNull(fileId, DMSNaming.ERROR_FILE_ID_MANDATORY);
 		CheckingTools.failIfNull(is, DMSNaming.ERROR_INPUTSTREAM_IS_MANDATORY);
 		Map<String, Object> avVersion = new HashMap<>();
-		avVersion.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
-		avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_DATE, new Date());
-		// TODO pendiente de tener la información en el userinfo
-		avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_USER, Integer.valueOf(1));
-		avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION, attributes.get(DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION));
-		avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH, attributes.get(DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH));
-		avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE,
-				attributes.containsKey(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE) ? attributes.get(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE) : OntimizeDMSEngine.ACTIVE);
-		avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_VERSION, fileVersion);
-		if (attributes.containsKey(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL)) {
-			avVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL, attributes.get(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL));
-		}
+		avVersion.put(this.getColumnHelper().getFileIdColumn(), fileId);
+		avVersion.put(this.getColumnHelper().getVersionAddedDateColumn(), new Date());
+		avVersion.put(this.getColumnHelper().getVersionAddedUserColumn(), Integer.valueOf(1)); // TODO pendiente de tener la información en el userinfo
+		avVersion.put(this.getColumnHelper().getVersionDescriptionColumn(), attributes.get(this.getColumnHelper().getVersionDescriptionColumn()));
+		avVersion.put(this.getColumnHelper().getVersionPathColumn(), attributes.get(this.getColumnHelper().getVersionPathColumn()));
+		avVersion.put(this.getColumnHelper().getVersionActiveColumn(), attributes.containsKey(this.getColumnHelper().getVersionActiveColumn()) ? attributes
+				.get(this.getColumnHelper().getVersionActiveColumn()) : OntimizeDMSEngine.ACTIVE);
+		avVersion.put(this.getColumnHelper().getVersionVersionColumn(), fileVersion);
+		MapTools.safePut(avVersion, this.getColumnHelper().getVersionThumbnailColumn(), attributes.get(this.getColumnHelper().getVersionThumbnailColumn()));
 		EntityResult resVersion = this.daoHelper.insert(this.documentFileVersionDao, avVersion);
-		Object versionId = resVersion.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+		Object versionId = resVersion.get(this.getColumnHelper().getVersionIdColumn());
 		CheckingTools.failIfNull(versionId, DMSNaming.ERROR_CREATING_FILE_VERSION);
 		Path file = this.getPhysicalFileFor(documentId, fileId, versionId);
 		try {
@@ -601,9 +636,9 @@ public class DMSServiceFileHelper {
 			// update filesize
 			long fileSize = Files.size(file);
 			Map<String, Object> kvVersion = new HashMap<String, Object>();
-			kvVersion.put(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, versionId);
+			kvVersion.put(this.getColumnHelper().getVersionIdColumn(), versionId);
 			Map<String, Object> avVersionSize = new HashMap<String, Object>();
-			avVersionSize.put(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, fileSize);
+			avVersionSize.put(this.getColumnHelper().getVersionSizeColumn(), fileSize);
 			this.daoHelper.update(this.documentFileVersionDao, avVersionSize, kvVersion);
 
 			DMSServiceFileHelper.logger.debug("Time copying file: {}", (System.currentTimeMillis() - time));
@@ -624,10 +659,10 @@ public class DMSServiceFileHelper {
 	protected Object getDocumentIdForFile(Object fileId) {
 		CheckingTools.failIfNull(fileId, DMSNaming.ERROR_FILE_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, fileId);
-		EntityResult res = this.daoHelper.query(this.documentFileDao, kv, Arrays.asList(new String[] { DMSNaming.DOCUMENT_ID_DMS_DOCUMENT }), "allfiles");
+		kv.put(this.getColumnHelper().getFileIdColumn(), fileId);
+		EntityResult res = this.daoHelper.query(this.documentFileDao, kv, EntityResultTools.attributes(this.getColumnHelper().getDocumentIdColumn()), "allfiles");
 		CheckingTools.failIf(res.calculateRecordNumber() != 1, DMSNaming.ERROR_DOCUMENT_NOT_FOUND);
-		return res.getRecordValues(0).get(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
+		return res.getRecordValues(0).get(this.getColumnHelper().getDocumentIdColumn());
 	}
 
 	public void moveFilesToCategory(Object idCategory, List<Object> idFiles) {
@@ -635,9 +670,9 @@ public class DMSServiceFileHelper {
 			return;
 		}
 		Map<String, Object> av = new HashMap<>();
-		av.put(DMSNaming.CATEGORY_ID_CATEGORY, idCategory == null ? new NullValue() : idCategory);
+		av.put(this.getColumnHelper().getCategoryIdColumn(), idCategory == null ? new NullValue() : idCategory);
 		Map<String, Object> kv = new HashMap<>();
-		kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, new SearchValue(SearchValue.IN, new Vector<>(idFiles)));
+		kv.put(this.getColumnHelper().getFileIdColumn(), new SearchValue(SearchValue.IN, new Vector<>(idFiles)));
 		this.documentFileDao.unsafeUpdate(av, kv);
 	}
 }

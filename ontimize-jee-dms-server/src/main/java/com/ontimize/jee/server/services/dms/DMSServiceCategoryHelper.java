@@ -15,6 +15,8 @@ import com.ontimize.db.NullValue;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.tools.CheckingTools;
+import com.ontimize.jee.common.tools.EntityResultTools;
+import com.ontimize.jee.common.tools.ListTools;
 import com.ontimize.jee.common.tools.ObjectTools;
 import com.ontimize.jee.server.dao.DefaultOntimizeDaoHelper;
 import com.ontimize.jee.server.services.dms.dao.IDMSCategoryDao;
@@ -25,8 +27,7 @@ import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileDao;
  */
 @Component
 @Lazy(value = true)
-public class DMSServiceCategoryHelper {
-
+public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 
 	@Autowired
 	DefaultOntimizeDaoHelper daoHelper;
@@ -57,17 +58,11 @@ public class DMSServiceCategoryHelper {
 		if (attributes == null) {
 			attributes = new ArrayList<Object>();
 		}
-		if (!attributes.contains(DMSNaming.CATEGORY_CATEGORY_NAME)) {
-			((List<Object>) attributes).add(DMSNaming.CATEGORY_CATEGORY_NAME);
-		}
-		if (!attributes.contains(DMSNaming.CATEGORY_ID_CATEGORY)) {
-			((List<Object>) attributes).add(DMSNaming.CATEGORY_ID_CATEGORY);
-		}
-		if (!attributes.contains(DMSNaming.CATEGORY_ID_CATEGORY_PARENT)) {
-			((List<Object>) attributes).add(DMSNaming.CATEGORY_ID_CATEGORY_PARENT);
-		}
-		Map<String, Object> filter = new HashMap<>();
-		filter.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, idDocument);
+		ListTools.safeAdd((List<String>) attributes, this.getColumnHelper().getCategoryIdColumn());
+		ListTools.safeAdd((List<String>) attributes, this.getColumnHelper().getCategoryNameColumn());
+		ListTools.safeAdd((List<String>) attributes, this.getColumnHelper().getCategoryParentColumn());
+
+		Map<Object, Object> filter = EntityResultTools.keysvalues(this.getColumnHelper().getDocumentIdColumn(), idDocument);
 		EntityResult er = this.daoHelper.query(this.categoryDao, filter, attributes);
 		return this.convertCategoryResultSet(idDocument, er);
 	}
@@ -83,7 +78,7 @@ public class DMSServiceCategoryHelper {
 	public void categoryUpdate(Object idCategory, Map<?, ?> av) {
 		CheckingTools.failIfNull(idCategory, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> filter = new HashMap<String, Object>();
-		filter.put(DMSNaming.CATEGORY_ID_CATEGORY, idCategory);
+		filter.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
 		this.daoHelper.update(this.categoryDao, av, filter);
 	}
 
@@ -96,14 +91,14 @@ public class DMSServiceCategoryHelper {
 	public void categoryDelete(Object idCategory) {
 		CheckingTools.failIfNull(idCategory, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> filter = new HashMap<String, Object>();
-		filter.put(DMSNaming.CATEGORY_ID_CATEGORY, idCategory);
+		filter.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
 
 
 		//Tenemos que poner a null el id_category_parent de las categorías que tenga a esta como padre
 		Map<String, Object> avUpdate = new HashMap<String, Object>();
-		avUpdate.put(DMSNaming.CATEGORY_ID_CATEGORY_PARENT,new NullValue());
+		avUpdate.put(this.getColumnHelper().getCategoryParentColumn(),new NullValue());
 		Map<String, Object> kvUpdate = new HashMap<String, Object>();
-		kvUpdate.put(DMSNaming.CATEGORY_ID_CATEGORY_PARENT, idCategory);
+		kvUpdate.put(this.getColumnHelper().getCategoryParentColumn(), idCategory);
 		try {
 			this.categoryDao.unsafeUpdate(avUpdate, kvUpdate);
 		} catch (SQLWarningException ex) {
@@ -112,9 +107,9 @@ public class DMSServiceCategoryHelper {
 
 		// Tenemos que quitar todos los ficheros de la categoria
 		avUpdate = new HashMap<String, Object>();
-		avUpdate.put(DMSNaming.CATEGORY_ID_CATEGORY, new NullValue());
+		avUpdate.put(this.getColumnHelper().getCategoryIdColumn(), new NullValue());
 		kvUpdate = new HashMap<String, Object>();
-		kvUpdate.put(DMSNaming.CATEGORY_ID_CATEGORY, idCategory);
+		kvUpdate.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
 		try {
 			this.fileDao.unsafeUpdate(avUpdate, kvUpdate);
 		} catch (SQLWarningException ex) {
@@ -140,10 +135,10 @@ public class DMSServiceCategoryHelper {
 		CheckingTools.failIfNull(idDocument, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(name, DMSNaming.ERROR_CATEGORY_NAME_MANDATORY);
 		Map<Object, Object> av = new HashMap<>(otherData == null ? new HashMap<Object, Object>() : otherData);
-		av.put(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, idDocument);
-		av.put(DMSNaming.CATEGORY_CATEGORY_NAME, name);
-		av.put(DMSNaming.CATEGORY_ID_CATEGORY_PARENT, idParentCategory);
-		return this.daoHelper.insert(this.categoryDao, av).get(DMSNaming.CATEGORY_ID_CATEGORY);
+		av.put(this.getColumnHelper().getDocumentIdColumn(), idDocument);
+		av.put(this.getColumnHelper().getCategoryNameColumn(), name);
+		av.put(this.getColumnHelper().getCategoryParentColumn(), idParentCategory);
+		return this.daoHelper.insert(this.categoryDao, av).get(this.getColumnHelper().getCategoryIdColumn());
 	}
 
 	/**
@@ -191,14 +186,14 @@ public class DMSServiceCategoryHelper {
 	 * @return the list
 	 */
 	private List<DMSCategory> removeCategoriesForParentId(EntityResult er, DMSCategory parentCategory, Object idDocument) {
-		List<Object> listIdParentCategory = (List<Object>) er.get(DMSNaming.CATEGORY_ID_CATEGORY_PARENT);
+		List<Object> listIdParentCategory = (List<Object>) er.get(this.getColumnHelper().getCategoryParentColumn());
 		List<DMSCategory> res = new ArrayList<DMSCategory>();
 		if (listIdParentCategory != null) {
 			for (int i = 0; i < listIdParentCategory.size(); i++) {
 				if (ObjectTools.safeIsEquals(listIdParentCategory.get(i), parentCategory.getIdCategory())) {
 					Map<?, ?> recordValues = er.getRecordValues(i);
-					Object idCategory = recordValues.remove(DMSNaming.CATEGORY_ID_CATEGORY);
-					String categoryName = (String) recordValues.remove(DMSNaming.CATEGORY_CATEGORY_NAME);
+					Object idCategory = recordValues.remove(this.getColumnHelper().getCategoryIdColumn());
+					String categoryName = (String) recordValues.remove(this.getColumnHelper().getCategoryNameColumn());
 					res.add(new DMSCategory(idDocument, idCategory, categoryName, recordValues, parentCategory));
 					er.deleteRecord(i);
 					i--;

@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
-import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.services.dms.IDMSService;
 
@@ -16,11 +15,11 @@ import com.ontimize.jee.common.services.dms.IDMSService;
  */
 @Component
 @Lazy(true)
-public class DMSCreationHelper {
+public class DMSCreationHelper extends AbstractDMSServiceHelper {
 
 	/** The dms service. */
 	@Autowired
-	private IDMSService	dmsService;
+	private IDMSService dmsService;
 
 	/**
 	 * Instantiates a new DMS creation helper.
@@ -45,11 +44,11 @@ public class DMSCreationHelper {
 	 * @return the object
 	 */
 	public DocumentIdentifier createDocument(String docName, Object ownerId, String description, String keyworkds, String... categories) {
-		Map<String,Object> av = new HashMap<>();
-		av.put(DMSNaming.DOCUMENT_DOCUMENT_NAME, docName == null ? "docname" : docName);
-		av.put(DMSNaming.DOCUMENT_OWNER_ID,ownerId);
-		av.put(DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION,description);
-		av.put(DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS,keyworkds);
+		Map<String, Object> av = new HashMap<>();
+		av.put(this.getColumnHelper().getDocumentNameColumn(), docName == null ? "docname" : docName);
+		av.put(this.getColumnHelper().getDocumentOwnerColumn(), ownerId);
+		av.put(this.getColumnHelper().getDocumentDescriptionColumn(), description);
+		av.put(this.getColumnHelper().getDocumentKeywordsColumn(), keyworkds);
 		DocumentIdentifier idDocument = this.dmsService.documentInsert(av);
 		if (categories != null) {
 			for (String catName : categories) {
@@ -68,7 +67,7 @@ public class DMSCreationHelper {
 	 */
 	public DocumentIdentifier createDocument(String docName) {
 		Map<String, Object> av = new HashMap<>();
-		av.put(DMSNaming.DOCUMENT_DOCUMENT_NAME, docName == null ? "docname" : docName);
+		av.put(this.getColumnHelper().getDocumentNameColumn(), docName == null ? "docname" : docName);
 		return this.dmsService.documentInsert(av);
 	}
 
