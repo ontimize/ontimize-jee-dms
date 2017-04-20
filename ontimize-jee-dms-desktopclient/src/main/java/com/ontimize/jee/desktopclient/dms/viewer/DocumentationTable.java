@@ -12,6 +12,7 @@ import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.TableCellEditor;
 import javax.swing.tree.TreePath;
 
 import org.slf4j.Logger;
@@ -30,6 +31,7 @@ import com.ontimize.gui.ValueEvent;
 import com.ontimize.gui.field.DataField;
 import com.ontimize.gui.field.FormComponent;
 import com.ontimize.gui.table.RefreshTableEvent;
+import com.ontimize.gui.table.TableSorter;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.IDMSService;
@@ -431,5 +433,67 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	 */
 	public void setIgnoreEvents(boolean ignoreEvents) {
 		this.ignoreEvents = ignoreEvents;
+	}
+
+	@Override
+	public EntityResult updateTable(Hashtable keysValues, int viewColumnIndex, TableCellEditor tableCellEditor, Hashtable otherData, Object previousData) throws Exception {
+		Map<String, Object> av = new Hashtable<>();
+		TableSorter model = (TableSorter) this.table.getModel();
+		String col = model.getColumnName(this.table.convertColumnIndexToModel(viewColumnIndex));
+		Object newData = tableCellEditor.getCellEditorValue();
+		if (newData != null) {
+			av.put(col, newData);
+		} else {
+			if ((tableCellEditor != null) && (tableCellEditor instanceof com.ontimize.gui.table.CellEditor)) {
+				com.ontimize.gui.table.CellEditor cE = (com.ontimize.gui.table.CellEditor) tableCellEditor;
+				av.put(col, new NullValue(cE.getSQLDataType()));
+			}
+		}
+
+		if (otherData != null) {
+			av.putAll(otherData);
+		}
+
+		// To include calculted values in the update operation
+		Hashtable rowData = this.getRowDataForKeys(keysValues);
+
+		Vector<String> calculatedColumns = model.getCalculatedColumnsName();
+		for (int i = 0; i < calculatedColumns.size(); i++) {
+			String column = calculatedColumns.get(i);
+			if (rowData.containsKey(column)) {
+				av.put(column, rowData.get(column));
+			}
+		}
+
+		Hashtable kv = (Hashtable) keysValues.clone();
+
+		// Keys and parentkeys
+		Vector vKeys = this.getKeys();
+		for (int i = 0; i < vKeys.size(); i++) {
+			Object atr = vKeys.get(i);
+			if (atr.equals(col)) {
+				Object oKeyValue = previousData;
+				if (oKeyValue != null) {
+					kv.put(atr, oKeyValue);
+				}
+			}
+		}
+		// Parentkeys with equivalences
+		Vector vParentkeys = this.getParentKeys();
+		for (int i = 0; i < vParentkeys.size(); i++) {
+			Object atr = vParentkeys.get(i);
+			Object oParentkeyValue = this.parentForm.getDataFieldValueFromFormCache(atr.toString());
+			if (oParentkeyValue != null) {
+				// since 5.2074EN-0.4
+				// when equivalences, we must get equivalence value for
+				// parentkey insteadof atr
+				kv.put(this.getParentkeyEquivalentValue(atr), oParentkeyValue);
+			}
+		}
+
+		IDMSService service = BeansFactory.getBean(IDMSService.class);
+		Object fileId = kv.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+		service.fileUpdate(fileId, av, null);
+		return new EntityResult();
 	}
 }
