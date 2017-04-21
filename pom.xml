@@ -15,60 +15,6 @@
 	<properties>
 	</properties>
 
-	<build>
-		<!-- =========================================================== -->
-		<!-- Plugins -->
-		<!-- =========================================================== -->
-		<pluginManagement>
-			<plugins>
-				<!-- Resources plugin (2.4.x versions do not correctly filter files containing 
-					'@' character). -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-resources-plugin</artifactId>
-					<version>${resources.plugin.version}</version>
-				</plugin>
-
-				<!-- Compiler configuration -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${compiler.plugin.version}</version>
-					<configuration>
-						<verbose>true</verbose>
-						<source>${jdk.version.server}</source>
-						<target>${jdk.version.server}</target>
-						<encoding>${project.build.sourceEncoding}</encoding>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-deploy-plugin</artifactId>
-					<version>${deploy.plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-source-plugin</artifactId>
-					<version>${source.plugin.version}</version>
-					<executions>
-						<execution>
-							<id>attach-sources</id>
-							<goals>
-								<goal>jar</goal>
-							</goals>
-						</execution>
-					</executions>
-				</plugin>
-				<!-- dependency maven plugin -->
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>dependency-maven-plugin</artifactId>
-					<version>1.0</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
-
 	<dependencyManagement>
 		<dependencies>
 			<!-- Ontimize DMS -->
@@ -83,28 +29,6 @@
 				<artifactId>ontimize-jee-dms-server</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-
-			<!-- Ontimize -->
-			<dependency>
-				<groupId>com.ontimize</groupId>
-				<artifactId>ontimize-core</artifactId>
-				<version>${ontimize.version}</version>
-			</dependency>
-
-			<!-- Ontimize JEE -->
-			<dependency>
-				<groupId>com.ontimize.jee</groupId>
-				<artifactId>ontimize-jee-common</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>com.ontimize.jee</groupId>
-				<artifactId>ontimize-jee-server</artifactId>
-				<version>${project.parent.version}</version>
-			</dependency>
-
-
 		</dependencies>
 	</dependencyManagement>
 	<modules>
