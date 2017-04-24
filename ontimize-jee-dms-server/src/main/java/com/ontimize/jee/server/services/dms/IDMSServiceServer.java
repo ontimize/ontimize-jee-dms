@@ -34,5 +34,9 @@ public interface IDMSServiceServer extends IDMSService {
 	 */
 	Path fileGetPathOfVersion(Object fileVersionId) throws OntimizeJEERuntimeException;
 
+	/**
+	 * Update settings.
+	 */
+	void updateSettings();
 
 }

@@ -347,4 +347,9 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	public void moveFilesToCategory(Object idCategory, List<Object> idFiles) throws OntimizeJEERuntimeException {
 		this.getEngine().moveFilesToCategory(idCategory, idFiles);
 	}
+
+	@Override
+	public void updateSettings() {
+		this.getEngine().updateSettings();
+	}
 }

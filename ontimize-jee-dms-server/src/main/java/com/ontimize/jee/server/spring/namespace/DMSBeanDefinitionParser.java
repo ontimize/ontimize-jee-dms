@@ -2,7 +2,11 @@ package com.ontimize.jee.server.spring.namespace;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.beans.factory.xml.AbstractSingleBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
@@ -18,6 +22,9 @@ import com.ontimize.jee.server.services.dms.OntimizeDMSEngine;
 public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 	/** The Constant SCOPE. */
 	private static final String	SCOPE	= "scope";
+
+	/** The CONSTANT logger */
+	private static final Logger	logger	= LoggerFactory.getLogger(DMSBeanDefinitionParser.class);
 
 	/*
 	 * (non-Javadoc)
@@ -88,10 +95,13 @@ public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
 			if (childElements.size() == 0) {
 				builder.addPropertyValue("documentsBasePath", item.getNodeValue());
 			} else {
-				Object parseNode = DefinitionParserUtil.parseNode(childElements.get(0), ctx, builder.getBeanDefinition(),
-						element.getAttribute("scope"));
-				builder.addPropertyValue("documentsBasePath", parseNode);
+				GenericBeanDefinition parseNode = (GenericBeanDefinition) DefinitionParserUtil.parseNode(childElements.get(0), ctx, builder.getBeanDefinition(), element.getAttribute("scope"));
+				builder.addPropertyValue("documentsBasePathResolver", parseNode);
+				if (!parseNode.getPropertyValues().contains("useMyselfInSpringContext")){
+					parseNode.getPropertyValues().add("useMyselfInSpringContext", Boolean.TRUE);
+				}
 			}
+			builder.setDependencyCheck(AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
 			builder.setLazyInit(true);
 		}
 	}

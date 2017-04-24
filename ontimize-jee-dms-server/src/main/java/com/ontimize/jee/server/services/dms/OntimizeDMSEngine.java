@@ -6,46 +6,70 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ontimize.db.EntityResult;
 import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
+import com.ontimize.jee.common.spring.parser.AbstractPropertyResolver;
 import com.ontimize.jee.common.tools.CheckingTools;
 import com.ontimize.jee.server.configuration.OntimizeConfiguration;
 
 /**
  * The Ontimize standard DMS implementation. Splitted implementation over helpers.
  */
-public class OntimizeDMSEngine implements IDMSServiceServer {
+public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
+
+	/** The CONSTANT logger */
+	private static final Logger					logger		= LoggerFactory.getLogger(OntimizeDMSEngine.class);
 
 	/** The Constant ACTIVE. */
-	public static final String			ACTIVE		= "Y";
+	public static final String					ACTIVE		= "Y";
 	/** The Constant INACTIVE. */
-	public static final String			INACTIVE	= "N";
+	public static final String					INACTIVE	= "N";
 
 	/** The ontimize configuration. */
 	@Autowired
-	protected OntimizeConfiguration		ontimizeConfiguration;
+	protected OntimizeConfiguration				ontimizeConfiguration;
 
 	/** The file helper. */
 	@Autowired
-	protected DMSServiceFileHelper		fileHelper;
+	protected DMSServiceFileHelper				fileHelper;
 
 	/** The document helper. */
 	@Autowired
-	protected DMSServiceDocumentHelper	documentHelper;
+	protected DMSServiceDocumentHelper			documentHelper;
 
 	/** The category helper. */
 	@Autowired
-	protected DMSServiceCategoryHelper	categoryHelper;
+	protected DMSServiceCategoryHelper			categoryHelper;
 
 	/** The documents base path. */
-	protected Path						documentsBasePath;
+	protected Path								documentsBasePath;
+	protected AbstractPropertyResolver<String>	documentsBasePathResolver;
 
 	public OntimizeDMSEngine() {
 		super();
+	}
+
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		this.updateSettings();
+	}
+
+	@Override
+	public void updateSettings() {
+		OntimizeDMSEngine.logger.debug("Updating settings...");
+		if (this.documentsBasePathResolver != null) {
+			CheckingTools.failIfNull(this.documentsBasePathResolver, "DMS documents base path resolver is not configured.");
+			Path resolvedValue = this.getResolverValue(this.documentsBasePathResolver);
+			CheckingTools.failIfNull(resolvedValue, "DMS documents base path is not configured.");
+			this.documentsBasePath = resolvedValue;
+		}
 	}
 
 	/**
@@ -64,8 +88,31 @@ public class OntimizeDMSEngine implements IDMSServiceServer {
 	 * @param documentsBasePath
 	 *            the documents base path
 	 */
-	public void setDocumentsBasePath(String documentsBasePath) {
-		this.documentsBasePath = Paths.get(documentsBasePath);
+	public void setDocumentsBasePath(final String documentsBasePath) {
+		this.documentsBasePathResolver = new AbstractPropertyResolver<String>() {
+			@Override
+			public String getValue() {
+				return documentsBasePath;
+			}
+		};
+	}
+
+	/**
+	 *
+	 * @return
+	 */
+	public AbstractPropertyResolver<String> getDocumentsBasePathResolver() {
+		return this.documentsBasePathResolver;
+	}
+
+	/**
+	 * Sets the documents base path resolver.
+	 *
+	 * @param documentsBasePathResolver
+	 *            the base path resolver
+	 */
+	public void setDocumentsBasePathResolver(AbstractPropertyResolver<String> documentsBasePathResolver) {
+		this.documentsBasePathResolver = documentsBasePathResolver;
 	}
 
 	/*
@@ -326,4 +373,23 @@ public class OntimizeDMSEngine implements IDMSServiceServer {
 	public void moveFilesToCategory(Object idCategory, List<Object> idFiles) throws OntimizeJEERuntimeException {
 		this.fileHelper.moveFilesToCategory(idCategory, idFiles);
 	}
+
+	/**
+	 * Gets the resolver value.
+	 *
+	 * @param resolver
+	 *            the resolver
+	 * @return the resolver value
+	 */
+	protected Path getResolverValue(AbstractPropertyResolver<String> resolver) {
+		if (resolver != null) {
+			try {
+				return Paths.get(resolver.getValue());
+			} catch (Exception ex) {
+				OntimizeDMSEngine.logger.error(null, ex);
+			}
+		}
+		return null;
+	}
+
 }
