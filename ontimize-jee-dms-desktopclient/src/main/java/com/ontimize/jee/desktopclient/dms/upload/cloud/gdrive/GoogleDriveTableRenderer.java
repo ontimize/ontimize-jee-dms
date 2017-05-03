@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.api.client.util.DateTime;
-import com.google.api.services.drive.model.File;
 import com.ontimize.gui.table.CellRenderer;
 import com.ontimize.jee.common.tools.FileTools;
 
@@ -31,8 +30,8 @@ public class GoogleDriveTableRenderer extends CellRenderer {
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean selected, boolean hasFocus, int row, int column) {
 		JLabel component = (JLabel) super.getTableCellRendererComponent(table, "", selected, hasFocus, row, column);
-		if (value instanceof File) {
-			File file = (File) value;
+		if (value instanceof GoogleFile) {
+			GoogleFile file = (GoogleFile) value;
 			component.setIcon(null);
 			component.setText(null);
 			switch (column) {
@@ -67,8 +66,8 @@ public class GoogleDriveTableRenderer extends CellRenderer {
 		if (res == null) {
 			try {
 				res = new ImageIcon(ImageIO.read(new URL(iconLink)));
-			} catch (Exception e) {
-				// logger.error(null, e);
+			} catch (Exception error) {
+				GoogleDriveTableRenderer.logger.warn("Image not found {}", iconLink, error);
 			}
 			GoogleDriveTableRenderer.ICON_CACHE.put(iconLink, res);
 		}

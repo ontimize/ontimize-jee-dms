@@ -8,6 +8,7 @@ import javax.swing.AbstractButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.utilmize.client.gui.buttons.AbstractActionListenerButton;
@@ -47,6 +48,6 @@ public abstract class AbstractUploadableSelectionActionListener extends Abstract
 		}
 	}
 
-	protected abstract AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws Exception;
+	protected abstract AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws DmsException;
 
 }

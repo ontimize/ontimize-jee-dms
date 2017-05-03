@@ -1,9 +1,12 @@
 package com.ontimize.jee.desktopclient.dms.upload.cloud;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 
 import javax.swing.table.TableCellRenderer;
+
+import com.ontimize.jee.common.exceptions.DmsException;
 
 /**
  * The Interface ICloudManager.
@@ -11,7 +14,7 @@ import javax.swing.table.TableCellRenderer;
  * @param <T>
  *            the generic type
  */
-public interface ICloudManager<T> {
+public interface ICloudManager<T extends Serializable> extends Serializable {
 
 	/**
 	 * Download a file's content.
@@ -22,7 +25,7 @@ public interface ICloudManager<T> {
 	 * @throws Exception
 	 *             the exception
 	 */
-	InputStream downloadFile(T file) throws Exception;
+	InputStream downloadFile(T file) throws DmsException;
 
 	/**
 	 * Retrieve files in a folder.
@@ -33,7 +36,7 @@ public interface ICloudManager<T> {
 	 * @throws Exception
 	 *             the exception
 	 */
-	List<T> retrieveFilesInFolder(String folderId) throws Exception;
+	List<T> retrieveFilesInFolder(String folderId) throws DmsException;
 
 	/**
 	 * Checks if is folder.
@@ -60,7 +63,7 @@ public interface ICloudManager<T> {
 	 * @throws Exception
 	 *             the exception
 	 */
-	String getRootFolderId() throws Exception;
+	String getRootFolderId() throws DmsException;
 
 	/**
 	 * Gets the back file.

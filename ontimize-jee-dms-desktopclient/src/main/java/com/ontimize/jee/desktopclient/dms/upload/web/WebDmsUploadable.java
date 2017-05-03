@@ -3,6 +3,7 @@ package com.ontimize.jee.desktopclient.dms.upload.web;
 import java.net.MalformedURLException;
 import java.net.URI;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 
 /**
@@ -20,14 +21,30 @@ public class WebDmsUploadable extends AbstractDmsUploadable {
 	 *            the uri
 	 * @param description
 	 *            the description
-	 * @throws MalformedURLException
+	 * @throws DmsException
+	 *             the dms exception
 	 */
-	public WebDmsUploadable(URI uri, String description) throws MalformedURLException {
-		super(description, WebDmsUploadable.extractFileName(uri.toURL().getPath()), null);
+	public WebDmsUploadable(URI uri, String description) throws DmsException {
+		super(description, WebDmsUploadable.extractFileName(uri), null);
 		this.uri = uri;
 	}
 
-	private static String extractFileName(String path) {
+	/**
+	 * Extract file name.
+	 *
+	 * @param uri
+	 *            the uri
+	 * @return the string
+	 * @throws DmsException
+	 *             the dms exception
+	 */
+	private static String extractFileName(URI uri) throws DmsException {
+		String path;
+		try {
+			path = uri.toURL().getPath();
+		} catch (MalformedURLException error) {
+			throw new DmsException(error);
+		}
 		int indx = path.lastIndexOf('/');
 		if (indx >= 0) {
 			return path.substring(indx + 1);

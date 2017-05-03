@@ -2,7 +2,6 @@ package com.ontimize.jee.desktopclient.dms.upload.cloud.gdrive;
 
 import java.net.MalformedURLException;
 
-import com.google.api.services.drive.model.File;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 
 /**
@@ -10,8 +9,9 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
  */
 public class GoogleDriveDmsUploadable extends AbstractDmsUploadable {
 
+	private static final long	serialVersionUID	= 1L;
 	/** The file. */
-	private final File	file;
+	private final GoogleFile file;
 
 	/**
 	 * Instantiates a new local disk dms transferable.
@@ -27,7 +27,7 @@ public class GoogleDriveDmsUploadable extends AbstractDmsUploadable {
 	 * @throws MalformedURLException
 	 *             the malformed url exception
 	 */
-	public GoogleDriveDmsUploadable(File file, String description, String fileName, Long fileSize) throws MalformedURLException {
+	public GoogleDriveDmsUploadable(GoogleFile file, String description, String fileName, Long fileSize) throws MalformedURLException {
 		super(description, fileName, fileSize);
 		this.file = file;
 	}
@@ -37,7 +37,7 @@ public class GoogleDriveDmsUploadable extends AbstractDmsUploadable {
 	 *
 	 * @return the file
 	 */
-	public File getFile() {
+	public GoogleFile getFile() {
 		return this.file;
 	}
 }

@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
 import com.utilmize.client.gui.buttons.UButton;
@@ -21,12 +22,17 @@ public class WebUploadableSelectionActionListener extends AbstractUploadableSele
 	}
 
 	@Override
-	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws Exception {
+	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws DmsException {
 		String url = (String) this.getForm().getDataFieldValue("URL");
 		String description = (String) this.getForm().getDataFieldValue("URL_DESCRIPTION");
-		URI verifiedUrl = WebUploadableSelectionActionListener.verifyURL(url);
+		URI verifiedUrl;
+		try {
+			verifiedUrl = WebUploadableSelectionActionListener.verifyURL(url);
+		} catch (MalformedURLException | URISyntaxException error) {
+			throw new DmsException(error);
+		}
 		if (verifiedUrl == null) {
-			throw new Exception("dms.e_invalidurl");
+			throw new DmsException("dms.e_invalidurl");
 		}
 		return new WebDmsUploadable(verifiedUrl, description);
 	}

@@ -1,5 +1,6 @@
 package com.ontimize.jee.desktopclient.dms.upload.cloud;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ import javax.swing.table.AbstractTableModel;
 /**
  * The Class RemoteDriveTableModel.
  */
-public class CloudDriveTableModel<T> extends AbstractTableModel {
+public class CloudDriveTableModel<T extends Serializable> extends AbstractTableModel {
 	private static final long	serialVersionUID		= 1L;
 	public static final String	COLUMN_DESCRIPTION		= "dms.gfile_description";
 	public static final String	COLUMN_USERMODIFICATION	= "dms.gfile_usermodification";

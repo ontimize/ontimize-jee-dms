@@ -27,7 +27,7 @@ public class DMSCategory implements Serializable {
 	private String				name;
 
 	/** The other info. */
-	private Map<?, ?>			otherInfo;
+	private Map<? extends Serializable, ? extends Serializable>	otherInfo;
 
 	/** The children. */
 	private List<DMSCategory>	children;
@@ -37,7 +37,7 @@ public class DMSCategory implements Serializable {
 	 */
 	public DMSCategory() {
 		super();
-		this.otherInfo = new HashMap<Object, Object>();
+		this.otherInfo = new HashMap<>();
 		this.children = new ArrayList<DMSCategory>();
 	}
 
@@ -55,11 +55,11 @@ public class DMSCategory implements Serializable {
 	 * @param parent
 	 *            the parent
 	 */
-	public DMSCategory(Serializable idDocument, Serializable idCategory, String name, Map<?, ?> otherInfo, DMSCategory parent) {
+	public DMSCategory(Serializable idDocument, Serializable idCategory, String name, Map<? extends Serializable, ? extends Serializable> otherInfo, DMSCategory parent) {
 		super();
 		this.idCategory = idCategory;
 		this.name = name;
-		this.otherInfo = otherInfo == null ? new HashMap<Object, Object>() : otherInfo;
+		this.otherInfo = otherInfo == null ? new HashMap<Serializable, Serializable>() : otherInfo;
 		this.children = new ArrayList<DMSCategory>();
 		this.idDocument = idDocument;
 		this.parent = parent;
@@ -91,8 +91,8 @@ public class DMSCategory implements Serializable {
 	 * @param otherInfo
 	 *            the other info
 	 */
-	public void setOtherInfo(Map<?, ?> otherInfo) {
-		this.otherInfo = otherInfo == null ? new HashMap<Object, Object>() : otherInfo;
+	public void setOtherInfo(Map<? extends Serializable, ? extends Serializable> otherInfo) {
+		this.otherInfo = otherInfo == null ? new HashMap<Serializable, Serializable>() : otherInfo;
 	}
 
 	/**
@@ -118,7 +118,7 @@ public class DMSCategory implements Serializable {
 	 *
 	 * @return the other info
 	 */
-	public Map<?, ?> getOtherInfo() {
+	public Map<? extends Serializable, ? extends Serializable> getOtherInfo() {
 		return this.otherInfo;
 	}
 

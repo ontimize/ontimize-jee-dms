@@ -16,13 +16,13 @@ import org.slf4j.LoggerFactory;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.InteractionManagerModeEvent;
 import com.ontimize.gui.container.CardPanel;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.tools.CheckingTools;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsTransferable.Status;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.DmsTransfererManagerFactory;
 import com.ontimize.jee.desktopclient.dms.viewer.DocumentationTable;
 import com.ontimize.util.ParseUtils;
@@ -136,7 +136,7 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 		return null;
 	}
 
-	protected AbstractDmsUploadable showSelectionDialog(Form parentForm) throws Throwable {
+	protected AbstractDmsUploadable showSelectionDialog(Form parentForm) {
 		if (this.formDialog == null) {
 			this.formDialog = UClientApplication.getCurrentActiveForm().getFormManager().getFormCopy("ontimize-dms-forms/formMultipleFiles.form", IMMultipleFiles.class.getName());
 			this.formDialog.putInModalDialog(this.formDialog.getFormTitle(), parentForm);

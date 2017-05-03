@@ -3,8 +3,8 @@ package com.ontimize.jee.desktopclient.dms.upload.disk;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploader;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsException;
 
 /**
  *

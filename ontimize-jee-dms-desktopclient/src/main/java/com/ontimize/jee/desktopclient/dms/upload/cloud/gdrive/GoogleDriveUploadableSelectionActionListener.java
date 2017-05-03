@@ -2,6 +2,7 @@ package com.ontimize.jee.desktopclient.dms.upload.cloud.gdrive;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.net.MalformedURLException;
 import java.util.Hashtable;
 
 import javax.swing.AbstractButton;
@@ -9,8 +10,8 @@ import javax.swing.AbstractButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.services.drive.model.File;
 import com.ontimize.gui.Form;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
 import com.utilmize.client.UClientApplication;
@@ -39,7 +40,7 @@ public class GoogleDriveUploadableSelectionActionListener extends AbstractUpload
 	}
 
 	@Override
-	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws Exception {
+	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws DmsException {
 
 		if (this.formDialog == null) {
 			this.formDialog = UClientApplication.getCurrentActiveForm().getFormManager()
@@ -51,9 +52,13 @@ public class GoogleDriveUploadableSelectionActionListener extends AbstractUpload
 		}
 		this.formDialog.deleteDataField("CLOUD_FILE");
 		this.formDialog.getJDialog().setVisible(true);
-		File file = (File) this.formDialog.getDataFieldValue("CLOUD_FILE");
+		GoogleFile file = (GoogleFile) this.formDialog.getDataFieldValue("CLOUD_FILE");
 		if (file != null) {
-			return new GoogleDriveDmsUploadable(file, file.getDescription(), file.getTitle(), file.getFileSize());
+			try {
+				return new GoogleDriveDmsUploadable(file, file.getDescription(), file.getTitle(), file.getFileSize());
+			} catch (MalformedURLException error) {
+				throw new DmsException(error);
+			}
 		}
 		return null;
 	}

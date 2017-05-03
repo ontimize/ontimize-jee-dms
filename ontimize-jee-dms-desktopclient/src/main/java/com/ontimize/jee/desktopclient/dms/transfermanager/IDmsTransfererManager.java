@@ -3,6 +3,7 @@ package com.ontimize.jee.desktopclient.dms.transfermanager;
 import java.io.Serializable;
 import java.nio.file.Path;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.events.ITransferQueueListener;
 
 /**

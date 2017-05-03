@@ -2,8 +2,8 @@ package com.ontimize.jee.desktopclient.dms.upload.cloud.dropbox;
 
 import java.io.InputStream;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploader;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsException;
 
 /**
  *

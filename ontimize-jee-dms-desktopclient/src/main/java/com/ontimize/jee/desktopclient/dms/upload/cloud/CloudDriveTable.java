@@ -2,6 +2,7 @@ package com.ontimize.jee.desktopclient.dms.upload.cloud;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Stack;
 
@@ -13,11 +14,12 @@ import javax.swing.table.TableCellRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.ontimize.jee.desktopclient.dms.util.TranslatedTableCellRenderer;
 import com.utilmize.client.gui.tasks.USwingWorker;
 
-public class CloudDriveTable<T> extends JTable {
+public class CloudDriveTable<T extends Serializable> extends JTable {
 	private static final long						serialVersionUID	= 1L;
 	private static final Logger						logger				= LoggerFactory.getLogger(CloudDriveTable.class);
 	private final ICloudFileSelectionListener<T>	selectionListener;
@@ -52,7 +54,7 @@ public class CloudDriveTable<T> extends JTable {
 		return this.getRemoteDriveModel().getFileAtRow(this.getSelectedRow());
 	}
 
-	public void startNavigation() throws Exception {
+	public void startNavigation() throws DmsException {
 		this.navigationStack.clear();
 		this.browseFolder(this.cloudManager.getRootFolderId());
 	}

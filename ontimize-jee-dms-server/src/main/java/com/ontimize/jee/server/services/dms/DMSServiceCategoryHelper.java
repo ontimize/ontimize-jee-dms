@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.SQLWarningException;
@@ -29,6 +31,8 @@ import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileDao;
 @Component
 @Lazy(value = true)
 public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
+
+	private static final Logger		logger	= LoggerFactory.getLogger(DMSServiceCategoryHelper.class);
 
 	@Autowired
 	DefaultOntimizeDaoHelper daoHelper;
@@ -103,7 +107,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 		try {
 			this.categoryDao.unsafeUpdate(avUpdate, kvUpdate);
 		} catch (SQLWarningException ex) {
-			// do nothing
+			DMSServiceCategoryHelper.logger.warn("Warning setting null parent categories", ex);
 		}
 
 		// Tenemos que quitar todos los ficheros de la categoria
@@ -114,7 +118,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 		try {
 			this.fileDao.unsafeUpdate(avUpdate, kvUpdate);
 		} catch (SQLWarningException ex) {
-			// do nothing
+			DMSServiceCategoryHelper.logger.warn("Warning setting null category files", ex);
 		}
 		this.daoHelper.delete(this.categoryDao, filter);
 	}
@@ -192,8 +196,8 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 		if (listIdParentCategory != null) {
 			for (int i = 0; i < listIdParentCategory.size(); i++) {
 				if (ObjectTools.safeIsEquals(listIdParentCategory.get(i), parentCategory.getIdCategory())) {
-					Map<?, ?> recordValues = er.getRecordValues(i);
-					Serializable idCategory = (Serializable) recordValues.remove(this.getColumnHelper().getCategoryIdColumn());
+					Map<? extends Serializable, ? extends Serializable> recordValues = er.getRecordValues(i);
+					Serializable idCategory = recordValues.remove(this.getColumnHelper().getCategoryIdColumn());
 					String categoryName = (String) recordValues.remove(this.getColumnHelper().getCategoryNameColumn());
 					res.add(new DMSCategory(idDocument, idCategory, categoryName, recordValues, parentCategory));
 					er.deleteRecord(i);

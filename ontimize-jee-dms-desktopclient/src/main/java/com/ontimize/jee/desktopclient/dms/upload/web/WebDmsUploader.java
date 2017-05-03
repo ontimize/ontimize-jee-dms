@@ -6,8 +6,8 @@ import java.net.HttpURLConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploader;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsException;
 
 /**
  *

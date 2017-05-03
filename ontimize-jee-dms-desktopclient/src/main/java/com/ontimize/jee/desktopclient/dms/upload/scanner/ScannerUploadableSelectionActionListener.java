@@ -10,6 +10,7 @@ import javax.swing.AbstractButton;
 import javax.swing.JOptionPane;
 
 import com.ontimize.gui.ApplicationManager;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.tools.FileTools;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
@@ -38,12 +39,16 @@ public class ScannerUploadableSelectionActionListener extends AbstractUploadable
 	}
 
 	@Override
-	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws Exception {
+	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws DmsException {
 		if (this.acquisitionDataField == null) {
 			Hashtable<String, Object> params = new Hashtable<>();
 			params.put("opengenerated", "false");
 			params.put("closeOnGenerate", "true");
-			this.acquisitionDataField = new UAcquisitionDataField(params);
+			try {
+				this.acquisitionDataField = new UAcquisitionDataField(params);
+			} catch (Exception error) {
+				throw new DmsException(error);
+			}
 		}
 		List<File> resFile = this.acquisitionDataField.showAcquireDialog(this.getButton(), "dms.scanner_acquisition", this.getResourceBundle());
 		if ((resFile != null) && (resFile.size() > 0)) {

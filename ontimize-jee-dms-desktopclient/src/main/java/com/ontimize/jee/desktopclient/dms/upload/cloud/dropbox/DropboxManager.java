@@ -20,6 +20,8 @@ import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
+import com.ontimize.jee.common.exceptions.DmsException;
+import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
 
 /**
@@ -27,6 +29,7 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  *
  */
 public class DropboxManager implements ICloudManager<DbxEntry> {
+	private static final long		serialVersionUID	= 1L;
 	private static final Logger		logger				= LoggerFactory.getLogger(DropboxManager.class);
 	protected static final String	APPLICATION_NAME	= "OntimizeEEdrpbx";
 
@@ -89,7 +92,7 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 			DbxRequestConfig config = new DbxRequestConfig(DropboxManager.APPLICATION_NAME, Locale.getDefault().toString());
 			this.webAuth = new DbxWebAuthNoRedirect(config, appInfo);
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new DmsRuntimeException(ex);
 		}
 	}
 
@@ -126,8 +129,13 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	 * @throws DbxException
 	 */
 	@Override
-	public InputStream downloadFile(DbxEntry file) throws DbxException {
-		Downloader downloader = this.service.startGetFile(file.path, null);
+	public InputStream downloadFile(DbxEntry file) throws DmsException {
+		Downloader downloader;
+		try {
+			downloader = this.service.startGetFile(file.path, null);
+		} catch (DbxException error) {
+			throw new DmsException(error);
+		}
 		return downloader.body;
 	}
 
@@ -140,8 +148,13 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	 * @throws DbxException
 	 */
 	@Override
-	public List<DbxEntry> retrieveFilesInFolder(String folderName) throws DbxException {
-		DbxEntry.WithChildren listing = this.service.getMetadataWithChildren(folderName);
+	public List<DbxEntry> retrieveFilesInFolder(String folderName) throws DmsException {
+		DbxEntry.WithChildren listing;
+		try {
+			listing = this.service.getMetadataWithChildren(folderName);
+		} catch (DbxException error) {
+			throw new DmsException(error);
+		}
 		return listing.children;
 	}
 

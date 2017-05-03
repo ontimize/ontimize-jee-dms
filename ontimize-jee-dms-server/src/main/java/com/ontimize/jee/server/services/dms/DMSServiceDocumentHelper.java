@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 import com.ontimize.db.EntityResult;
 import com.ontimize.gui.SearchValue;
-import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.tools.CheckingTools;
@@ -112,8 +112,9 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 *
 	 * @param documentId
 	 *            the document id
+	 * @throws DmsException
 	 */
-	public void documentDelete(Serializable documentId) {
+	public void documentDelete(Serializable documentId) throws DmsException {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		// borramos las propiedades
 		Map<String, Object> kv = new HashMap<>();
@@ -278,10 +279,10 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @param attributes
 	 *            the attributes
 	 * @return the entity result
-	 * @throws OntimizeJEERuntimeException
+	 * @throws DmsException
 	 *             the ontimize jee runtime exception
 	 */
-	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
+	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws DmsException {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		return this.daoHelper.query(this.documentFileDao, kv, attributes, "allfiles");

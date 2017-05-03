@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 
+import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
 
 /**
@@ -28,10 +29,11 @@ public class DmsTransfererManagerFactory {
 			try {
 				DmsTransfererManagerFactory.sInstance = BeansFactory.getBean(IDmsTransfererManager.class);
 			} catch (NoSuchBeanDefinitionException ex) {
+				DmsTransfererManagerFactory.logger.warn("IDmsTransferManager not defined, using default");
 				DmsTransfererManagerFactory.sInstance = new DmsTransfererManagerGui();
 			}
 			if (DmsTransfererManagerFactory.sInstance == null) {
-				throw new RuntimeException("Can't not initializate transfermanager");
+				throw new DmsRuntimeException("Can not initializate transfermanager");
 			}
 			DmsTransfererManagerFactory.sInstance.init();
 		}

@@ -3,6 +3,7 @@ package com.ontimize.jee.desktopclient.dms.transfermanager;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 
 public class AbstractDmsUploadable extends AbstractDmsTransferable {
+	private static final long	serialVersionUID	= 1L;
 
 	/**
 	 * The document identifier.

@@ -29,8 +29,9 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.Drive.Files;
 import com.google.api.services.drive.DriveScopes;
-import com.google.api.services.drive.model.File;
 import com.google.api.services.drive.model.FileList;
+import com.ontimize.jee.common.exceptions.DmsException;
+import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
 
 /**
@@ -39,7 +40,8 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  * @see https://developers.google.com/drive/examples/java#making_authorized_api_requests
  * @see https://developers.google.com/drive/quickstart-java"urn:ietf:wg:oauth:2.0:oob";
  */
-public class GoogleDriveManager implements ICloudManager<File> {
+public class GoogleDriveManager implements ICloudManager<GoogleFile> {
+	private static final long				serialVersionUID		= 1L;
 	private static final Logger				logger					= LoggerFactory.getLogger(GoogleDriveManager.class);
 	protected static final String			APPLICATION_NAME		= "Application";
 	protected static GoogleDriveManager		instance;
@@ -84,8 +86,12 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	}
 
 	@Override
-	public String getRootFolderId() throws IOException {
-		return this.service.about().get().execute().getRootFolderId();
+	public String getRootFolderId() throws DmsException {
+		try {
+			return this.service.about().get().execute().getRootFolderId();
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
 	}
 
 	public boolean isSyncronized() {
@@ -112,14 +118,13 @@ public class GoogleDriveManager implements ICloudManager<File> {
 			this.reset();
 			this.httpTransport = new NetHttpTransport();
 			this.jsonFactory = new JacksonFactory();
-			InputStreamReader readerSecretsLocation = new InputStreamReader(
-					GoogleDriveManager.class.getResourceAsStream(GoogleDriveManager.CLIENTSECRETS_LOCATION));
+			InputStreamReader readerSecretsLocation = new InputStreamReader(GoogleDriveManager.class.getResourceAsStream(GoogleDriveManager.CLIENTSECRETS_LOCATION));
 
 			GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(this.jsonFactory, readerSecretsLocation);
 			this.flow = new GoogleAuthorizationCodeFlow.Builder(this.httpTransport, this.jsonFactory, clientSecrets, GoogleDriveManager.SCOPES)
 					.setAccessType(GoogleDriveManager.ONLINE).setApprovalPrompt(GoogleDriveManager.AUTO).build();
 		} catch (Exception ex) {
-			throw new RuntimeException(ex);
+			throw new DmsRuntimeException(ex);
 		}
 	}
 
@@ -147,13 +152,17 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 * @param String
 	 *            authorization code.
 	 */
-	public void setAuthorizationCode(String code) throws IOException {
-		GoogleTokenResponse response = this.flow.newTokenRequest(code).setRedirectUri(GoogleDriveManager.REDIRECT_URI_AUTO).execute();
+	public void setAuthorizationCode(String code) throws DmsException {
+		GoogleTokenResponse response;
+		try {
+			response = this.flow.newTokenRequest(code).setRedirectUri(GoogleDriveManager.REDIRECT_URI_AUTO).execute();
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
 		GoogleCredential credential = new GoogleCredential().setFromTokenResponse(response);
 
 		// Create a new authorized API client
-		this.service = new Drive.Builder(this.httpTransport, this.jsonFactory, credential).setApplicationName(GoogleDriveManager.APPLICATION_NAME)
-				.build();
+		this.service = new Drive.Builder(this.httpTransport, this.jsonFactory, credential).setApplicationName(GoogleDriveManager.APPLICATION_NAME).build();
 	}
 
 	/**
@@ -163,14 +172,19 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 *            path of the file.
 	 * @return String name of the file in google drive.
 	 */
-	public String uploadTextFile(String filePath, String title) throws IOException {
-		File body = new File();
+	public String uploadTextFile(String filePath, String title) throws DmsException {
+		GoogleFile body = new GoogleFile();
 		body.setTitle(title);
 		body.setDescription("A test document");
 		body.setMimeType("text/plain");
 		java.io.File fileContent = new java.io.File(filePath);
 		FileContent mediaContent = new FileContent("text/plain", fileContent);
-		File file = this.service.files().insert(body, mediaContent).execute();
+		GoogleFile file;
+		try {
+			file = GoogleFile.toGoogleFile(this.service.files().insert(body.getFile(), mediaContent).execute());
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
 		return file.getId();
 	}
 
@@ -181,13 +195,21 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 *            to get the content.
 	 * @return String content of the file.
 	 */
-	public String downloadTextFile(File gFile) throws IOException {
+	public String downloadTextFile(GoogleFile gFile) throws DmsException {
 		GenericUrl url = new GenericUrl(gFile.getDownloadUrl());
-		HttpResponse response = this.service.getRequestFactory().buildGetRequest(url).execute();
+		HttpResponse response;
 		try {
-			return new Scanner(response.getContent()).useDelimiter("\\A").next();
-		} catch (java.util.NoSuchElementException e) {
+			response = this.service.getRequestFactory().buildGetRequest(url).execute();
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
+		try (Scanner sc = new Scanner(response.getContent())) {
+			return sc.useDelimiter("\\A").next();
+		} catch (java.util.NoSuchElementException error) {
+			GoogleDriveManager.logger.warn(null, error);
 			return "";
+		} catch (IOException error) {
+			throw new DmsException(error);
 		}
 	}
 
@@ -198,8 +220,13 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 *            the file ID.
 	 * @return String content of the file.
 	 */
-	public String downloadTextFile(String fileID) throws IOException {
-		File file = this.service.files().get(fileID).execute();
+	public String downloadTextFile(String fileID) throws DmsException {
+		GoogleFile file;
+		try {
+			file = GoogleFile.toGoogleFile(this.service.files().get(fileID).execute());
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
 		return this.downloadTextFile(file);
 	}
 
@@ -212,17 +239,20 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 * @author Google
 	 * @throws IOException
 	 */
-	public List<File> retrieveAllFiles() throws IOException {
-		List<File> result = new ArrayList<File>();
+	public List<GoogleFile> retrieveAllFiles() throws DmsException {
+		List<GoogleFile> result = new ArrayList<GoogleFile>();
 		Files.List request = null;
 
-		request = this.service.files().list();
+		try {
+			request = this.service.files().list();
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
 
 		do {
 			try {
 				FileList files = request.execute();
-
-				result.addAll(files.getItems());
+				result.addAll(GoogleFile.toGoogleFile(files.getItems()));
 				request.setPageToken(files.getNextPageToken());
 			} catch (IOException e) {
 				GoogleDriveManager.logger.error("An error occurred: ", e);
@@ -241,10 +271,14 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 * @return InputStream containing the file's content if successful, {@code null} otherwise.
 	 */
 	@Override
-	public InputStream downloadFile(File file) throws IOException {
+	public InputStream downloadFile(GoogleFile file) throws DmsException {
 		if ((file.getDownloadUrl() != null) && (file.getDownloadUrl().length() > 0)) {
-			HttpResponse resp = this.service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
-			return resp.getContent();
+			try {
+				HttpResponse resp = this.service.getRequestFactory().buildGetRequest(new GenericUrl(file.getDownloadUrl())).execute();
+				return resp.getContent();
+			} catch (Exception error) {
+				throw new DmsException(error);
+			}
 		} else {
 			// The file doesn't have any content stored on Drive.
 			return null;
@@ -259,23 +293,28 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	 * @throws IOException
 	 */
 	@Override
-	public List<File> retrieveFilesInFolder(String folderName) throws IOException {
-		List<File> result = new ArrayList<File>();
-		Files.List request = this.service.files().list();
+	public List<GoogleFile> retrieveFilesInFolder(String folderName) throws DmsException {
+		List<GoogleFile> result = new ArrayList<GoogleFile>();
+		Files.List request;
+		try {
+			request = this.service.files().list();
+		} catch (IOException error) {
+			throw new DmsException(error);
+		}
 		request.setQ("'" + folderName + "' in parents");
 		do {
 			try {
 				FileList files = request.execute();
-				result.addAll(files.getItems());
+				result.addAll(GoogleFile.toGoogleFile(files.getItems()));
 				request.setPageToken(files.getNextPageToken());
 			} catch (IOException e) {
 				GoogleDriveManager.logger.error("An error occurred: ", e);
 				request.setPageToken(null);
 			}
 		} while ((request.getPageToken() != null) && (request.getPageToken().length() > 0));
-		Collections.sort(result, new Comparator<File>() {
+		Collections.sort(result, new Comparator<GoogleFile>() {
 			@Override
-			public int compare(File o1, File o2) {
+			public int compare(GoogleFile o1, GoogleFile o2) {
 				if (o1.getMimeType().endsWith(".folder")) {
 					if (o2.getMimeType().endsWith(".folder")) {
 						return o1.getTitle().toLowerCase().compareTo(o2.getTitle().toLowerCase());
@@ -293,27 +332,27 @@ public class GoogleDriveManager implements ICloudManager<File> {
 	}
 
 	@Override
-	public boolean isFolder(File file) {
+	public boolean isFolder(GoogleFile file) {
 		return file.getMimeType().endsWith(".folder");
 	}
 
 	@Override
-	public String getFolderId(File file) {
+	public String getFolderId(GoogleFile file) {
 		return file.getId();
 	}
 
-
-	public static final File	BACK_FILE	= new File();
+	protected static final GoogleFile BACK_FILE = new GoogleFile();
 	static {
 		GoogleDriveManager.BACK_FILE.setTitle("..");
 	}
 
 	@Override
-	public File getBackFile() {
+	public GoogleFile getBackFile() {
 		return GoogleDriveManager.BACK_FILE;
 	}
 
-	public static final GoogleDriveTableRenderer	TABLECELLRENDERER	= new GoogleDriveTableRenderer();
+	public static final GoogleDriveTableRenderer TABLECELLRENDERER = new GoogleDriveTableRenderer();
+
 	@Override
 	public TableCellRenderer getTableRenderer() {
 		return GoogleDriveManager.TABLECELLRENDERER;

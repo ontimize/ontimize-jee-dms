@@ -1,5 +1,6 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsTransferable.Status;
 
 public abstract class AbstractDmsTransferer<T extends AbstractDmsTransferable> {

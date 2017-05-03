@@ -3,7 +3,7 @@ package com.ontimize.jee.server.services.dms;
 import java.io.Serializable;
 import java.nio.file.Path;
 
-import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.IDMSService;
 
 /**
@@ -18,10 +18,11 @@ public interface IDMSServiceServer extends IDMSService {
 	 * @param fileId
 	 *            the file id
 	 * @return the input stream
-	 * @throws OntimizeJEERuntimeException
+	 * @throws DmsException
 	 *             the ontimize jee runtime exception
+	 * @throws DmsException
 	 */
-	Path fileGetPath(Serializable fileId) throws OntimizeJEERuntimeException;
+	Path fileGetPath(Serializable fileId) throws DmsException;
 
 
 	/**
@@ -30,14 +31,14 @@ public interface IDMSServiceServer extends IDMSService {
 	 * @param fileVersionId
 	 *            the file version id
 	 * @return the input stream
-	 * @throws OntimizeJEERuntimeException
+	 * @throws DmsException
 	 *             the ontimize jee runtime exception
 	 */
-	Path fileGetPathOfVersion(Serializable fileVersionId) throws OntimizeJEERuntimeException;
+	Path fileGetPathOfVersion(Serializable fileVersionId) throws DmsException;
 
 	/**
 	 * Update settings.
 	 */
-	void updateSettings();
+	void updateSettings() throws DmsException;
 
 }

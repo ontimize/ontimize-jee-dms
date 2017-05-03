@@ -4,9 +4,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsException;
 
 /**
  * The Class LocalDiskDmsTransferable.

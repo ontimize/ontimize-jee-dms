@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.ontimize.db.EntityResult;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.IDMSService;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
@@ -26,8 +27,9 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 	 *            the id version file
 	 * @param targetFile
 	 *            the target file
+	 * @throws DmsException
 	 */
-	public DmsDownloadable(Serializable idVersionFile, Path targetFile) {
+	public DmsDownloadable(Serializable idVersionFile, Path targetFile) throws DmsException {
 		super(null, null);
 		this.idVersionFile = idVersionFile;
 		this.targetFile = targetFile;
@@ -41,8 +43,9 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 	 *            the id version file
 	 * @param targetFile
 	 *            the target file
+	 * @throws DmsException
 	 */
-	public DmsDownloadable(Serializable idVersionFile, Path targetFile, String name, Long size) {
+	public DmsDownloadable(Serializable idVersionFile, Path targetFile, String name, Long size) throws DmsException {
 		super(name, size);
 		this.idVersionFile = idVersionFile;
 		this.targetFile = targetFile;
@@ -51,8 +54,10 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 
 	/**
 	 * Inits the name and size.
+	 *
+	 * @throws DmsException
 	 */
-	protected void init() {
+	protected void init() throws DmsException {
 		if ((this.getName() == null) || (this.getSize() == null)) {
 			EntityResult er = BeansFactory.getBean(IDMSService.class).fileVersionQuery(this.idVersionFile,
 					Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_NAME }));

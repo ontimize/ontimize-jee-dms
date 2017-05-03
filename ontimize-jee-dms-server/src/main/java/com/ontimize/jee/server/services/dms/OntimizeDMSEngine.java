@@ -13,7 +13,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ontimize.db.EntityResult;
-import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.spring.parser.AbstractPropertyResolver;
@@ -121,7 +121,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContent(java.lang .Object)
 	 */
 	@Override
-	public InputStream fileGetContent(Serializable fileId) {
+	public InputStream fileGetContent(Serializable fileId) throws DmsException {
 		return this.fileHelper.fileGetContent(fileId);
 	}
 
@@ -130,7 +130,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
 	@Override
-	public Path fileGetPath(Serializable fileId) throws OntimizeJEERuntimeException {
+	public Path fileGetPath(Serializable fileId) throws DmsException {
 		return this.fileHelper.fileGetPath(fileId);
 	}
 
@@ -139,7 +139,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
 	@Override
-	public InputStream fileGetContentOfVersion(Serializable fileVersionId) {
+	public InputStream fileGetContentOfVersion(Serializable fileVersionId) throws DmsException {
 		return this.fileHelper.fileGetContentOfVersion(fileVersionId);
 	}
 
@@ -148,7 +148,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
 	@Override
-	public Path fileGetPathOfVersion(Serializable fileVersionId) throws OntimizeJEERuntimeException {
+	public Path fileGetPathOfVersion(Serializable fileVersionId) throws DmsException {
 		return this.fileHelper.fileGetPathOfVersion(fileVersionId);
 	}
 
@@ -157,7 +157,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileInsert(java.util.Map, java.io.InputStream)
 	 */
 	@Override
-	public DocumentIdentifier fileInsert(Serializable documentId, Map<?, ?> av, InputStream is) {
+	public DocumentIdentifier fileInsert(Serializable documentId, Map<?, ?> av, InputStream is) throws DmsException {
 		return this.fileHelper.fileInsert(documentId, av, is);
 	}
 
@@ -177,7 +177,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileUpdate(java.lang.Object , java.util.Map, java.io.InputStream)
 	 */
 	@Override
-	public DocumentIdentifier fileUpdate(Serializable fileId, Map<?, ?> attributesValues, InputStream is) {
+	public DocumentIdentifier fileUpdate(Serializable fileId, Map<?, ?> attributesValues, InputStream is) throws DmsException {
 		return this.fileHelper.fileUpdate(fileId, attributesValues, is);
 	}
 
@@ -195,7 +195,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileDelete(java.lang.Object )
 	 */
 	@Override
-	public void fileDelete(Serializable fileId) {
+	public void fileDelete(Serializable fileId) throws DmsException {
 		this.fileHelper.fileDelete(fileId);
 	}
 
@@ -204,7 +204,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileVersionQuery(java.lang.Object, java.util.List)
 	 */
 	@Override
-	public EntityResult fileVersionQuery(Serializable fileVersionId, List<?> attributes) throws OntimizeJEERuntimeException {
+	public EntityResult fileVersionQuery(Serializable fileVersionId, List<?> attributes) {
 		return this.fileHelper.fileVersionQuery(fileVersionId, attributes);
 	}
 
@@ -222,7 +222,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileRecoverPreviousVersion(java.lang.Object)
 	 */
 	@Override
-	public void fileRecoverPreviousVersion(Serializable fileId, boolean acceptNotPreviousVersion) throws OntimizeJEERuntimeException {
+	public void fileRecoverPreviousVersion(Serializable fileId, boolean acceptNotPreviousVersion) throws DmsException {
 		this.fileHelper.fileRecoverPreviousVersion(fileId, acceptNotPreviousVersion);
 	}
 
@@ -258,7 +258,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#documentDelete(java.lang.Object)
 	 */
 	@Override
-	public void documentDelete(Serializable documentId) {
+	public void documentDelete(Serializable documentId) throws DmsException {
 		this.documentHelper.documentDelete(documentId);
 	}
 
@@ -312,7 +312,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#documentGetAllFiles(java.lang.Object, java.util.Map, java.util.List)
 	 */
 	@Override
-	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
+	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws DmsException {
 		return this.documentHelper.documentGetAllFiles(documentId, kv, attributes);
 	}
 
@@ -339,7 +339,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#categoryGetForDocument(java.lang.Object, java.util.List)
 	 */
 	@Override
-	public DMSCategory categoryGetForDocument(Serializable documentId, List<?> attributes) throws OntimizeJEERuntimeException {
+	public DMSCategory categoryGetForDocument(Serializable documentId, List<?> attributes) throws DmsException {
 		return this.categoryHelper.categoryGetForDocument(documentId, attributes);
 	}
 
@@ -348,7 +348,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#categoryInsert(java.lang.String, java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public Serializable categoryInsert(Serializable documentId, String name, Serializable parentCategoryId, Map<?, ?> otherData) throws OntimizeJEERuntimeException {
+	public Serializable categoryInsert(Serializable documentId, String name, Serializable parentCategoryId, Map<?, ?> otherData) {
 		return this.categoryHelper.categoryInsert(documentId, name, parentCategoryId, otherData);
 	}
 
@@ -357,7 +357,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#categoryUpdate(java.lang.Object, java.util.Map)
 	 */
 	@Override
-	public void categoryUpdate(Serializable categoryId, Map<?, ?> av) throws OntimizeJEERuntimeException {
+	public void categoryUpdate(Serializable categoryId, Map<?, ?> av) {
 		this.categoryHelper.categoryUpdate(categoryId, av);
 	}
 
@@ -366,12 +366,12 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#categoryDelete(java.lang.Object)
 	 */
 	@Override
-	public void categoryDelete(Serializable idCategory) throws OntimizeJEERuntimeException {
+	public void categoryDelete(Serializable idCategory) {
 		this.categoryHelper.categoryDelete(idCategory);
 	}
 
 	@Override
-	public void moveFilesToCategory(Serializable idCategory, List<Serializable> idFiles) throws OntimizeJEERuntimeException {
+	public void moveFilesToCategory(Serializable idCategory, List<Serializable> idFiles) {
 		this.fileHelper.moveFilesToCategory(idCategory, idFiles);
 	}
 

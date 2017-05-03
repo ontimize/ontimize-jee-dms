@@ -3,7 +3,6 @@ package com.ontimize.jee.desktopclient.dms.upload.cloud.gdrive;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.api.services.drive.model.File;
 import com.ontimize.annotation.FormComponent;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.container.CardPanel;
@@ -12,15 +11,18 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.CloudDrivePanel;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudFileSelectionListener;
 import com.utilmize.client.fim.UBasicFIM;
 
-public class IMGoogleDrive extends UBasicFIM implements ICloudFileSelectionListener<File> {
+public class IMGoogleDrive extends UBasicFIM implements ICloudFileSelectionListener<GoogleFile> {
+
+	private static final long				serialVersionUID	= 1L;
 
 	private static final Logger				logger	= LoggerFactory.getLogger(IMGoogleDrive.class);
+
 	@FormComponent(attr = "WEB")
 	private LoginIntoGoogleDriveComponent	moduleWeb;
 	@FormComponent(attr = "cardpanel")
 	private CardPanel						cp;
 	@FormComponent(attr = "remotepanel")
-	private CloudDrivePanel<File>			remotePanel;
+	private CloudDrivePanel<GoogleFile>		remotePanel;
 
 	@Override
 	public void registerInteractionManager(Form form, IFormManager formManager) {
@@ -40,8 +42,8 @@ public class IMGoogleDrive extends UBasicFIM implements ICloudFileSelectionListe
 		try {
 			this.moduleWeb.showLoginScreen();
 			this.showCardPanel("login");
-		} catch (Exception e) {
-			IMGoogleDrive.logger.error(null, e);
+		} catch (Exception error) {
+			IMGoogleDrive.logger.error(null, error);
 		}
 	}
 
@@ -55,7 +57,7 @@ public class IMGoogleDrive extends UBasicFIM implements ICloudFileSelectionListe
 	}
 
 	@Override
-	public void onFileSelected(File file) {
+	public void onFileSelected(GoogleFile file) {
 		if (file != null) {
 			this.managedForm.setDataFieldValue("CLOUD_FILE", file);
 		}

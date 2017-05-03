@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.common.services.dms.IDMSService;
 
@@ -42,8 +43,9 @@ public class DMSCreationHelper extends AbstractDMSServiceHelper {
 	 * @param categories
 	 *            the categories
 	 * @return the object
+	 * @throws DmsException
 	 */
-	public DocumentIdentifier createDocument(String docName, Object ownerId, String description, String keyworkds, String... categories) {
+	public DocumentIdentifier createDocument(String docName, Object ownerId, String description, String keyworkds, String... categories) throws DmsException {
 		Map<String, Object> av = new HashMap<>();
 		av.put(this.getColumnHelper().getDocumentNameColumn(), docName == null ? "docname" : docName);
 		av.put(this.getColumnHelper().getDocumentOwnerColumn(), ownerId);
@@ -64,8 +66,9 @@ public class DMSCreationHelper extends AbstractDMSServiceHelper {
 	 * @param docName
 	 *            the doc name
 	 * @return the object
+	 * @throws DmsException
 	 */
-	public DocumentIdentifier createDocument(String docName) {
+	public DocumentIdentifier createDocument(String docName) throws DmsException {
 		Map<String, Object> av = new HashMap<>();
 		av.put(this.getColumnHelper().getDocumentNameColumn(), docName == null ? "docname" : docName);
 		return this.dmsService.documentInsert(av);

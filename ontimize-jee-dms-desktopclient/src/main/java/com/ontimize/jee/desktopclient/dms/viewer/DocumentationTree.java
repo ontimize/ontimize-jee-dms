@@ -9,6 +9,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.IDMSService;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
@@ -49,7 +50,7 @@ public class DocumentationTree extends JTree {
 		this.expandRow(0);
 	}
 
-	public void refreshModel(Serializable idDocument) {
+	public void refreshModel(Serializable idDocument) throws DmsException {
 		if (idDocument == null) {
 			this.deleteData();
 			return;

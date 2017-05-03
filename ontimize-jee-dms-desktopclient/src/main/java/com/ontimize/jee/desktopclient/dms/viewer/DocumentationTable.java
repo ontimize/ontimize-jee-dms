@@ -33,6 +33,8 @@ import com.ontimize.gui.field.DataField;
 import com.ontimize.gui.field.FormComponent;
 import com.ontimize.gui.table.RefreshTableEvent;
 import com.ontimize.gui.table.TableSorter;
+import com.ontimize.jee.common.exceptions.DmsException;
+import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.IDMSService;
@@ -49,18 +51,18 @@ import com.utilmize.client.gui.field.table.render.UXmlByteSizeCellRenderer;
  * The Class DocumentationTable.
  */
 public class DocumentationTable extends UTable implements InteractionManagerModeListener {
-	private static final Logger		logger						= LoggerFactory.getLogger(DocumentationTable.class);
-	protected static final String	AVOID_PARENT_KEYS_NULL		= "avoidparentkeysnull";
+	private static final Logger									logger						= LoggerFactory.getLogger(DocumentationTable.class);
+	protected static final String								AVOID_PARENT_KEYS_NULL		= "avoidparentkeysnull";
 
-	private final DocumentationTree	categoryTree				= new DocumentationTree();
-	private Serializable			currentIdDocument			= null;
-	private Map<Object, Object>		currentFilter				= null;
+	private final DocumentationTree								categoryTree				= new DocumentationTree();
+	private Serializable										currentIdDocument			= null;
+	private Map<? extends Serializable, ? extends Serializable>	currentFilter				= null;
 	// ñapa
-	private boolean					deleting					= false;
-	private boolean					ignoreEvents				= false;
-	private boolean					ignoreCheckRefreshThread	= false;
-	private boolean					categoryPanel				= true;
-	protected String				form_id_dms_doc_field;
+	private boolean												deleting					= false;
+	private boolean												ignoreEvents				= false;
+	private boolean												ignoreCheckRefreshThread	= false;
+	private boolean												categoryPanel				= true;
+	protected String											form_id_dms_doc_field;
 
 	public DocumentationTable(Hashtable<String, Object> params) throws Exception {
 		super(params);
@@ -227,14 +229,14 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		}
 	}
 
-	protected EntityResult doQueryDocuments(Map<?, ?> filter, List<?> attrs) {
+	protected EntityResult doQueryDocuments(Map<?, ?> filter, List<?> attrs) throws DmsException {
 		if (!filter.containsKey(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT)) {
 			return new EntityResult();
 		}
 		return BeansFactory.getBean(IDMSService.class).fileQuery(filter, attrs);
 	}
 
-	protected void requeryDocuments() {
+	protected void requeryDocuments() throws DmsException {
 		Serializable idDms = (Serializable) this.parentForm.getDataFieldValue(this.form_id_dms_doc_field);
 		if (idDms == null) {
 			this.deleteData();
@@ -258,7 +260,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		if (ObjectTools.safeIsEquals(this.currentFilter, kv)) {
 			return;
 		}
-		this.currentFilter = (Map<Object, Object>) kv;
+		this.currentFilter = (Map<Serializable, Serializable>) kv;
 		final EntityResult er = BeansFactory.getBean(IDMSService.class).fileQuery(kv, this.getAttributeList());
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
@@ -301,7 +303,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	public void setParentForm(Form form) {
 		FormComponent idDmsField = form.getElementReference(this.form_id_dms_doc_field);
 		if (idDmsField == null) {
-			throw new RuntimeException("Field ID_DMS_DOC is mandatory in form");
+			throw new DmsRuntimeException("Field ID_DMS_DOC is mandatory in form");
 		}
 		((DataField) idDmsField).addValueChangeListener(new ValueChangeListener() {
 
@@ -374,7 +376,8 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 			this.uRefreshThread = new DocumentationTableRefreshThread(this);
 			this.uRefreshThread.setDelay(0);
 			this.uRefreshThread.start();
-		} catch (Exception e) {
+		} catch (Exception error) {
+			DocumentationTable.logger.error(null, error);
 		}
 	}
 

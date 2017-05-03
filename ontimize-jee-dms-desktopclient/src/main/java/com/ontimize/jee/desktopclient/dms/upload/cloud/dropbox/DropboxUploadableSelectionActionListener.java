@@ -2,6 +2,7 @@ package com.ontimize.jee.desktopclient.dms.upload.cloud.dropbox;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
+import java.net.MalformedURLException;
 import java.util.Hashtable;
 
 import javax.swing.AbstractButton;
@@ -11,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxEntry;
 import com.ontimize.gui.Form;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
 import com.utilmize.client.UClientApplication;
@@ -39,7 +41,7 @@ public class DropboxUploadableSelectionActionListener extends AbstractUploadable
 	}
 
 	@Override
-	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws Exception {
+	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws DmsException {
 
 		if (this.formDialog == null) {
 			this.formDialog = UClientApplication.getCurrentActiveForm().getFormManager()
@@ -53,7 +55,11 @@ public class DropboxUploadableSelectionActionListener extends AbstractUploadable
 		this.formDialog.getJDialog().setVisible(true);
 		DbxEntry file = (DbxEntry) this.formDialog.getDataFieldValue("CLOUD_FILE");
 		if (file != null) {
-			return new DropboxDmsUploadable(file, null, file.name, file.asFile().numBytes);
+			try {
+				return new DropboxDmsUploadable(file, null, file.name, file.asFile().numBytes);
+			} catch (MalformedURLException error) {
+				throw new DmsException(error);
+			}
 		}
 		return null;
 	}
