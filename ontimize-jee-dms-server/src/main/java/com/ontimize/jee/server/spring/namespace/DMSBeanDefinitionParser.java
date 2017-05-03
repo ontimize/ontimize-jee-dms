@@ -48,7 +48,7 @@ public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
 	@Override
 	protected void doParse(Element element, ParserContext ctx, BeanDefinitionBuilder builder) {
 		Element child = DomUtils.getChildElements(element).get(0);
-		Object engine = null;
+		Object engine;
 		if ("ontimize-dms-engine".equals(child.getLocalName())) {
 			final ParserContext nestedCtx = new ParserContext(ctx.getReaderContext(), ctx.getDelegate(), builder.getBeanDefinition());
 			engine = new OntimizeDMSParser().parse(child, nestedCtx);
@@ -92,7 +92,7 @@ public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
 		protected void doParse(final Element element, final ParserContext ctx, final BeanDefinitionBuilder builder) {
 			Element item = DomUtils.getChildElementByTagName(element, "document-base-path");
 			List<Element> childElements = DomUtils.getChildElements(item);
-			if (childElements.size() == 0) {
+			if (childElements.isEmpty()) {
 				builder.addPropertyValue("documentsBasePath", item.getNodeValue());
 			} else {
 				GenericBeanDefinition parseNode = (GenericBeanDefinition) DefinitionParserUtil.parseNode(childElements.get(0), ctx, builder.getBeanDefinition(), element.getAttribute("scope"));

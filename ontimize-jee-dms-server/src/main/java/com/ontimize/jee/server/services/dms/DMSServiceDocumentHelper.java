@@ -198,7 +198,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	public void documentDeleteProperties(Serializable documentId, List<String> propertyKeys) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(propertyKeys, DMSNaming.ERROR_PROPERTY_KEY_MANDATORY);
-		if (propertyKeys.size() == 0) {
+		if (propertyKeys.isEmpty()) {
 			return;
 		}
 

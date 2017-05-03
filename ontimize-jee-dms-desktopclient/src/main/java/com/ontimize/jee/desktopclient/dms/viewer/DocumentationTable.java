@@ -444,7 +444,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		Map<String, Object> av = new Hashtable<>();
 		TableSorter model = (TableSorter) this.table.getModel();
 		String col = model.getColumnName(this.table.convertColumnIndexToModel(viewColumnIndex));
-		Object newData = tableCellEditor.getCellEditorValue();
+		Object newData = tableCellEditor == null ? null : tableCellEditor.getCellEditorValue();
 		if (newData != null) {
 			av.put(col, newData);
 		} else {
