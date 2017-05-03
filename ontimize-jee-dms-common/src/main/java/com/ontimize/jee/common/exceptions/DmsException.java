@@ -13,7 +13,7 @@ public class DmsException extends OntimizeJEEException {
 	 * Instantiates a new dms exception.
 	 */
 	public DmsException() {
-
+		super();
 	}
 
 	/**

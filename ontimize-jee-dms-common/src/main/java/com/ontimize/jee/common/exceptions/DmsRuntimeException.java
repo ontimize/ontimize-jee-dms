@@ -13,7 +13,7 @@ public class DmsRuntimeException extends OntimizeJEERuntimeException {
 	 * Instantiates a new dms runtime exception.
 	 */
 	public DmsRuntimeException() {
-
+		super();
 	}
 
 	/**
