@@ -9,57 +9,57 @@ public class DocumentIdentifier implements Serializable {
 	/**
 	 * ID_DMS_DOC
 	 */
-	protected Object	documentId;
+	protected Serializable	documentId;
 
 	/**
 	 * ID_DMS_DOC_FILE
 	 */
-	protected Object	fileId;
+	protected Serializable	fileId;
 
 	/**
 	 * ID_DMS_DOC_FILE_VERSION
 	 */
-	protected Object	versionId;
+	protected Serializable	versionId;
 
 	public DocumentIdentifier() {
 		this(null);
 	}
 
-	public DocumentIdentifier(Object documentId) {
+	public DocumentIdentifier(Serializable documentId) {
 		this(documentId, null);
 	}
 
-	public DocumentIdentifier(Object documentId, Object fileId) {
+	public DocumentIdentifier(Serializable documentId, Serializable fileId) {
 		this(documentId, fileId, null);
 	}
 
-	public DocumentIdentifier(Object documentId, Object fileId, Object versionId) {
+	public DocumentIdentifier(Serializable documentId, Serializable fileId, Serializable versionId) {
 		this.documentId = documentId;
 		this.fileId = fileId;
 		this.versionId = versionId;
 	}
 
-	public Object getDocumentId() {
+	public Serializable getDocumentId() {
 		return this.documentId;
 	}
 
-	public void setDocumentId(Object documentId) {
+	public void setDocumentId(Serializable documentId) {
 		this.documentId = documentId;
 	}
 
-	public Object getFileId() {
+	public Serializable getFileId() {
 		return this.fileId;
 	}
 
-	public void setFileId(Object fileId) {
+	public void setFileId(Serializable fileId) {
 		this.fileId = fileId;
 	}
 
-	public Object getVersionId() {
+	public Serializable getVersionId() {
 		return this.versionId;
 	}
 
-	public void setVersionId(Object versionId) {
+	public void setVersionId(Serializable versionId) {
 		this.versionId = versionId;
 	}
 }

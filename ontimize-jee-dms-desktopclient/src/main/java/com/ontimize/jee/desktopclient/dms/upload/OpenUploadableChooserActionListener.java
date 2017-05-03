@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.Serializable;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Observable;
@@ -84,10 +85,10 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 	}
 
 	protected void upload(AbstractDmsUploadable uploadable) throws DmsException {
-		Object idDocument = this.getForm().getDataFieldValue(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
-		Object idFile = this.getForm().getDataFieldValue(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
-		Object idVersion = this.getForm().getDataFieldValue(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
-		Object idCategory = this.getForm().getDataFieldValue(DMSNaming.CATEGORY_ID_CATEGORY);
+		Serializable idDocument = (Serializable) this.getForm().getDataFieldValue(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
+		Serializable idFile = (Serializable) this.getForm().getDataFieldValue(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+		Serializable idVersion = (Serializable) this.getForm().getDataFieldValue(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
+		Serializable idCategory = (Serializable) this.getForm().getDataFieldValue(DMSNaming.CATEGORY_ID_CATEGORY);
 		final DocumentationTable table = this.getDocumentationTable();
 		if (table != null) {
 			idDocument = table.getCurrentIdDocument();

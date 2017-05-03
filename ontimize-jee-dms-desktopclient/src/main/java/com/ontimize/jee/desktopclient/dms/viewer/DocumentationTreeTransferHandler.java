@@ -2,6 +2,7 @@ package com.ontimize.jee.desktopclient.dms.viewer;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import javax.swing.JComponent;
@@ -74,8 +75,8 @@ public class DocumentationTreeTransferHandler extends TransferHandler {
 		for (DataFlavor flavor : transferable.getTransferDataFlavors()) {
 			if ("filesToMove".equals(flavor.getHumanPresentableName())) {
 				try {
-					DataWrapper<ArrayList<Object>> transferData = (DataWrapper<ArrayList<Object>>) transferable.getTransferData(flavor);
-					ArrayList<Object> data = transferData.getData();
+					DataWrapper<ArrayList<Serializable>> transferData = (DataWrapper<ArrayList<Serializable>>) transferable.getTransferData(flavor);
+					ArrayList<Serializable> data = transferData.getData();
 					TreePath pathForLocation = this.getTree().getPathForLocation(support.getDropLocation().getDropPoint().x,
 							support.getDropLocation().getDropPoint().y);
 					if (pathForLocation == null) {

@@ -1,5 +1,6 @@
 package com.ontimize.jee.server.services.dms;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +54,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 *            the attributes
 	 * @return the DMS category
 	 */
-	public DMSCategory categoryGetForDocument(Object idDocument, List<?> attributes) {
+	public DMSCategory categoryGetForDocument(Serializable idDocument, List<?> attributes) {
 		CheckingTools.failIfNull(idDocument, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		if (attributes == null) {
 			attributes = new ArrayList<Object>();
@@ -75,7 +76,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 * @param av
 	 *            the av
 	 */
-	public void categoryUpdate(Object idCategory, Map<?, ?> av) {
+	public void categoryUpdate(Serializable idCategory, Map<?, ?> av) {
 		CheckingTools.failIfNull(idCategory, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> filter = new HashMap<String, Object>();
 		filter.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
@@ -88,7 +89,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 * @param idCategory
 	 *            the id category
 	 */
-	public void categoryDelete(Object idCategory) {
+	public void categoryDelete(Serializable idCategory) {
 		CheckingTools.failIfNull(idCategory, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> filter = new HashMap<String, Object>();
 		filter.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
@@ -131,14 +132,14 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 *            the other data
 	 * @return the object
 	 */
-	public Object categoryInsert(Object idDocument, String name, Object idParentCategory, Map<?, ?> otherData) {
+	public Serializable categoryInsert(Serializable idDocument, String name, Serializable idParentCategory, Map<?, ?> otherData) {
 		CheckingTools.failIfNull(idDocument, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(name, DMSNaming.ERROR_CATEGORY_NAME_MANDATORY);
 		Map<Object, Object> av = new HashMap<>(otherData == null ? new HashMap<Object, Object>() : otherData);
 		av.put(this.getColumnHelper().getDocumentIdColumn(), idDocument);
 		av.put(this.getColumnHelper().getCategoryNameColumn(), name);
 		av.put(this.getColumnHelper().getCategoryParentColumn(), idParentCategory);
-		return this.daoHelper.insert(this.categoryDao, av).get(this.getColumnHelper().getCategoryIdColumn());
+		return (Serializable) this.daoHelper.insert(this.categoryDao, av).get(this.getColumnHelper().getCategoryIdColumn());
 	}
 
 	/**
@@ -150,7 +151,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 *            the er
 	 * @return the DMS category
 	 */
-	private DMSCategory convertCategoryResultSet(Object idDocument, EntityResult er) {
+	private DMSCategory convertCategoryResultSet(Serializable idDocument, EntityResult er) {
 		DMSCategory root = new DMSCategory(idDocument, null, "/", null, null);
 		this.expandCategory(root, er, idDocument);
 		return root;
@@ -166,7 +167,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 * @param idDocument
 	 *            the id document
 	 */
-	private void expandCategory(DMSCategory root, EntityResult er, Object idDocument) {
+	private void expandCategory(DMSCategory root, EntityResult er, Serializable idDocument) {
 		List<DMSCategory> categories = this.removeCategoriesForParentId(er, root, idDocument);
 		root.setChildren(categories);
 		for (DMSCategory category : root.getChildren()) {
@@ -185,14 +186,14 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 *            the id document
 	 * @return the list
 	 */
-	private List<DMSCategory> removeCategoriesForParentId(EntityResult er, DMSCategory parentCategory, Object idDocument) {
-		List<Object> listIdParentCategory = (List<Object>) er.get(this.getColumnHelper().getCategoryParentColumn());
+	private List<DMSCategory> removeCategoriesForParentId(EntityResult er, DMSCategory parentCategory, Serializable idDocument) {
+		List<Serializable> listIdParentCategory = (List<Serializable>) er.get(this.getColumnHelper().getCategoryParentColumn());
 		List<DMSCategory> res = new ArrayList<DMSCategory>();
 		if (listIdParentCategory != null) {
 			for (int i = 0; i < listIdParentCategory.size(); i++) {
 				if (ObjectTools.safeIsEquals(listIdParentCategory.get(i), parentCategory.getIdCategory())) {
 					Map<?, ?> recordValues = er.getRecordValues(i);
-					Object idCategory = recordValues.remove(this.getColumnHelper().getCategoryIdColumn());
+					Serializable idCategory = (Serializable) recordValues.remove(this.getColumnHelper().getCategoryIdColumn());
 					String categoryName = (String) recordValues.remove(this.getColumnHelper().getCategoryNameColumn());
 					res.add(new DMSCategory(idDocument, idCategory, categoryName, recordValues, parentCategory));
 					er.deleteRecord(i);

@@ -1,5 +1,6 @@
 package com.ontimize.jee.desktopclient.dms.viewer;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -33,7 +34,7 @@ public class DocumentationTreeModel implements TreeModel {
 
 	/** The all files. */
 	private final String		allFiles			= "dms.all_files";
-	private Object				idDocument;
+	private Serializable		idDocument;
 
 	/**
 	 * Instantiates a new documentation tree model.
@@ -51,7 +52,7 @@ public class DocumentationTreeModel implements TreeModel {
 	 *            the new category tree
 	 * @param idDocument
 	 */
-	public void setCategoryTree(DMSCategory category, Object idDocument) {
+	public void setCategoryTree(DMSCategory category, Serializable idDocument) {
 		this.idDocument = idDocument;
 		this.uncategorized = category;
 		if (this.uncategorized == null) {
@@ -258,7 +259,7 @@ public class DocumentationTreeModel implements TreeModel {
 		}
 	}
 
-	public Object getIdDocument() {
+	public Serializable getIdDocument() {
 		return this.idDocument;
 	}
 

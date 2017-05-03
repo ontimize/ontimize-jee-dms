@@ -1,5 +1,6 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +16,7 @@ import com.ontimize.jee.desktopclient.spring.BeansFactory;
 public class DmsDownloadable extends AbstractDmsTransferable {
 
 	/** The id version file. */
-	private final Object	idVersionFile;
+	private final Serializable	idVersionFile;
 	private final Path		targetFile;
 
 	/**
@@ -26,7 +27,7 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 	 * @param targetFile
 	 *            the target file
 	 */
-	public DmsDownloadable(Object idVersionFile, Path targetFile) {
+	public DmsDownloadable(Serializable idVersionFile, Path targetFile) {
 		super(null, null);
 		this.idVersionFile = idVersionFile;
 		this.targetFile = targetFile;
@@ -41,7 +42,7 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 	 * @param targetFile
 	 *            the target file
 	 */
-	public DmsDownloadable(Object idVersionFile, Path targetFile, String name, Long size) {
+	public DmsDownloadable(Serializable idVersionFile, Path targetFile, String name, Long size) {
 		super(name, size);
 		this.idVersionFile = idVersionFile;
 		this.targetFile = targetFile;
@@ -65,7 +66,7 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 	 *
 	 * @return the id version file
 	 */
-	public Object getIdVersionFile() {
+	public Serializable getIdVersionFile() {
 		return this.idVersionFile;
 	}
 

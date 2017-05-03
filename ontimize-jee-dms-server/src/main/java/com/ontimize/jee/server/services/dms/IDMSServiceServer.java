@@ -1,5 +1,6 @@
 package com.ontimize.jee.server.services.dms;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 
 import com.ontimize.jee.common.exceptions.OntimizeJEERuntimeException;
@@ -20,7 +21,7 @@ public interface IDMSServiceServer extends IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	Path fileGetPath(Object fileId) throws OntimizeJEERuntimeException;
+	Path fileGetPath(Serializable fileId) throws OntimizeJEERuntimeException;
 
 
 	/**
@@ -32,7 +33,7 @@ public interface IDMSServiceServer extends IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	Path fileGetPathOfVersion(Object fileVersionId) throws OntimizeJEERuntimeException;
+	Path fileGetPathOfVersion(Serializable fileVersionId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Update settings.

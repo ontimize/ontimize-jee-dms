@@ -1,6 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -137,7 +138,7 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 	}
 
 	@Override
-	public Path obtainDmsFileVersion(Object idFileVersion) throws DmsException {
+	public Path obtainDmsFileVersion(Serializable idFileVersion) throws DmsException {
 		EntityResult er = BeansFactory.getBean(IDMSService.class).fileVersionQuery(idFileVersion,
 				Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_NAME }));
 		Long fileSize = ((List<Number>) er.get(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE)).get(0).longValue();
@@ -146,7 +147,7 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 	}
 
 	@Override
-	public Path obtainDmsFileVersion(Object idFileVersion, String fileName, Long fileSize) throws DmsException {
+	public Path obtainDmsFileVersion(Serializable idFileVersion, String fileName, Long fileSize) throws DmsException {
 		Path localFile = this.computeLocalFile(idFileVersion, fileName);
 		if (!Files.exists(localFile)) {
 			final DmsDownloadable dmsDownloadable = new DmsDownloadable(idFileVersion, localFile, fileName, fileSize);

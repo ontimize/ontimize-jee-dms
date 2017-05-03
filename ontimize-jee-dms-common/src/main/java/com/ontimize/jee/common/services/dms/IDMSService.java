@@ -1,6 +1,7 @@
 package com.ontimize.jee.common.services.dms;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -22,7 +23,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	InputStream fileGetContent(Object fileId) throws OntimizeJEERuntimeException;
+	InputStream fileGetContent(Serializable fileId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Inserta un fichero al documento indicado.
@@ -37,7 +38,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	DocumentIdentifier fileInsert(Object documentId, Map<?, ?> av, InputStream file) throws OntimizeJEERuntimeException;
+	DocumentIdentifier fileInsert(Serializable documentId, Map<?, ?> av, InputStream file) throws OntimizeJEERuntimeException;
 
 	/**
 	 * BÃºsqueda sobre el repositorio de ficheros.
@@ -60,7 +61,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void fileDelete(Object fileId) throws OntimizeJEERuntimeException;
+	void fileDelete(Serializable fileId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Actualiza un fichero. Si file != null, se crea una nueva versiÃ³n
@@ -74,7 +75,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	DocumentIdentifier fileUpdate(Object fileId, Map<?, ?> attributesValues, InputStream file) throws OntimizeJEERuntimeException;
+	DocumentIdentifier fileUpdate(Serializable fileId, Map<?, ?> attributesValues, InputStream file) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene las versiones de un fichero.
@@ -89,7 +90,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	EntityResult fileGetVersions(Object fileId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException;
+	EntityResult fileGetVersions(Serializable fileId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene los datos de una versión concreta de un fichero.
@@ -102,7 +103,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	EntityResult fileVersionQuery(Object fileVersionId, List<?> attributes) throws OntimizeJEERuntimeException;
+	EntityResult fileVersionQuery(Serializable fileVersionId, List<?> attributes) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene una versión dada de un fichero.
@@ -113,7 +114,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	InputStream fileGetContentOfVersion(Object fileVersionId) throws OntimizeJEERuntimeException;
+	InputStream fileGetContentOfVersion(Serializable fileVersionId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Delete last version of this file and mark previous as current active. If no previous version available, operation must be aborted and error
@@ -127,7 +128,7 @@ public interface IDMSService {
 	 * @return
 	 * @throws OntimizeJEERuntimeException
 	 */
-	void fileRecoverPreviousVersion(Object fileId, boolean acceptNotPreviousVersion) throws OntimizeJEERuntimeException;
+	void fileRecoverPreviousVersion(Serializable fileId, boolean acceptNotPreviousVersion) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Consulta documentos en base a un criterio.
@@ -163,7 +164,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void documentUpdate(Object documentId, Map<?, ?> attributesValues) throws OntimizeJEERuntimeException;
+	void documentUpdate(Serializable documentId, Map<?, ?> attributesValues) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Elimina un documento.
@@ -173,7 +174,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void documentDelete(Object documentId) throws OntimizeJEERuntimeException;
+	void documentDelete(Serializable documentId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * AÃ±ade propiedades a un documento.
@@ -185,7 +186,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void documentAddProperties(Object documentId, Map<String, String> properties) throws OntimizeJEERuntimeException;
+	void documentAddProperties(Serializable documentId, Map<String, String> properties) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Elimina propiedades de un documento.
@@ -197,7 +198,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void documentDeleteProperties(Object documentId, List<String> propertyKeys) throws OntimizeJEERuntimeException;
+	void documentDeleteProperties(Serializable documentId, List<String> propertyKeys) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene una propiedad de un documento.
@@ -210,7 +211,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	String documentGetProperty(Object documentId, String propertyKey) throws OntimizeJEERuntimeException;
+	String documentGetProperty(Serializable documentId, String propertyKey) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Otiene las propiedades de un documento.
@@ -223,7 +224,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	Map<String, String> documentGetProperties(Object documentId, Map<?, ?> kv) throws OntimizeJEERuntimeException;
+	Map<String, String> documentGetProperties(Serializable documentId, Map<?, ?> kv) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene los ficheros de un documento. Por defecto sólo devuelve los ficheros/versiones activos
@@ -238,7 +239,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	EntityResult documentGetFiles(Object documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException;
+	EntityResult documentGetFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene TODOS los ficheros de un documento.
@@ -253,7 +254,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	EntityResult documentGetAllFiles(Object documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException;
+	EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Obtiene los documentos relacionados con un documento.
@@ -264,7 +265,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	EntityResult getRelatedDocument(Object documentId) throws OntimizeJEERuntimeException;
+	EntityResult getRelatedDocument(Serializable documentId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Establece una relaciÃ³n entre dos documentos.
@@ -276,7 +277,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void setRelatedDocuments(Object documentId, Object otherDocumentId) throws OntimizeJEERuntimeException;
+	void setRelatedDocuments(Serializable documentId, Serializable otherDocumentId) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Category get for document.
@@ -289,7 +290,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	DMSCategory categoryGetForDocument(Object documentId, List<?> attributes) throws OntimizeJEERuntimeException;
+	DMSCategory categoryGetForDocument(Serializable documentId, List<?> attributes) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Category insert.
@@ -306,7 +307,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	Object categoryInsert(Object documentId, String name, Object parentCategoryId, Map<?, ?> otherData) throws OntimizeJEERuntimeException;
+	Serializable categoryInsert(Serializable documentId, String name, Serializable parentCategoryId, Map<?, ?> otherData) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Category update.
@@ -318,7 +319,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void categoryUpdate(Object idCategory, Map<?, ?> av) throws OntimizeJEERuntimeException;
+	void categoryUpdate(Serializable idCategory, Map<?, ?> av) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Category delete.
@@ -328,7 +329,7 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void categoryDelete(Object idCategory) throws OntimizeJEERuntimeException;
+	void categoryDelete(Serializable idCategory) throws OntimizeJEERuntimeException;
 
 	/**
 	 * Move files to cagetory.
@@ -340,5 +341,5 @@ public interface IDMSService {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	void moveFilesToCategory(Object idCategory, List<Object> idFiles) throws OntimizeJEERuntimeException;
+	void moveFilesToCategory(Serializable idCategory, List<Serializable> idFiles) throws OntimizeJEERuntimeException;
 }

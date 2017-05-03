@@ -1,6 +1,7 @@
 package com.ontimize.jee.server.services.dms;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +68,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public InputStream fileGetContent(Object fileId) {
+	public InputStream fileGetContent(Serializable fileId) {
 		return this.getEngine().fileGetContent(fileId);
 	}
 
@@ -76,7 +77,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
 	@Override
-	public Path fileGetPath(Object fileId) throws OntimizeJEERuntimeException {
+	public Path fileGetPath(Serializable fileId) throws OntimizeJEERuntimeException {
 		return this.getEngine().fileGetPath(fileId);
 	}
 
@@ -86,7 +87,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public InputStream fileGetContentOfVersion(Object fileVersionId) {
+	public InputStream fileGetContentOfVersion(Serializable fileVersionId) {
 		return this.getEngine().fileGetContentOfVersion(fileVersionId);
 	}
 
@@ -95,7 +96,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileGetContentOfVersion (java.lang.Object)
 	 */
 	@Override
-	public Path fileGetPathOfVersion(Object fileVersionId) throws OntimizeJEERuntimeException {
+	public Path fileGetPathOfVersion(Serializable fileVersionId) throws OntimizeJEERuntimeException {
 		return this.getEngine().fileGetPathOfVersion(fileVersionId);
 	}
 
@@ -106,7 +107,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public DocumentIdentifier fileInsert(Object documentId, Map<?, ?> av, InputStream is) {
+	public DocumentIdentifier fileInsert(Serializable documentId, Map<?, ?> av, InputStream is) {
 		return this.getEngine().fileInsert(documentId, av, is);
 	}
 
@@ -117,7 +118,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public DocumentIdentifier fileUpdate(Object fileId, Map<?, ?> attributesValues, InputStream is) {
+	public DocumentIdentifier fileUpdate(Serializable fileId, Map<?, ?> attributesValues, InputStream is) {
 		return this.getEngine().fileUpdate(fileId, attributesValues, is);
 	}
 
@@ -138,7 +139,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void fileDelete(Object fileId) {
+	public void fileDelete(Serializable fileId) {
 		this.getEngine().fileDelete(fileId);
 	}
 
@@ -148,7 +149,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public EntityResult fileVersionQuery(Object fileVersionId, List<?> attributes) throws OntimizeJEERuntimeException {
+	public EntityResult fileVersionQuery(Serializable fileVersionId, List<?> attributes) throws OntimizeJEERuntimeException {
 		return this.getEngine().fileVersionQuery(fileVersionId, attributes);
 	}
 
@@ -158,7 +159,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public EntityResult fileGetVersions(Object fileId, Map<?, ?> kv, List<?> attributes) {
+	public EntityResult fileGetVersions(Serializable fileId, Map<?, ?> kv, List<?> attributes) {
 		return this.getEngine().fileGetVersions(fileId, kv, attributes);
 	}
 
@@ -168,7 +169,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public void fileRecoverPreviousVersion(Object fileId, boolean acceptNotPreviousVersion) throws OntimizeJEERuntimeException {
+	public void fileRecoverPreviousVersion(Serializable fileId, boolean acceptNotPreviousVersion) throws OntimizeJEERuntimeException {
 		this.getEngine().fileRecoverPreviousVersion(fileId, acceptNotPreviousVersion);
 	}
 
@@ -200,7 +201,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Override
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
-	public void documentUpdate(Object documentId, Map<?, ?> attributesValues) {
+	public void documentUpdate(Serializable documentId, Map<?, ?> attributesValues) {
 		this.getEngine().documentUpdate(documentId, attributesValues);
 	}
 
@@ -211,7 +212,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void documentDelete(Object documentId) {
+	public void documentDelete(Serializable documentId) {
 		this.getEngine().documentDelete(documentId);
 	}
 
@@ -222,7 +223,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Override
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
-	public void documentAddProperties(Object documentId, Map<String, String> properties) {
+	public void documentAddProperties(Serializable documentId, Map<String, String> properties) {
 		this.getEngine().documentAddProperties(documentId, properties);
 	}
 
@@ -233,7 +234,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Override
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
-	public void documentDeleteProperties(Object documentId, List<String> propertyKeys) {
+	public void documentDeleteProperties(Serializable documentId, List<String> propertyKeys) {
 		this.getEngine().documentDeleteProperties(documentId, propertyKeys);
 	}
 
@@ -243,7 +244,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public String documentGetProperty(Object documentId, String propertyKey) {
+	public String documentGetProperty(Serializable documentId, String propertyKey) {
 		return this.getEngine().documentGetProperty(documentId, propertyKey);
 	}
 
@@ -253,7 +254,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public Map<String, String> documentGetProperties(Object documentId, Map<?, ?> kv) {
+	public Map<String, String> documentGetProperties(Serializable documentId, Map<?, ?> kv) {
 		return this.getEngine().documentGetProperties(documentId, kv);
 	}
 
@@ -263,7 +264,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public EntityResult documentGetFiles(Object documentId, Map<?, ?> kv, List<?> attributes) {
+	public EntityResult documentGetFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) {
 		return this.getEngine().documentGetFiles(documentId, kv, attributes);
 	}
 
@@ -273,7 +274,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public EntityResult documentGetAllFiles(Object documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
+	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
 		return this.getEngine().documentGetAllFiles(documentId, kv, attributes);
 	}
 
@@ -283,7 +284,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public EntityResult getRelatedDocument(Object documentId) {
+	public EntityResult getRelatedDocument(Serializable documentId) {
 		return this.getEngine().getRelatedDocument(documentId);
 	}
 
@@ -294,7 +295,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Override
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
-	public void setRelatedDocuments(Object masterDocumentId, Object childDocumentId) {
+	public void setRelatedDocuments(Serializable masterDocumentId, Serializable childDocumentId) {
 		this.getEngine().setRelatedDocuments(masterDocumentId, childDocumentId);
 	}
 
@@ -304,7 +305,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Override
-	public DMSCategory categoryGetForDocument(Object documentId, List<?> attributes) throws OntimizeJEERuntimeException {
+	public DMSCategory categoryGetForDocument(Serializable documentId, List<?> attributes) throws OntimizeJEERuntimeException {
 		return this.getEngine().categoryGetForDocument(documentId, attributes);
 	}
 
@@ -315,7 +316,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public Object categoryInsert(Object documentId,String name, Object parentCategoryId, Map<?, ?> otherData) throws OntimizeJEERuntimeException {
+	public Serializable categoryInsert(Serializable documentId, String name, Serializable parentCategoryId, Map<?, ?> otherData) throws OntimizeJEERuntimeException {
 		return this.getEngine().categoryInsert(documentId, name, parentCategoryId, otherData);
 	}
 
@@ -326,7 +327,7 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void categoryUpdate(Object categoryId, Map<?, ?> av) throws OntimizeJEERuntimeException {
+	public void categoryUpdate(Serializable categoryId, Map<?, ?> av) throws OntimizeJEERuntimeException {
 		this.getEngine().categoryUpdate(categoryId, av);
 	}
 
@@ -337,14 +338,14 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void categoryDelete(Object idCategory) throws OntimizeJEERuntimeException {
+	public void categoryDelete(Serializable idCategory) throws OntimizeJEERuntimeException {
 		this.getEngine().categoryDelete(idCategory);
 	}
 
 	@Override
 	@Secured({ PermissionsProviderSecured.SECURED })
 	@Transactional(rollbackFor = Exception.class)
-	public void moveFilesToCategory(Object idCategory, List<Object> idFiles) throws OntimizeJEERuntimeException {
+	public void moveFilesToCategory(Serializable idCategory, List<Serializable> idFiles) throws OntimizeJEERuntimeException {
 		this.getEngine().moveFilesToCategory(idCategory, idFiles);
 	}
 

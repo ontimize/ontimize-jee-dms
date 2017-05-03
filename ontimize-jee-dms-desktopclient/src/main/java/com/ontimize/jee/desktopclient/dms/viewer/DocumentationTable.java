@@ -1,6 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.viewer;
 
 import java.awt.BorderLayout;
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
@@ -52,7 +53,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	protected static final String	AVOID_PARENT_KEYS_NULL		= "avoidparentkeysnull";
 
 	private final DocumentationTree	categoryTree				= new DocumentationTree();
-	private Object					currentIdDocument			= null;
+	private Serializable			currentIdDocument			= null;
 	private Map<Object, Object>		currentFilter				= null;
 	// ñapa
 	private boolean					deleting					= false;
@@ -234,7 +235,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	}
 
 	protected void requeryDocuments() {
-		Object idDms = this.parentForm.getDataFieldValue(this.form_id_dms_doc_field);
+		Serializable idDms = (Serializable) this.parentForm.getDataFieldValue(this.form_id_dms_doc_field);
 		if (idDms == null) {
 			this.deleteData();
 			this.currentIdDocument = null;
@@ -277,7 +278,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		return kv;
 	}
 
-	private Object getCurrentIdCategoryToFilter() {
+	protected Serializable getCurrentIdCategoryToFilter() {
 		TreePath selectionPath = this.categoryTree.getSelectionPath();
 		if (selectionPath == null) {
 			return null;
@@ -346,13 +347,13 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 			this.getTableSorter().clearInsertingRow(this.getParentKeyValues());
 		} else if (this.dataBaseRemove) {
 			IDMSService service = BeansFactory.getBean(IDMSService.class);
-			Object fileId = this.getRowKey(rowIndex, DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+			Serializable fileId = (Serializable) this.getRowKey(rowIndex, DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
 			service.fileDelete(fileId);
 		}
 		return new EntityResult();
 	}
 
-	public Object getCurrentIdDocument() {
+	public Serializable getCurrentIdDocument() {
 		return this.currentIdDocument;
 	}
 
@@ -397,8 +398,8 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		return this.categoryTree;
 	}
 
-	public Object getCurrentIdCategory() {
-		Object idCategory = this.getCurrentIdCategoryToFilter();
+	public Serializable getCurrentIdCategory() {
+		Serializable idCategory = this.getCurrentIdCategoryToFilter();
 		if ((idCategory instanceof SearchValue) || (idCategory instanceof NullValue)) {
 			idCategory = null;
 		}
@@ -492,7 +493,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		}
 
 		IDMSService service = BeansFactory.getBean(IDMSService.class);
-		Object fileId = kv.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
+		Serializable fileId = (Serializable) kv.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
 		service.fileUpdate(fileId, av, null);
 		return new EntityResult();
 	}

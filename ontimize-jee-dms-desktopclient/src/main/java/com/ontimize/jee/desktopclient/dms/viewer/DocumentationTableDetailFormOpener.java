@@ -1,6 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.viewer;
 
 import java.awt.Desktop;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.Hashtable;
 
@@ -27,7 +28,7 @@ public class DocumentationTableDetailFormOpener implements IDetailFormOpener {
 			protected Path doInBackground() throws Exception {
 				Hashtable<String, Object> data = table.getRowData(row);
 				return DmsTransfererManagerFactory.getInstance().obtainDmsFileVersion(
-						data.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION));
+						(Serializable) data.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION));
 			}
 
 			@Override

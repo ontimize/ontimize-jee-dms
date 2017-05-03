@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -140,10 +141,10 @@ public class DocumentationTreePopupMenuManager extends MouseAdapter {
 				String categoryName = JOptionPane.showInputDialog(DocumentationTreePopupMenuManager.this.getTree(),
 						ApplicationManager.getTranslation("dms.categorynameinput"));
 				if (categoryName != null) {
-					Object idDocument = DocumentationTreePopupMenuManager.this.tree.getDocumentationModel().getIdDocument();
-					Object idParentCategory = DocumentationTreePopupMenuManager.this.currentPopupCategory == null ? null : DocumentationTreePopupMenuManager.this.currentPopupCategory
+					Serializable idDocument = DocumentationTreePopupMenuManager.this.tree.getDocumentationModel().getIdDocument();
+					Serializable idParentCategory = DocumentationTreePopupMenuManager.this.currentPopupCategory == null ? null : DocumentationTreePopupMenuManager.this.currentPopupCategory
 							.getIdCategory();
-					Object idCategory = BeansFactory.getBean(IDMSService.class).categoryInsert(idDocument, categoryName, idParentCategory, null);
+					Serializable idCategory = BeansFactory.getBean(IDMSService.class).categoryInsert(idDocument, categoryName, idParentCategory, null);
 					DMSCategory newCategory = new DMSCategory(idDocument, idCategory, categoryName, null,
 							DocumentationTreePopupMenuManager.this.currentPopupCategory);
 					DocumentationTreePopupMenuManager.this.tree.getDocumentationModel().insertCategory(

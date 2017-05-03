@@ -1,12 +1,12 @@
 package com.ontimize.jee.server.services.dms;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Vector;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -88,7 +88,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 		}
 		EntityResult res = this.daoHelper.insert(this.documentDao, av);
 
-		DocumentIdentifier result = new DocumentIdentifier(res.get(this.getColumnHelper().getDocumentIdColumn()));
+		DocumentIdentifier result = new DocumentIdentifier((Serializable) res.get(this.getColumnHelper().getDocumentIdColumn()));
 		return result;
 	}
 
@@ -100,7 +100,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @param attributesValues
 	 *            the attributes values
 	 */
-	public void documentUpdate(Object documentId, Map<?, ?> attributesValues) {
+	public void documentUpdate(Serializable documentId, Map<?, ?> attributesValues) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
 		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
@@ -113,7 +113,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @param documentId
 	 *            the document id
 	 */
-	public void documentDelete(Object documentId) {
+	public void documentDelete(Serializable documentId) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		// borramos las propiedades
 		Map<String, Object> kv = new HashMap<>();
@@ -132,13 +132,13 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 
 		// borramos los ficheros
 		EntityResult resFiles = this.documentGetFiles(documentId, new HashMap<>(), EntityResultTools.attributes(this.getColumnHelper().getFileIdColumn()));
-		List<?> vDocumentId = (List<?>) resFiles.get(this.getColumnHelper().getFileIdColumn());
+		List<Serializable> vDocumentId = (List<Serializable>) resFiles.get(this.getColumnHelper().getFileIdColumn());
 		List<Path> toDelete = new ArrayList<>();
 		if (vDocumentId != null) {
-			for (Object fileId : vDocumentId) {
+			for (Serializable fileId : vDocumentId) {
 
 				EntityResult res = this.serviceFileHelper.fileGetVersions(fileId, new HashMap<>(), EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn()));
-				Vector<?> fileVersionIds = (Vector<?>) res.get(this.getColumnHelper().getVersionIdColumn());
+				List<Serializable> fileVersionIds = (List<Serializable>) res.get(this.getColumnHelper().getVersionIdColumn());
 
 				// borramos las versiones, sin borrar los ficheros
 				List<Path> toDeletePartial = this.serviceFileHelper.deleteFileVersionsWithoutDeleteFiles(fileId, fileVersionIds);
@@ -170,7 +170,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @param properties
 	 *            the properties
 	 */
-	public void documentAddProperties(Object documentId, Map<String, String> properties) {
+	public void documentAddProperties(Serializable documentId, Map<String, String> properties) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(properties, DMSNaming.ERROR_PROPERTY_KEY_MANDATORY);
 
@@ -194,7 +194,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @param propertyKeys
 	 *            the property keys
 	 */
-	public void documentDeleteProperties(Object documentId, List<String> propertyKeys) {
+	public void documentDeleteProperties(Serializable documentId, List<String> propertyKeys) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(propertyKeys, DMSNaming.ERROR_PROPERTY_KEY_MANDATORY);
 		if (propertyKeys.size() == 0) {
@@ -216,7 +216,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 *            the property key
 	 * @return the string
 	 */
-	public String documentGetProperty(Object documentId, String propertyKey) {
+	public String documentGetProperty(Serializable documentId, String propertyKey) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(propertyKey, DMSNaming.ERROR_PROPERTY_KEY_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
@@ -238,7 +238,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 *            the kv
 	 * @return the map
 	 */
-	public Map<String, String> documentGetProperties(Object documentId, Map<?, ?> kv) {
+	public Map<String, String> documentGetProperties(Serializable documentId, Map<?, ?> kv) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		EntityResult rs = this.daoHelper.query(this.documentPropertyDao, kv, this.getColumnHelper().getPropertyColumns());
@@ -262,7 +262,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 *            the attributes
 	 * @return the entity result
 	 */
-	public EntityResult documentGetFiles(Object documentId, Map<?, ?> kv, List<?> attributes) {
+	public EntityResult documentGetFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		return this.daoHelper.query(this.documentFileDao, kv, attributes);
@@ -281,7 +281,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @throws OntimizeJEERuntimeException
 	 *             the ontimize jee runtime exception
 	 */
-	public EntityResult documentGetAllFiles(Object documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
+	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws OntimizeJEERuntimeException {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
 		return this.daoHelper.query(this.documentFileDao, kv, attributes, "allfiles");
@@ -294,7 +294,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 *            the document id
 	 * @return the related document
 	 */
-	public EntityResult getRelatedDocument(Object documentId) {
+	public EntityResult getRelatedDocument(Serializable documentId) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
 		kv.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), documentId);
@@ -309,7 +309,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @param childDocumentId
 	 *            the child document id
 	 */
-	public void setRelatedDocuments(Object masterDocumentId, Object childDocumentId) {
+	public void setRelatedDocuments(Serializable masterDocumentId, Serializable childDocumentId) {
 		CheckingTools.failIfNull(masterDocumentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		CheckingTools.failIfNull(childDocumentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> av = new HashMap<>();

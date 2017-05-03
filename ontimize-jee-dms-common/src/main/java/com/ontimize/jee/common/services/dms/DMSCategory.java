@@ -15,10 +15,10 @@ public class DMSCategory implements Serializable {
 	private static final long	serialVersionUID	= 1L;
 
 	/** The id category. */
-	private Object				idCategory;
+	private Serializable		idCategory;
 
 	/** The id document. */
-	private Object				idDocument;
+	private Serializable		idDocument;
 
 	/** The parent. */
 	private DMSCategory			parent;
@@ -55,7 +55,7 @@ public class DMSCategory implements Serializable {
 	 * @param parent
 	 *            the parent
 	 */
-	public DMSCategory(Object idDocument, Object idCategory, String name, Map<?, ?> otherInfo, DMSCategory parent) {
+	public DMSCategory(Serializable idDocument, Serializable idCategory, String name, Map<?, ?> otherInfo, DMSCategory parent) {
 		super();
 		this.idCategory = idCategory;
 		this.name = name;
@@ -71,7 +71,7 @@ public class DMSCategory implements Serializable {
 	 * @param idCategory
 	 *            the new id category
 	 */
-	public void setIdCategory(Object idCategory) {
+	public void setIdCategory(Serializable idCategory) {
 		this.idCategory = idCategory;
 	}
 
@@ -100,7 +100,7 @@ public class DMSCategory implements Serializable {
 	 *
 	 * @return the id category
 	 */
-	public Object getIdCategory() {
+	public Serializable getIdCategory() {
 		return this.idCategory;
 	}
 
@@ -177,7 +177,7 @@ public class DMSCategory implements Serializable {
 	 *
 	 * @return the id document
 	 */
-	public Object getIdDocument() {
+	public Serializable getIdDocument() {
 		return this.idDocument;
 	}
 
@@ -187,7 +187,7 @@ public class DMSCategory implements Serializable {
 	 * @param idDocument
 	 *            the new id document
 	 */
-	public void setIdDocument(Object idDocument) {
+	public void setIdDocument(Serializable idDocument) {
 		this.idDocument = idDocument;
 	}
 

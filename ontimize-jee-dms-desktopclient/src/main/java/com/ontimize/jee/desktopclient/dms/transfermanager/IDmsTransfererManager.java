@@ -1,5 +1,6 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
+import java.io.Serializable;
 import java.nio.file.Path;
 
 import com.ontimize.jee.desktopclient.dms.transfermanager.events.ITransferQueueListener;
@@ -48,7 +49,7 @@ public interface IDmsTransfererManager {
 	 * @return the dms file version
 	 * @throws DmsException
 	 */
-	Path obtainDmsFileVersion(Object idFileVersion) throws DmsException;
+	Path obtainDmsFileVersion(Serializable idFileVersion) throws DmsException;
 
 	/**
 	 * Gets the dms file version.
@@ -63,5 +64,5 @@ public interface IDmsTransfererManager {
 	 * @throws DmsException
 	 *             the dms exception
 	 */
-	Path obtainDmsFileVersion(Object idFileVersion, String fileName, Long fileSize) throws DmsException;
+	Path obtainDmsFileVersion(Serializable idFileVersion, String fileName, Long fileSize) throws DmsException;
 }

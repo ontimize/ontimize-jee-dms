@@ -1,5 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.viewer;
 
+import java.io.Serializable;
+
 import javax.swing.DropMode;
 import javax.swing.JTree;
 import javax.swing.tree.TreeSelectionModel;
@@ -47,7 +49,7 @@ public class DocumentationTree extends JTree {
 		this.expandRow(0);
 	}
 
-	public void refreshModel(Object idDocument) {
+	public void refreshModel(Serializable idDocument) {
 		if (idDocument == null) {
 			this.deleteData();
 			return;

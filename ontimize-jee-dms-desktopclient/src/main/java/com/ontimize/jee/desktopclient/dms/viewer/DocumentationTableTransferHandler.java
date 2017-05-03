@@ -3,6 +3,7 @@ package com.ontimize.jee.desktopclient.dms.viewer;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -138,8 +139,8 @@ public class DocumentationTableTransferHandler extends TransferHandler {
 	 */
 	@Override
 	public boolean importData(JComponent comp, Transferable t) {
-		Object idDocument = this.getTable().getCurrentIdDocument();
-		Object idCategory = this.getTable().getCurrentIdCategory();
+		Serializable idDocument = this.getTable().getCurrentIdDocument();
+		Serializable idCategory = this.getTable().getCurrentIdCategory();
 		DataFlavor[] dataFlavors = t.getTransferDataFlavors();
 		for (DataFlavor df : dataFlavors) {
 			if (df.getMimeType().toLowerCase().startsWith("application/x-java-file")) {
