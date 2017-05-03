@@ -1,6 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.upload.disk;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -38,7 +39,7 @@ public class LocalDiskDmsUploadable extends AbstractDmsUploadable {
 		}
 	}
 
-	public LocalDiskDmsUploadable(Path file, String description, DocumentIdentifier documentIdentifier, Object idCategory) throws DmsException {
+	public LocalDiskDmsUploadable(Path file, String description, DocumentIdentifier documentIdentifier, Serializable idCategory) throws DmsException {
 		this(file, description);
 		this.setDocumentIdentifier(documentIdentifier);
 		this.setCategoryId(idCategory);

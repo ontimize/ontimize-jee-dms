@@ -9,7 +9,6 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
  */
 public class GoogleDriveDmsUploadable extends AbstractDmsUploadable {
 
-	private static final long	serialVersionUID	= 1L;
 	/** The file. */
 	private final GoogleFile file;
 

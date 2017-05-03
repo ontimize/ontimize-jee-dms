@@ -1,9 +1,10 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
+import java.io.Serializable;
+
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 
 public class AbstractDmsUploadable extends AbstractDmsTransferable {
-	private static final long	serialVersionUID	= 1L;
 
 	/**
 	 * The document identifier.
@@ -11,7 +12,7 @@ public class AbstractDmsUploadable extends AbstractDmsTransferable {
 	private DocumentIdentifier	documentIdentifier;
 
 	/** The category id. */
-	private Object			categoryId;
+	private Serializable		categoryId;
 
 	/** The description. */
 	private final String	description;
@@ -37,7 +38,7 @@ public class AbstractDmsUploadable extends AbstractDmsTransferable {
 	 * @param categoryId
 	 *            the new category id
 	 */
-	public void setCategoryId(Object categoryId) {
+	public void setCategoryId(Serializable categoryId) {
 		this.categoryId = categoryId;
 	}
 
@@ -55,7 +56,7 @@ public class AbstractDmsUploadable extends AbstractDmsTransferable {
 	 *
 	 * @return the category id
 	 */
-	public Object getCategoryId() {
+	public Serializable getCategoryId() {
 		return this.categoryId;
 	}
 

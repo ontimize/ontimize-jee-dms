@@ -51,7 +51,7 @@ public class ScannerUploadableSelectionActionListener extends AbstractUploadable
 			}
 		}
 		List<File> resFile = this.acquisitionDataField.showAcquireDialog(this.getButton(), "dms.scanner_acquisition", this.getResourceBundle());
-		if ((resFile != null) && (resFile.size() > 0)) {
+		if ((resFile != null) && (!resFile.isEmpty())) {
 			List<Path> res = FileTools.toPath(resFile);
 			String fileName = JOptionPane.showInputDialog(ApplicationManager.getTranslation("dms.fileNameInput"));
 			String description = JOptionPane.showInputDialog(ApplicationManager.getTranslation("dms.descriptioninput"));

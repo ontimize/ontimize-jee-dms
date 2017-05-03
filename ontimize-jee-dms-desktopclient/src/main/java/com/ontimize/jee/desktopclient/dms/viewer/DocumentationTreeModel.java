@@ -122,7 +122,7 @@ public class DocumentationTreeModel implements TreeModel {
 	@Override
 	public boolean isLeaf(Object node) {
 		if (node instanceof DMSCategory) {
-			return ((DMSCategory) node).getChildren().size() == 0;
+			return ((DMSCategory) node).getChildren().isEmpty();
 		}
 		return false;
 	}

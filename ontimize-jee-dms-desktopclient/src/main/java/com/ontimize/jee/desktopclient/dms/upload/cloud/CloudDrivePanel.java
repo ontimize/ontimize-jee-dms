@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import com.ontimize.gui.ApplicationManager;
 import com.ontimize.gui.container.Row;
 import com.ontimize.gui.i18n.Internationalization;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.common.tools.ParseUtilsExtended;
 import com.ontimize.jee.common.tools.ReflectionTools;
@@ -96,7 +97,7 @@ public class CloudDrivePanel<T extends Serializable> extends Row implements Inte
 		}
 	}
 
-	public void startNavigation() throws Exception {
+	public void startNavigation() throws DmsException {
 		this.table.startNavigation();
 	}
 }

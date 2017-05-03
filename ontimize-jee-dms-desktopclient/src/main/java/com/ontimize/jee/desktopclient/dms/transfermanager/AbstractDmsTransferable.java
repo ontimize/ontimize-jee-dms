@@ -1,13 +1,11 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
-import java.io.Serializable;
 import java.util.Observable;
 
 /**
  * The Class AbstractDmsTransferable.
  */
-public abstract class AbstractDmsTransferable extends Observable implements Serializable {
-	private static final long serialVersionUID = 1L;
+public abstract class AbstractDmsTransferable extends Observable {
 
 	/**
 	 * The Enum Status.

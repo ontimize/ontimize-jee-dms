@@ -41,7 +41,6 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  * @see https://developers.google.com/drive/quickstart-java"urn:ietf:wg:oauth:2.0:oob";
  */
 public class GoogleDriveManager implements ICloudManager<GoogleFile> {
-	private static final long				serialVersionUID		= 1L;
 	private static final Logger				logger					= LoggerFactory.getLogger(GoogleDriveManager.class);
 	protected static final String			APPLICATION_NAME		= "Application";
 	protected static GoogleDriveManager		instance;

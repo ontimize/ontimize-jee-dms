@@ -14,7 +14,7 @@ import com.ontimize.jee.common.exceptions.DmsException;
  * @param <T>
  *            the generic type
  */
-public interface ICloudManager<T extends Serializable> extends Serializable {
+public interface ICloudManager<T extends Serializable> {
 
 	/**
 	 * Download a file's content.

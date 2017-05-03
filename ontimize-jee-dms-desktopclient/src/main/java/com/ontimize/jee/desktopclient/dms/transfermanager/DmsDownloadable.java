@@ -18,7 +18,7 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 
 	/** The id version file. */
 	private final Serializable	idVersionFile;
-	private final Path		targetFile;
+	private final Path			targetFile;
 
 	/**
 	 * Instantiates a new dms download transferable.

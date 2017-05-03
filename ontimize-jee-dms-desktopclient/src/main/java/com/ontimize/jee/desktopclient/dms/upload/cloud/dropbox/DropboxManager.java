@@ -29,7 +29,6 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  *
  */
 public class DropboxManager implements ICloudManager<DbxEntry> {
-	private static final long		serialVersionUID	= 1L;
 	private static final Logger		logger				= LoggerFactory.getLogger(DropboxManager.class);
 	protected static final String	APPLICATION_NAME	= "OntimizeEEdrpbx";
 
