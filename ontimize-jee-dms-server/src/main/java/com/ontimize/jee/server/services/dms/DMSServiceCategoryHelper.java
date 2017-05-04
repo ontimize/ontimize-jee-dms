@@ -60,15 +60,16 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper{
 	 */
 	public DMSCategory categoryGetForDocument(Serializable idDocument, List<?> attributes) {
 		CheckingTools.failIfNull(idDocument, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
-		if (attributes == null) {
-			attributes = new ArrayList<Object>();
+		List<?> attribs = attributes;
+		if (attribs == null) {
+			attribs = new ArrayList<Object>();
 		}
-		ListTools.safeAdd((List<String>) attributes, this.getColumnHelper().getCategoryIdColumn());
-		ListTools.safeAdd((List<String>) attributes, this.getColumnHelper().getCategoryNameColumn());
-		ListTools.safeAdd((List<String>) attributes, this.getColumnHelper().getCategoryParentColumn());
+		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryIdColumn());
+		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryNameColumn());
+		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryParentColumn());
 
 		Map<Object, Object> filter = EntityResultTools.keysvalues(this.getColumnHelper().getDocumentIdColumn(), idDocument);
-		EntityResult er = this.daoHelper.query(this.categoryDao, filter, attributes);
+		EntityResult er = this.daoHelper.query(this.categoryDao, filter, attribs);
 		return this.convertCategoryResultSet(idDocument, er);
 	}
 

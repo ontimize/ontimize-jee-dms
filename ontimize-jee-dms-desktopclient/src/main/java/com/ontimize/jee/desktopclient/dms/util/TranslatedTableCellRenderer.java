@@ -13,7 +13,7 @@ import com.ontimize.gui.ApplicationManager;
 public class TranslatedTableCellRenderer implements TableCellRenderer {
 
 	/** The original renderer. */
-	private TableCellRenderer	originalRenderer;
+	private final TableCellRenderer	originalRenderer;
 
 	/**
 	 * Instantiates a new translated table cell renderer.
@@ -32,10 +32,11 @@ public class TranslatedTableCellRenderer implements TableCellRenderer {
 	 */
 	@Override
 	public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-		if (value instanceof String) {
-			value = ApplicationManager.getTranslation((String) value);
+		Object trValue = value;
+		if (trValue instanceof String) {
+			trValue = ApplicationManager.getTranslation((String) trValue);
 		}
-		return originalRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+		return this.originalRenderer.getTableCellRendererComponent(table, trValue, isSelected, hasFocus, row, column);
 	}
 
 }

@@ -420,10 +420,11 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 
 	@Override
 	public void setEnabled(boolean enabled) {
+		boolean upEnabled = enabled;
 		if (this.getParentForm().getInteractionManager().getCurrentMode() == InteractionManager.INSERT) {
-			enabled = false;
+			upEnabled = false;
 		}
-		super.setEnabled(enabled);
+		super.setEnabled(upEnabled);
 	}
 
 	public boolean isIgnoreEvents() {
