@@ -42,7 +42,7 @@ public class DmsDownloader extends AbstractDmsTransferer<DmsDownloadable> {
 			try {
 				Files.move(tmpFile, targetFile);
 			} catch (IOException ex) {
-				DmsDownloader.logger.warn("Move option not work, using copy option: {}", ex.getMessage());
+				DmsDownloader.logger.warn("Move option not work, using copy option", ex);
 				Files.copy(tmpFile, targetFile);
 				FileTools.deleteQuitely(tmpFile);
 			}

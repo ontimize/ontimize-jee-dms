@@ -554,7 +554,7 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 	 */
 	public void moveFilesToDoc(List<Serializable> idDmsDocFiles, Serializable idDmsDoc) throws DmsException {
 		// Comprobamos parámetros
-		if ((idDmsDocFiles == null) || (idDmsDocFiles.size() <= 0)) {
+		if ((idDmsDocFiles == null) || (idDmsDocFiles.isEmpty())) {
 			throw new DmsException("ErrorNoDocFiles");
 		}
 		if ((idDmsDoc == null) || (idDmsDoc instanceof NullValue)) {
@@ -646,7 +646,7 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 			try {
 				Files.move(tmpFile, file);
 			} catch (IOException ex) {
-				DMSServiceFileHelper.logger.warn("Move option not work, using copy option: {}", ex.getMessage());
+				DMSServiceFileHelper.logger.warn("Move option not work, using copy option", ex);
 				Files.copy(tmpFile, file);
 				FileTools.deleteQuitely(tmpFile);
 			}

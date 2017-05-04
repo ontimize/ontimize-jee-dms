@@ -84,6 +84,16 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 		return GoogleDriveManager.instance;
 	}
 
+	public static void reset() {
+		if (GoogleDriveManager.instance != null) {
+			GoogleDriveManager.instance.flow = null;
+			GoogleDriveManager.instance.service = null;
+			GoogleDriveManager.instance.httpTransport = null;
+			GoogleDriveManager.instance.jsonFactory = null;
+		}
+		GoogleDriveManager.instance = null;
+	}
+
 	@Override
 	public String getRootFolderId() throws DmsException {
 		try {
@@ -97,14 +107,6 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 		return this.service != null;
 	}
 
-	public void reset() {
-		GoogleDriveManager.instance = null;
-		this.flow = null;
-		this.service = null;
-		this.httpTransport = null;
-		this.jsonFactory = null;
-	}
-
 	/**
 	 * Build an authorization flow and store it as a static class attribute.
 	 *
@@ -114,7 +116,7 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 	 */
 	private void createFlow() {
 		try {
-			this.reset();
+			GoogleDriveManager.reset();
 			this.httpTransport = new NetHttpTransport();
 			this.jsonFactory = new JacksonFactory();
 			InputStreamReader readerSecretsLocation = new InputStreamReader(GoogleDriveManager.class.getResourceAsStream(GoogleDriveManager.CLIENTSECRETS_LOCATION));

@@ -40,7 +40,7 @@ public class CloudDrivePanel<T extends Serializable> extends Row implements Inte
 	 * @throws Exception
 	 * @throws IOException
 	 */
-	public CloudDrivePanel(Hashtable parameters) throws IOException, Exception {
+	public CloudDrivePanel(Hashtable parameters) {
 		super(parameters);
 	}
 
