@@ -19,19 +19,19 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.events.TransferQueueCh
  */
 public class TransferTableModel extends AbstractTableModel implements Observer, ITransferQueueListener {
 
-	private static final long					serialVersionUID	= 2376138748556807794L;
+	private static final long								serialVersionUID	= 2376138748556807794L;
 
-	public static final String					COLUMN_SIZE			= "dms.SIZE";
-	public static final String					COLUMN_SYNC_STATUS	= "dms.SYNC_STATUS";
-	public static final String					COLUMN_PROGRESS		= "dms.PROGRESS";
-	public static final String					COLUMN_FILENAME		= "dms.FILENAME";
+	public static final String								COLUMN_SIZE			= "dms.SIZE";
+	public static final String								COLUMN_SYNC_STATUS	= "dms.SYNC_STATUS";
+	public static final String								COLUMN_PROGRESS		= "dms.PROGRESS";
+	public static final String								COLUMN_FILENAME		= "dms.FILENAME";
 
 	// These are the names for the table's columns.
-	private static final String[]				columnNames			= { TransferTableModel.COLUMN_FILENAME, TransferTableModel.COLUMN_SIZE, TransferTableModel.COLUMN_PROGRESS, TransferTableModel.COLUMN_SYNC_STATUS };
+	private static final String[]							columnNames			= { TransferTableModel.COLUMN_FILENAME, TransferTableModel.COLUMN_SIZE, TransferTableModel.COLUMN_PROGRESS, TransferTableModel.COLUMN_SYNC_STATUS };
 
 	// These are the classes for each column's values.
-	private static final Class<?>[]				columnClasses		= { String.class, Number.class, Number.class, Status.class };
-	private final List<AbstractDmsTransferable>	transfersList;
+	private static final Class<?>[]							columnClasses		= { String.class, Number.class, Number.class, Status.class };
+	private final transient List<AbstractDmsTransferable>	transfersList;
 
 	public TransferTableModel() {
 		super();

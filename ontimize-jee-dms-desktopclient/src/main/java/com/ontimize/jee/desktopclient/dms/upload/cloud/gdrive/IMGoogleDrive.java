@@ -7,6 +7,7 @@ import com.ontimize.annotation.FormComponent;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.container.CardPanel;
 import com.ontimize.gui.manager.IFormManager;
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.CloudDrivePanel;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudFileSelectionListener;
 import com.utilmize.client.fim.UBasicFIM;
@@ -47,7 +48,7 @@ public class IMGoogleDrive extends UBasicFIM implements ICloudFileSelectionListe
 		}
 	}
 
-	public void showRemoteDir() throws Exception {
+	public void showRemoteDir() throws DmsException {
 		this.remotePanel.startNavigation();
 		this.cp.show("remotedir");
 	}

@@ -19,14 +19,40 @@ import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.ontimize.jee.desktopclient.dms.util.TranslatedTableCellRenderer;
 import com.utilmize.client.gui.tasks.USwingWorker;
 
+/**
+ * The Class CloudDriveTable.
+ *
+ * @param <T>
+ *            the generic type
+ */
 public class CloudDriveTable<T extends Serializable> extends JTable {
-	private static final long						serialVersionUID	= 1L;
-	private static final Logger						logger				= LoggerFactory.getLogger(CloudDriveTable.class);
-	private final ICloudFileSelectionListener<T>	selectionListener;
-	private final Stack<String>						navigationStack		= new Stack<String>();
-	private String									currentFolderId;
-	private final ICloudManager<T>					cloudManager;
 
+	/** The Constant serialVersionUID. */
+	private static final long						serialVersionUID	= 1L;
+
+	/** The Constant logger. */
+	private static final Logger						logger				= LoggerFactory.getLogger(CloudDriveTable.class);
+
+	/** The selection listener. */
+	private final ICloudFileSelectionListener<T>	selectionListener;
+
+	/** The navigation stack. */
+	private final Stack<String>						navigationStack		= new Stack<String>();
+
+	/** The current folder id. */
+	private String									currentFolderId;
+
+	/** The cloud manager. */
+	private final transient ICloudManager<T>		cloudManager;
+
+	/**
+	 * Instantiates a new cloud drive table.
+	 *
+	 * @param selectionListener
+	 *            the selection listener
+	 * @param cloudManager
+	 *            the cloud manager
+	 */
 	public CloudDriveTable(ICloudFileSelectionListener<T> selectionListener, ICloudManager<T> cloudManager) {
 		super(new CloudDriveTableModel<T>());
 		this.cloudManager = cloudManager;
@@ -40,25 +66,53 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 		this.selectionListener = selectionListener;
 	}
 
+	/**
+	 * Fire selection event.
+	 *
+	 * @param selectedFile
+	 *            the selected file
+	 */
 	private void fireSelectionEvent(T selectedFile) {
 		if (this.selectionListener != null) {
 			this.selectionListener.onFileSelected(selectedFile);
 		}
 	}
 
+	/**
+	 * Gets the remote drive model.
+	 *
+	 * @return the remote drive model
+	 */
 	public CloudDriveTableModel<T> getRemoteDriveModel() {
 		return (CloudDriveTableModel<T>) this.getModel();
 	}
 
+	/**
+	 * Gets the selected file.
+	 *
+	 * @return the selected file
+	 */
 	public T getSelectedFile() {
 		return this.getRemoteDriveModel().getFileAtRow(this.getSelectedRow());
 	}
 
+	/**
+	 * Start navigation.
+	 *
+	 * @throws DmsException
+	 *             the dms exception
+	 */
 	public void startNavigation() throws DmsException {
 		this.navigationStack.clear();
 		this.browseFolder(this.cloudManager.getRootFolderId());
 	}
 
+	/**
+	 * Browse folder.
+	 *
+	 * @param folderId
+	 *            the folder id
+	 */
 	private void browseFolder(final String folderId) {
 		new USwingWorker<List<T>, Void>() {
 
@@ -85,6 +139,9 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 		}.executeOperation(this);
 	}
 
+	/**
+	 * On file selected.
+	 */
 	public void onFileSelected() {
 		T selectedFile = this.getSelectedFile();
 		if (CloudDriveTable.this.cloudManager.getBackFile().equals(selectedFile)) {
@@ -97,7 +154,19 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 		}
 	}
 
+	/**
+	 * The listener interface for receiving navigationMouse events. The class that is interested in processing a navigationMouse event implements this interface, and the object
+	 * created with that class is registered with a component using the component's <code>addNavigationMouseListener<code> method. When the navigationMouse event occurs, that
+	 * object's appropriate method is invoked.
+	 *
+	 * @see NavigationMouseEvent
+	 */
 	private class NavigationMouseListener extends MouseAdapter {
+
+		/*
+		 * (non-Javadoc)
+		 * @see java.awt.event.MouseAdapter#mouseReleased(java.awt.event.MouseEvent)
+		 */
 		@Override
 		public void mouseReleased(MouseEvent event) {
 			if ((event.getClickCount() == 2) && SwingUtilities.isLeftMouseButton(event)) {

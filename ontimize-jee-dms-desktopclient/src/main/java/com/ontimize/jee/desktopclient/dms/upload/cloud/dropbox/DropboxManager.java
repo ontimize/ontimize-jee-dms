@@ -1,6 +1,5 @@
 package com.ontimize.jee.desktopclient.dms.upload.cloud.dropbox;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
@@ -29,14 +28,28 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  *
  */
 public class DropboxManager implements ICloudManager<DbxEntry> {
+
+	/** The Constant logger. */
 	private static final Logger		logger				= LoggerFactory.getLogger(DropboxManager.class);
+
+	/** The Constant APPLICATION_NAME. */
 	protected static final String	APPLICATION_NAME	= "OntimizeEEdrpbx";
 
+	/** The Constant APP_KEY. */
 	// Get your app key and secret from the Dropbox developers website.
 	final static String				APP_KEY				= "6fwbab6m3ehjfed";
+
+	/** The Constant APP_SECRET. */
 	final static String				APP_SECRET			= "l8jhgqcb1lcfxyv";
+
+	/** The instance. */
 	protected static DropboxManager	instance;
 
+	/**
+	 * Gets the single instance of DropboxManager.
+	 *
+	 * @return single instance of DropboxManager
+	 */
 	public static DropboxManager getInstance() {
 		if (DropboxManager.instance == null) {
 			DropboxManager.instance = new DropboxManager();
@@ -44,49 +57,68 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 		return DropboxManager.instance;
 	}
 
+	/**
+	 * Reset.
+	 */
+	public static void reset() {
+		if (DropboxManager.instance != null) {
+			DropboxManager.instance.webAuth = null;
+			DropboxManager.instance.service = null;
+			DropboxManager.instance.httpTransport = null;
+			DropboxManager.instance.jsonFactory = null;
+		}
+		DropboxManager.instance = null;
+	}
+
+	/** The http transport. */
 	protected HttpTransport			httpTransport;
+
+	/** The json factory. */
 	protected JsonFactory			jsonFactory;
+
+	/** The web auth. */
 	protected DbxWebAuthNoRedirect	webAuth;
+
+	/** The service. */
 	protected DbxClient				service	= null;
+
+	/** The token. */
 	protected String				token	= null;
 
 	/**
 	 * Initialize initials attributes.
-	 *
-	 * @param String
-	 *            basic configuration parameters.
 	 */
 	public DropboxManager() {
 		this.getFlow();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager#getRootFolderId()
+	 */
 	@Override
 	public String getRootFolderId() {
 		return "/";
 	}
 
+	/**
+	 * Checks if is syncronized.
+	 *
+	 * @return true, if is syncronized
+	 */
 	public boolean isSyncronized() {
 		return this.service != null;
 	}
 
-	public void reset() {
-		DropboxManager.instance = null;
-		this.webAuth = null;
-		this.service = null;
-		this.httpTransport = null;
-		this.jsonFactory = null;
-	}
 
 	/**
 	 * Build an authorization flow and store it as a static class attribute.
 	 *
 	 * @return GoogleAuthorizationCodeFlow instance.
-	 * @throws IOException
-	 *             Unable to load client_secrets.json.
 	 */
 	private void getFlow() {
 		try {
-			this.reset();
+			DropboxManager.reset();
 			DbxAppInfo appInfo = new DbxAppInfo(DropboxManager.APP_KEY, DropboxManager.APP_SECRET);
 			DbxRequestConfig config = new DbxRequestConfig(DropboxManager.APPLICATION_NAME, Locale.getDefault().toString());
 			this.webAuth = new DbxWebAuthNoRedirect(config, appInfo);
@@ -107,9 +139,10 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	/**
 	 * Set the authorization code and create the service.
 	 *
-	 * @param String
-	 *            authorization code.
+	 * @param code
+	 *            the new authorization code
 	 * @throws DbxException
+	 *             the dbx exception
 	 */
 	public void setAuthorizationCode(String code) throws DbxException {
 		DbxAuthFinish authFinish = this.webAuth.finish(code);
@@ -125,7 +158,8 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	 * @param file
 	 *            Drive File instance.
 	 * @return InputStream containing the file's content if successful, {@code null} otherwise.
-	 * @throws DbxException
+	 * @throws DmsException
+	 *             the dms exception
 	 */
 	@Override
 	public InputStream downloadFile(DbxEntry file) throws DmsException {
@@ -142,9 +176,10 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	 * Retrieve files in a folder.
 	 *
 	 * @param folderName
-	 * @return
-	 * @throws IOException
-	 * @throws DbxException
+	 *            the folder name
+	 * @return the list
+	 * @throws DmsException
+	 *             the dms exception
 	 */
 	@Override
 	public List<DbxEntry> retrieveFilesInFolder(String folderName) throws DmsException {
@@ -157,25 +192,43 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 		return listing.children;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager#isFolder(java.io.Serializable)
+	 */
 	@Override
 	public boolean isFolder(DbxEntry file) {
 		return file.isFolder();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager#getFolderId(java.io.Serializable)
+	 */
 	@Override
 	public String getFolderId(DbxEntry file) {
 		return file.path;
 	}
 
+	/** The Constant BACK_FOLDER. */
 	public static final DbxEntry.Folder	BACK_FOLDER	= new DbxEntry.Folder("/..", null, false);
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager#getBackFile()
+	 */
 	@Override
 	public DbxEntry getBackFile() {
 		return DropboxManager.BACK_FOLDER;
 	}
 
+	/** The Constant RENDERER. */
 	public static final DropboxTableRenderer	RENDERER	= new DropboxTableRenderer();
 
+	/*
+	 * (non-Javadoc)
+	 * @see com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager#getTableRenderer()
+	 */
 	@Override
 	public TableCellRenderer getTableRenderer() {
 		return DropboxManager.RENDERER;
