@@ -9,8 +9,8 @@ import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsException;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
 import com.utilmize.client.gui.buttons.UButton;
 
