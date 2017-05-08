@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.ontimize.db.EntityResult;
@@ -32,10 +33,12 @@ import com.ontimize.gui.SearchValue;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
+import com.ontimize.jee.common.services.user.UserInformation;
 import com.ontimize.jee.common.tools.CheckingTools;
 import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.FileTools;
 import com.ontimize.jee.common.tools.MapTools;
+import com.ontimize.jee.common.tools.ObjectTools;
 import com.ontimize.jee.server.dao.DefaultOntimizeDaoHelper;
 import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileDao;
 import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileVersionDao;
@@ -622,7 +625,7 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 		Map<String, Object> avVersion = new HashMap<>();
 		avVersion.put(this.getColumnHelper().getFileIdColumn(), fileId);
 		avVersion.put(this.getColumnHelper().getVersionAddedDateColumn(), new Date());
-		avVersion.put(this.getColumnHelper().getVersionAddedUserColumn(), Integer.valueOf(1)); // TODO pendiente de tener la información en el userinfo
+		avVersion.put(this.getColumnHelper().getVersionAddedUserColumn(), this.getUser()); // TODO pendiente de tener la información en el userinfo
 		avVersion.put(this.getColumnHelper().getVersionDescriptionColumn(), attributes.get(this.getColumnHelper().getVersionDescriptionColumn()));
 		avVersion.put(this.getColumnHelper().getVersionPathColumn(), attributes.get(this.getColumnHelper().getVersionPathColumn()));
 		avVersion.put(this.getColumnHelper().getVersionActiveColumn(), attributes.containsKey(this.getColumnHelper().getVersionActiveColumn()) ? attributes
@@ -663,6 +666,17 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 		} catch (Exception error) {
 			FileTools.deleteQuitely(file);
 			throw new DmsException(error);
+		}
+	}
+
+	private Object getUser() {
+		try {
+			Map<Object, Object> otherData = ((UserInformation) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getOtherData();
+			Object userId = ObjectTools.coalesce(otherData.get("USER_ID"), otherData.get("USR_ID"), otherData.get("ID_USER"));
+			CheckingTools.failIfNull(userId, "E_NULL_USER", new Object[0]);
+			return userId;
+		} catch (Exception ex) {
+			return Integer.valueOf(1);
 		}
 	}
 
