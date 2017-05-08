@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ontimize.gui.table.RefreshTableEvent;
+import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.utilmize.client.gui.field.table.UTableRefreshThread;
 
 public class DocumentationTableRefreshThread extends UTableRefreshThread {
@@ -58,7 +59,8 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					DocumentationTableRefreshThread.this.getTable().showInformationPanel(e.getMessage());
+					Throwable causeEx = MessageManager.getMessageManager().getCauseException(e);
+					DocumentationTableRefreshThread.this.getTable().showInformationPanel((causeEx == null ? e : causeEx).getMessage());
 				}
 			});
 		} finally {
