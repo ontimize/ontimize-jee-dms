@@ -20,6 +20,7 @@ import com.ontimize.jee.server.services.dms.OntimizeDMSEngine;
  * The Class DMSBeanDefinitionParser.
  */
 public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
+
 	/** The Constant SCOPE. */
 	private static final String	SCOPE	= "scope";
 
@@ -54,8 +55,7 @@ public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
 			engine = new OntimizeDMSParser().parse(child, nestedCtx);
 		} else {
 			// construimos el bean que nos venga que deberia ser un IRemoteApplicationPreferencesEngine
-			engine = DefinitionParserUtil.parseNode(child, ctx, builder.getBeanDefinition(),
-					element.getAttribute(DMSBeanDefinitionParser.SCOPE),false);
+			engine = DefinitionParserUtil.parseNode(child, ctx, builder.getBeanDefinition(), element.getAttribute(DMSBeanDefinitionParser.SCOPE), false);
 		}
 		builder.addPropertyValue("engine", engine);
 		builder.setLazyInit(true);
@@ -95,10 +95,12 @@ public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
 			if (childElements.isEmpty()) {
 				builder.addPropertyValue("documentsBasePath", item.getNodeValue());
 			} else {
-				GenericBeanDefinition parseNode = (GenericBeanDefinition) DefinitionParserUtil.parseNode(childElements.get(0), ctx, builder.getBeanDefinition(), element.getAttribute("scope"));
+				Object parseNode = DefinitionParserUtil.parseNode(childElements.get(0), ctx, builder.getBeanDefinition(), element.getAttribute("scope"));
 				builder.addPropertyValue("documentsBasePathResolver", parseNode);
-				if (!parseNode.getPropertyValues().contains("useMyselfInSpringContext")){
-					parseNode.getPropertyValues().add("useMyselfInSpringContext", Boolean.TRUE);
+				if (parseNode instanceof GenericBeanDefinition) {
+					if (!((AbstractBeanDefinition) parseNode).getPropertyValues().contains("useMyselfInSpringContext")) {
+						((AbstractBeanDefinition) parseNode).getPropertyValues().add("useMyselfInSpringContext", Boolean.TRUE);
+					}
 				}
 			}
 			builder.setDependencyCheck(AbstractBeanDefinition.DEPENDENCY_CHECK_NONE);
