@@ -29,7 +29,7 @@ public class DmsTransfererManagerFactory {
 			try {
 				DmsTransfererManagerFactory.sInstance = BeansFactory.getBean(IDmsTransfererManager.class);
 			} catch (NoSuchBeanDefinitionException ex) {
-				DmsTransfererManagerFactory.logger.warn("IDmsTransferManager not defined, using default", ex);
+				DmsTransfererManagerFactory.logger.debug("IDmsTransferManager not defined, using default", ex);
 				DmsTransfererManagerFactory.sInstance = new DmsTransfererManagerGui();
 			}
 			if (DmsTransfererManagerFactory.sInstance == null) {
