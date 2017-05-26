@@ -1,6 +1,6 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
-import com.ontimize.jee.desktopclient.dms.taskmanager.TaskManagerGUI;
+import com.ontimize.jee.desktopclient.components.taskmanager.TaskManagerGUI;
 import com.ontimize.jee.desktopclient.dms.transfermanager.events.ITransferQueueListener;
 import com.ontimize.jee.desktopclient.dms.transfermanager.events.TransferQueueChangedEvent;
 

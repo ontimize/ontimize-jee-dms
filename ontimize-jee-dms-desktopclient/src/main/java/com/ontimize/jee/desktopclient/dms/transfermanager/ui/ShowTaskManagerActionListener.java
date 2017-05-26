@@ -1,4 +1,4 @@
-package com.ontimize.jee.desktopclient.dms.taskmanager;
+package com.ontimize.jee.desktopclient.dms.transfermanager.ui;
 
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
+import com.ontimize.jee.desktopclient.components.taskmanager.TaskManagerGUI;
 import com.ontimize.jee.desktopclient.dms.transfermanager.DmsTransfererManagerFactory;
 import com.ontimize.jee.desktopclient.dms.transfermanager.events.ITransferQueueListener;
 import com.ontimize.jee.desktopclient.dms.transfermanager.events.TransferQueueChangedEvent;

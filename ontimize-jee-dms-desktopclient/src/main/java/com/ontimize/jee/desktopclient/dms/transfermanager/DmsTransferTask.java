@@ -2,8 +2,8 @@ package com.ontimize.jee.desktopclient.dms.transfermanager;
 
 import java.util.Observable;
 
-import com.ontimize.jee.desktopclient.dms.taskmanager.ITask;
-import com.ontimize.jee.desktopclient.dms.taskmanager.TaskStatus;
+import com.ontimize.jee.desktopclient.components.taskmanager.ITask;
+import com.ontimize.jee.desktopclient.components.taskmanager.TaskStatus;
 
 public class DmsTransferTask implements ITask {
 
