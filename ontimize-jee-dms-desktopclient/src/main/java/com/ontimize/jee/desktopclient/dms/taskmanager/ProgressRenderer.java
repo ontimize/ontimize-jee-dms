@@ -1,4 +1,4 @@
-package com.ontimize.jee.desktopclient.dms.transfermanager.ui;
+package com.ontimize.jee.desktopclient.dms.taskmanager;
 
 import java.awt.Component;
 

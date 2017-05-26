@@ -1,4 +1,4 @@
-package com.ontimize.jee.desktopclient.dms.transfermanager.ui;
+package com.ontimize.jee.desktopclient.dms.taskmanager;
 
 import java.awt.Dialog.ModalExclusionType;
 import java.awt.Dimension;
@@ -14,30 +14,24 @@ import javax.swing.event.TableModelListener;
 
 import com.ontimize.gui.ApplicationManager;
 import com.ontimize.gui.images.ImageManager;
-import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsTransferable;
-import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsTransferable.Status;
-import com.ontimize.jee.desktopclient.dms.transfermanager.DmsTransfererManagerFactory;
-import com.ontimize.jee.desktopclient.dms.transfermanager.events.ITransferQueueListener;
-import com.ontimize.jee.desktopclient.dms.transfermanager.events.TransferQueueChangedEvent;
 import com.utilmize.tools.WindowUtils;
 
-public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQueueListener {
+public class TaskManagerGUI extends javax.swing.JFrame {
 	private static final long			serialVersionUID	= -5169995535825046706L;
 
 	// The unique instance of this class
-	private static TransferManagerGUI	sInstance			= null;
+	private static TaskManagerGUI	sInstance			= null;
 
 	/**
 	 * Get an instance of this class
 	 *
 	 * @return the instance of this class
 	 */
-	public static TransferManagerGUI getInstance() {
-		if (TransferManagerGUI.sInstance == null) {
-			TransferManagerGUI.sInstance = new TransferManagerGUI();
-			DmsTransfererManagerFactory.getInstance().addTransferQueueListener(TransferManagerGUI.sInstance);
+	public static TaskManagerGUI getInstance() {
+		if (TaskManagerGUI.sInstance == null) {
+			TaskManagerGUI.sInstance = new TaskManagerGUI();
 		}
-		return TransferManagerGUI.sInstance;
+		return TaskManagerGUI.sInstance;
 	}
 
 	// Variables declaration - do not modify//GEN-BEGIN:variables
@@ -47,13 +41,13 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 	private javax.swing.JButton		jbnPause;
 	private javax.swing.JButton		jbnRemove;
 	private javax.swing.JButton		jbnResume;
-	private TransferTable			transferTable;
+	private TaskTable				taskTable;
 
 	// End of variables declaration//GEN-END:variables
 
 	/** Creates new form TransferManagerGUI */
-	public TransferManagerGUI() {
-		super(ApplicationManager.getTranslation("dms.transfermanager"));
+	public TaskManagerGUI() {
+		super(ApplicationManager.getTranslation("task.transfermanager"));
 		this.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
 		this.setIconImage(ImageManager.getIcon("ontimize-dms-images/download_manager_22x22.png").getImage());
 		this.initComponents();
@@ -64,19 +58,19 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 		// Set up table
 
 		// Allow only one row at a time to be selected.
-		this.transferTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		this.transferTable.addMouseListener(new MouseListenerOpenFile());
+		this.taskTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		this.taskTable.addMouseListener(new MouseListenerOpenFile());
 
-		this.transferTable.getModel().addTableModelListener(new TableModelListener() {
+		this.taskTable.getModel().addTableModelListener(new TableModelListener() {
 			@Override
 			public void tableChanged(TableModelEvent e) {
-				TransferManagerGUI.this.updateButtons();
+				TaskManagerGUI.this.updateButtons();
 			}
 		});
-		this.transferTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+		this.taskTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
 			@Override
 			public void valueChanged(ListSelectionEvent e) {
-				TransferManagerGUI.this.updateButtons();
+				TaskManagerGUI.this.updateButtons();
 			}
 		});
 	}
@@ -90,37 +84,37 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 	private void initComponents() {
 
 		this.jScrollPane1 = new javax.swing.JScrollPane();
-		this.transferTable = new TransferTable();
+		this.taskTable = new TaskTable();
 		this.jbnPause = new javax.swing.JButton();
 		this.jbnRemove = new javax.swing.JButton();
 		// this.jbnCancel = new javax.swing.JButton();
 		this.jbnExit = new javax.swing.JButton();
 		this.jbnResume = new javax.swing.JButton();
 
-		this.setTitle(ApplicationManager.getTranslation("dms.DOWNLOAD_MANAGER_TITLE"));
+		this.setTitle(ApplicationManager.getTranslation("task.DOWNLOAD_MANAGER_TITLE"));
 		this.setResizable(true);
 
-		this.jScrollPane1.setViewportView(this.transferTable);
+		this.jScrollPane1.setViewportView(this.taskTable);
 
-		this.jbnPause.setText(ApplicationManager.getTranslation(("dms.PAUSE")));
+		this.jbnPause.setText(ApplicationManager.getTranslation(("task.PAUSE")));
 		this.jbnPause.setEnabled(false);
 		this.jbnPause.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				TransferManagerGUI.this.jbnPauseActionPerformed(evt);
+				TaskManagerGUI.this.jbnPauseActionPerformed(evt);
 			}
 		});
 
-		this.jbnRemove.setText(ApplicationManager.getTranslation(("dms.REMOVE")));
+		this.jbnRemove.setText(ApplicationManager.getTranslation(("task.REMOVE")));
 		this.jbnRemove.setEnabled(false);
 		this.jbnRemove.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				TransferManagerGUI.this.jbnRemoveActionPerformed(evt);
+				TaskManagerGUI.this.jbnRemoveActionPerformed(evt);
 			}
 		});
 
-		// this.jbnCancel.setText(ApplicationManager.getTranslation(("dms.CANCEL")));
+		// this.jbnCancel.setText(ApplicationManager.getTranslation(("task.CANCEL")));
 		// this.jbnCancel.setEnabled(false);
 		// this.jbnCancel.addActionListener(new java.awt.event.ActionListener() {
 		// @Override
@@ -129,20 +123,20 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 		// }
 		// });
 
-		this.jbnExit.setText(ApplicationManager.getTranslation(("dms.EXIT")));
+		this.jbnExit.setText(ApplicationManager.getTranslation(("task.EXIT")));
 		this.jbnExit.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				TransferManagerGUI.this.jbnExitActionPerformed(evt);
+				TaskManagerGUI.this.jbnExitActionPerformed(evt);
 			}
 		});
 
-		this.jbnResume.setText(ApplicationManager.getTranslation(("dms.RESUME")));
+		this.jbnResume.setText(ApplicationManager.getTranslation(("task.RESUME")));
 		this.jbnResume.setEnabled(false);
 		this.jbnResume.addActionListener(new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(java.awt.event.ActionEvent evt) {
-				TransferManagerGUI.this.jbnResumeActionPerformed(evt);
+				TaskManagerGUI.this.jbnResumeActionPerformed(evt);
 			}
 		});
 
@@ -208,8 +202,8 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 	}// GEN-LAST:event_jbnCancelActionPerformed
 
 	private void jbnRemoveActionPerformed(java.awt.event.ActionEvent evt) {// GEN-FIRST:event_jbnRemoveActionPerformed
-		int index = this.transferTable.getSelectedRow();
-		this.transferTable.getTransferModel().removeRow(index);
+		int index = this.taskTable.getSelectedRow();
+		this.taskTable.getTaskModel().removeRow(index);
 		this.updateButtons();
 	}// GEN-LAST:event_jbnRemoveActionPerformed
 
@@ -217,10 +211,10 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 		this.setVisible(false);
 	}// GEN-LAST:event_jbnExitActionPerformed
 
-	protected AbstractDmsTransferable getSelectedRow() {
-		int selectedRow = this.transferTable.getSelectedRow();
+	protected ITask getSelectedRow() {
+		int selectedRow = this.taskTable.getSelectedRow();
 		if (selectedRow >= 0) {
-			return this.transferTable.getTransferModel().getRow(selectedRow);
+			return this.taskTable.getTaskModel().getRow(selectedRow);
 		}
 		return null;
 	}
@@ -229,12 +223,11 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 	 * Update buttons' state
 	 */
 	private void updateButtons() {
-		AbstractDmsTransferable transferable = this.getSelectedRow();
-		if (transferable != null) {
-			Status status = transferable.getStatus();
+		ITask task = this.getSelectedRow();
+		if (task != null) {
+			TaskStatus status = task.getStatus();
 			switch (status) {
-				case UPLOADING:
-				case DOWNLOADING:
+				case RUNNING:
 					this.jbnPause.setEnabled(true);
 					this.jbnResume.setEnabled(false);
 					// this.jbnCancel.setEnabled(true);
@@ -278,11 +271,28 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 		}
 	}
 
-	@Override
-	public void onTransferQueueChanged(TransferQueueChangedEvent transferEvent) {
-		if (transferEvent.getAddedTransferable() != null) {
-			this.showWindow();
+	public void addTask(ITask task) {
+		if (task == null) {
+			return;
 		}
+		this.taskTable.addTask(task);
+		this.showWindow();
+	}
+
+	public void showWindow() {
+		if (!this.isVisible()) {
+			Rectangle screenBounds = WindowUtils.getScreenBounds(WindowUtils.getActiveWindow());
+			Dimension size = TaskManagerGUI.getInstance().getSize();
+			TaskManagerGUI.getInstance().setLocation(screenBounds.x + (screenBounds.width - size.width),
+					(screenBounds.height - size.height) + screenBounds.y);
+			this.setVisible(true);
+			this.setAlwaysOnTop(true);
+		}
+		this.toFront();
+	}
+
+	public TaskTable getTaskTable() {
+		return this.taskTable;
 	}
 
 	class MouseListenerOpenFile extends MouseAdapter {
@@ -294,15 +304,4 @@ public class TransferManagerGUI extends javax.swing.JFrame implements ITransferQ
 		}
 	}
 
-	public void showWindow() {
-		if (!TransferManagerGUI.getInstance().isVisible()) {
-			Rectangle screenBounds = WindowUtils.getScreenBounds(WindowUtils.getActiveWindow());
-			Dimension size = TransferManagerGUI.getInstance().getSize();
-			TransferManagerGUI.getInstance().setLocation(screenBounds.x + (screenBounds.width - size.width),
-					(screenBounds.height - size.height) + screenBounds.y);
-			TransferManagerGUI.getInstance().setVisible(true);
-			TransferManagerGUI.getInstance().setAlwaysOnTop(true);
-		}
-		TransferManagerGUI.getInstance().toFront();
-	}
 }

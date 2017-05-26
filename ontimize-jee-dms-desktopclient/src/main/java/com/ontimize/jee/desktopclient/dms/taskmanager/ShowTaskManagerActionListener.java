@@ -1,4 +1,4 @@
-package com.ontimize.jee.desktopclient.dms.transfermanager.ui;
+package com.ontimize.jee.desktopclient.dms.taskmanager;
 
 import java.awt.event.ActionEvent;
 import java.util.Hashtable;
@@ -15,14 +15,14 @@ import com.ontimize.jee.desktopclient.dms.util.AnimateIconButton;
 import com.utilmize.client.gui.buttons.AbstractActionListenerButton;
 import com.utilmize.client.gui.buttons.UButton;
 
-public class ShowTransferManagerActionListener extends AbstractActionListenerButton implements ITransferQueueListener {
+public class ShowTaskManagerActionListener extends AbstractActionListenerButton implements ITransferQueueListener {
 
-	private static final Logger		logger							= LoggerFactory.getLogger(ShowTransferManagerActionListener.class);
+	private static final Logger		logger							= LoggerFactory.getLogger(ShowTaskManagerActionListener.class);
 
 	protected static final String	ICO_DOWNLOAD_MANAGER_DEFAULT	= "ontimize-dms-images/download_manager_22x22.png";
 	protected static final String	GIF_DOWNLOAD_MANAGER_PROGRESS	= "ontimize-dms-images/roller_22x22.gif";
 
-	public ShowTransferManagerActionListener(UButton button, Hashtable params) throws Exception {
+	public ShowTaskManagerActionListener(UButton button, Hashtable params) throws Exception {
 		super(button, params);
 	}
 
@@ -37,20 +37,20 @@ public class ShowTransferManagerActionListener extends AbstractActionListenerBut
 		try {
 			this.toggleDialog();
 		} catch (Throwable ex) {
-			MessageManager.getMessageManager().showExceptionMessage(ex, ShowTransferManagerActionListener.logger);
+			MessageManager.getMessageManager().showExceptionMessage(ex, ShowTaskManagerActionListener.logger);
 		}
 	}
 
 	public void toggleDialog() {
-		TransferManagerGUI.getInstance().showWindow();
+		TaskManagerGUI.getInstance().showWindow();
 	}
 
 	@Override
 	public void onTransferQueueChanged(TransferQueueChangedEvent transferEvent) {
 		if (transferEvent.hasPendingTransfers()) {
-			AnimateIconButton.animateGIF(this.button, ShowTransferManagerActionListener.GIF_DOWNLOAD_MANAGER_PROGRESS);
+			AnimateIconButton.animateGIF(this.button, ShowTaskManagerActionListener.GIF_DOWNLOAD_MANAGER_PROGRESS);
 		} else {
-			AnimateIconButton.animate(this.button, ShowTransferManagerActionListener.ICO_DOWNLOAD_MANAGER_DEFAULT, null, 10, 500);
+			AnimateIconButton.animate(this.button, ShowTaskManagerActionListener.ICO_DOWNLOAD_MANAGER_DEFAULT, null, 10, 500);
 		}
 
 	}

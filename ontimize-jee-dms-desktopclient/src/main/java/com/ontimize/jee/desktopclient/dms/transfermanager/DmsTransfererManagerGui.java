@@ -1,6 +1,8 @@
 package com.ontimize.jee.desktopclient.dms.transfermanager;
 
-import com.ontimize.jee.desktopclient.dms.transfermanager.ui.TransferManagerGUI;
+import com.ontimize.jee.desktopclient.dms.taskmanager.TaskManagerGUI;
+import com.ontimize.jee.desktopclient.dms.transfermanager.events.ITransferQueueListener;
+import com.ontimize.jee.desktopclient.dms.transfermanager.events.TransferQueueChangedEvent;
 
 /**
  *
@@ -14,9 +16,21 @@ public class DmsTransfererManagerGui extends DmsTransfererManagerDefault {
 		super();
 	}
 
+	@Override
 	public void init() {
 		super.init();
 		// Start GUI
-		TransferManagerGUI.getInstance();
+		TaskManagerGUI.getInstance();
+
+		DmsTransfererManagerFactory.getInstance().addTransferQueueListener(new ITransferQueueListener() {
+
+			@Override
+			public void onTransferQueueChanged(TransferQueueChangedEvent transferEvent) {
+				if (transferEvent.getAddedTransferable() != null) {
+					TaskManagerGUI.getInstance().getTaskTable().getTaskModel().addTask(new DmsTransferTask(transferEvent.getAddedTransferable()));
+					TaskManagerGUI.getInstance().showWindow();
+				}
+			}
+		});
 	}
 }
