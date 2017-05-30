@@ -7,8 +7,8 @@
 				listener="com.ontimize.jee.desktopclient.dms.upload.HomeActionListener" align="left"
 				tip="dms.COME_BACK" />
 			<Column expand="yes" />
-			<Button key="DOWNLOAD_MANAGER" icon="ontimize-dms-images/download_manager_22x22.png"
-				listener="com.ontimize.jee.desktopclient.dms.transfermanager.ui.ShowTransferManagerActionListener"
+			<Button key="DOWNLOAD_MANAGER" icon="ontimize-jee-images/download_manager_22x22.png"
+				listener="com.ontimize.jee.desktopclient.dms.transfermanager.ui.ShowTaskManagerActionListener"
 				align="right" tip="dms.DOWNLOAD_MANAGER_TIP" />
 		</Row>
 		<Row height="10" expand="no" />
