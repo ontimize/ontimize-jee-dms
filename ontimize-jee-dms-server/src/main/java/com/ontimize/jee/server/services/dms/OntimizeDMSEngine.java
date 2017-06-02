@@ -1,7 +1,10 @@
 package com.ontimize.jee.server.services.dms;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
+import java.net.URI;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -29,28 +32,28 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	private static final Logger					logger		= LoggerFactory.getLogger(OntimizeDMSEngine.class);
 
 	/** The Constant ACTIVE. */
-	public static final String			ACTIVE		= "Y";
+	public static final String					ACTIVE		= "Y";
 	/** The Constant INACTIVE. */
-	public static final String			INACTIVE	= "N";
+	public static final String					INACTIVE	= "N";
 
 	/** The ontimize configuration. */
 	@Autowired
-	protected OntimizeConfiguration		ontimizeConfiguration;
+	protected OntimizeConfiguration				ontimizeConfiguration;
 
 	/** The file helper. */
 	@Autowired
-	protected DMSServiceFileHelper		fileHelper;
+	protected DMSServiceFileHelper				fileHelper;
 
 	/** The document helper. */
 	@Autowired
-	protected DMSServiceDocumentHelper	documentHelper;
+	protected DMSServiceDocumentHelper			documentHelper;
 
 	/** The category helper. */
 	@Autowired
-	protected DMSServiceCategoryHelper	categoryHelper;
+	protected DMSServiceCategoryHelper			categoryHelper;
 
 	/** The documents base path. */
-	protected Path						documentsBasePath;
+	protected Path								documentsBasePath;
 	protected AbstractPropertyResolver<String>	documentsBasePathResolver;
 
 	public OntimizeDMSEngine() {
@@ -385,12 +388,20 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	protected Path getResolverValue(AbstractPropertyResolver<String> resolver) {
 		if (resolver != null) {
 			try {
-				return Paths.get(resolver.getValue());
+				String basePath = resolver.getValue();
+				try {
+					basePath = Paths.get(basePath).normalize().toUri().toString();
+				} catch (InvalidPathException error) {
+					// do nothing
+				}
+				if (!basePath.endsWith(File.separator.replace("\\", "/"))) {
+					basePath += File.separator.replace("\\", "/");
+				}
+				return Paths.get(new URI(basePath));
 			} catch (Exception ex) {
 				OntimizeDMSEngine.logger.error(null, ex);
 			}
 		}
 		return null;
 	}
-
 }
