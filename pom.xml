@@ -3,17 +3,60 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ontimize.jee.dms</groupId>
 	<artifactId>ontimize-jee-dms</artifactId>
-	<version>1.0.0</version>
+	<version>1.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>com.ontimize.jee</groupId>
 		<artifactId>ontimize-jee</artifactId>
-		<version>1.0.0</version>
+		<version>1.0.1-SNAPSHOT</version>
 	</parent>
-	
+
 	<properties>
 	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>generate-version</id>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+					</plugin>
+					<!-- JavaDoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
@@ -35,5 +78,6 @@
 		<module>ontimize-jee-dms-common</module>
 		<module>ontimize-jee-dms-server</module>
 		
+		<module>ontimize-jee-dms-desktopclient</module>
 	</modules>
 </project>
