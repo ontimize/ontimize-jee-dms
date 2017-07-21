@@ -1,10 +1,8 @@
 package com.ontimize.jee.server.services.dms;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URI;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -389,15 +387,12 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 		if (resolver != null) {
 			try {
 				String basePath = resolver.getValue();
-				try {
-					basePath = Paths.get(basePath).normalize().toUri().toString();
-				} catch (InvalidPathException error) {
-					// do nothing
+				if (!basePath.endsWith("/")) {
+					basePath += "/";
 				}
-				if (!basePath.endsWith(File.separator.replace("\\", "/"))) {
-					basePath += File.separator.replace("\\", "/");
-				}
-				return Paths.get(new URI(basePath));
+				Path path = Paths.get(new URI(basePath));
+				OntimizeDMSEngine.logger.info("Final path / class {} / {}", path, path.getClass().getName());
+				return path;
 			} catch (Exception ex) {
 				OntimizeDMSEngine.logger.error(null, ex);
 			}

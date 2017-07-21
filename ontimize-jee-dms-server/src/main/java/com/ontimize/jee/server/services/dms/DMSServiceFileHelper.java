@@ -637,21 +637,13 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 		CheckingTools.failIfNull(versionId, DMSNaming.ERROR_CREATING_FILE_VERSION);
 		Path file = this.getPhysicalFileFor(documentId, fileId, versionId);
 		try {
-			Path tmpFile = Files.createTempFile("dms", "tmp");
 			CheckingTools.failIf(Files.exists(file), DMSNaming.ERROR_FILE_ALREADY_EXISTS);
-			// TODO ver si es necesario hacer esto antes para no ocupar memoria,
-			// aunque las operaciones anteriores deberían ser inmediatas
-			long time = System.currentTimeMillis();
-			try (OutputStream output = Files.newOutputStream(tmpFile)) {
-				IOUtils.copy(is, output);
-			}
 			Files.createDirectories(file.getParent());
-			try {
-				Files.move(tmpFile, file);
-			} catch (IOException ex) {
-				DMSServiceFileHelper.logger.warn("Move option not work, using copy option", ex);
-				Files.copy(tmpFile, file);
-				FileTools.deleteQuitely(tmpFile);
+			// TODO ver si es necesario hacer esto antes para no ocupar memoria,
+			// aunque las operaciones anteriores deber?an ser inmediatas
+			long time = System.currentTimeMillis();
+			try (OutputStream output = Files.newOutputStream(file)) {
+				IOUtils.copy(is, output);
 			}
 			// update filesize
 			long fileSize = Files.size(file);
