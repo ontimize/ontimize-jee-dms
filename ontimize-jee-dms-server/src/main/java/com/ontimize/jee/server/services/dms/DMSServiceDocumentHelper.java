@@ -116,12 +116,9 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 */
 	public void documentDelete(Serializable documentId) throws DmsException {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
-		// borramos las propiedades
-		Map<String, Object> kv = new HashMap<>();
-		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-		this.documentPropertyDao.unsafeDelete(kv);
+
 		// borramos las relaciones
-		kv = new HashMap<>();
+		Map<String, Object> kv = new HashMap<>();
 		kv.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), documentId);
 		this.relatedDocumentDao.unsafeDelete(kv);
 		kv = new HashMap<>();
@@ -152,6 +149,11 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 				toDelete.addAll(toDeletePartial);
 			}
 		}
+		// borramos las propiedades
+		kv = new HashMap<>();
+		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
+		this.documentPropertyDao.unsafeDelete(kv);
+
 		// Borramos el documento
 		kv = new HashMap<>();
 		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
