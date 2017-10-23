@@ -16,7 +16,8 @@ import com.utilmize.client.gui.field.table.UTable;
 import com.utilmize.client.gui.tasks.USwingWorker;
 
 public class DocumentationTableDetailFormOpener implements IDetailFormOpener {
-	private static final Logger	logger	= LoggerFactory.getLogger(DocumentationTableDetailFormOpener.class);
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentationTableDetailFormOpener.class);
 
 	public DocumentationTableDetailFormOpener(Hashtable<String, Object> av) {}
 
@@ -27,8 +28,7 @@ public class DocumentationTableDetailFormOpener implements IDetailFormOpener {
 			@Override
 			protected Path doInBackground() throws Exception {
 				Hashtable<String, Object> data = table.getRowData(row);
-				return DmsTransfererManagerFactory.getInstance().obtainDmsFileVersion(
-						(Serializable) data.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION));
+				return DmsTransfererManagerFactory.getInstance().obtainDmsFileVersion((Serializable) data.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION));
 			}
 
 			@Override
@@ -37,7 +37,7 @@ public class DocumentationTableDetailFormOpener implements IDetailFormOpener {
 					Path file = this.uget();
 					Desktop.getDesktop().open(file.toFile());
 				} catch (Throwable ex) {
-					MessageManager.getMessageManager().showExceptionMessage(ex, DocumentationTableDetailFormOpener.logger);
+					MessageManager.getMessageManager().showExceptionMessage(ex, DocumentationTableDetailFormOpener.LOGGER);
 
 				}
 			}

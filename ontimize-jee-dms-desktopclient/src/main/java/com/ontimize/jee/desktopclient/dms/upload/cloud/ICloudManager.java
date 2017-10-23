@@ -77,6 +77,6 @@ public interface ICloudManager<T extends Serializable> {
 	 *
 	 * @return the table renderer
 	 */
-	TableCellRenderer  getTableRenderer();
+	TableCellRenderer getTableRenderer();
 
 }

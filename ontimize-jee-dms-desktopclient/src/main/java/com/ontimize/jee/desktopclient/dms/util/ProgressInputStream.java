@@ -47,7 +47,7 @@ public class ProgressInputStream extends InputStream {
 	@Override
 	public int read() throws IOException {
 		int read = this.wrap.read();
-		if ((read >= 0) && this.totalLength > 0) {
+		if ((read >= 0) && (this.totalLength > 0)) {
 			this.currentLength++;
 			this.transferable.setProgress(this.currentLength / this.totalLength);
 		}

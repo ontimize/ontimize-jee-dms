@@ -10,7 +10,8 @@ import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.utilmize.client.gui.field.table.UTableRefreshThread;
 
 public class DocumentationTableRefreshThread extends UTableRefreshThread {
-	private static final Logger	logger	= LoggerFactory.getLogger(DocumentationTableRefreshThread.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(DocumentationTableRefreshThread.class);
 
 	/**
 	 * Creates the thread for the corresponding table.
@@ -38,6 +39,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 				Thread.sleep(this.delay);
 			}
 			SwingUtilities.invokeLater(new Runnable() {
+
 				@Override
 				public void run() {
 					DocumentationTableRefreshThread.this.getTable().showWaitPanel();
@@ -48,6 +50,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 			this.getTable().requeryDocuments();
 
 			SwingUtilities.invokeLater(new Runnable() {
+
 				@Override
 				public void run() {
 					DocumentationTableRefreshThread.this.getTable().hideWaitPanel();
@@ -57,6 +60,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 			ok = false;
 			DocumentationTableRefreshThread.logger.error(null, e);
 			SwingUtilities.invokeLater(new Runnable() {
+
 				@Override
 				public void run() {
 					Throwable causeEx = MessageManager.getMessageManager().getCauseException(e);
@@ -68,6 +72,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 				this.stop = true;
 				final boolean okFinal = ok;
 				SwingUtilities.invokeLater(new Runnable() {
+
 					@Override
 					public void run() {
 						synchronized (DocumentationTableRefreshThread.this.getTable().getJTable()) {
@@ -76,8 +81,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 							 * sin comentarios... ni copiar, ademas encima de usar enumerados meten estaticas...
 							 */
 							DocumentationTableRefreshThread.this.getTable().fireRefreshTableEvent(
-									new RefreshTableEvent(DocumentationTableRefreshThread.this.table,
-											okFinal ? RefreshTableEvent.OK : RefreshTableEvent.ERROR));
+							        new RefreshTableEvent(DocumentationTableRefreshThread.this.table, okFinal ? RefreshTableEvent.OK : RefreshTableEvent.ERROR));
 						}
 
 					}

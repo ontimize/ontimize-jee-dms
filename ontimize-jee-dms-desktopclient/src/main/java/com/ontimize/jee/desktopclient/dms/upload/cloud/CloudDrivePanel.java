@@ -15,9 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ontimize.gui.ApplicationManager;
 import com.ontimize.gui.container.Row;
 import com.ontimize.gui.i18n.Internationalization;
@@ -27,8 +24,8 @@ import com.ontimize.jee.common.tools.ParseUtilsExtended;
 import com.ontimize.jee.common.tools.ReflectionTools;
 
 public class CloudDrivePanel<T extends Serializable> extends Row implements Internationalization, ICloudFileSelectionListener<T> {
+
 	private static final long				serialVersionUID	= 1L;
-	private static final Logger				logger	= LoggerFactory.getLogger(CloudDrivePanel.class);
 	private CloudDriveTable<T>				table;
 	private ICloudFileSelectionListener<T>	selectionListener;
 
@@ -49,8 +46,8 @@ public class CloudDrivePanel<T extends Serializable> extends Row implements Inte
 		super.init(parameters);
 		this.setLayout(new BorderLayout());
 		try {
-			this.table = new CloudDriveTable<T>(this,
-					(ICloudManager<T>) ReflectionTools.invoke(ParseUtilsExtended.getClazz((String) parameters.get("cloudmanagerclass"), null), "getInstance", null));
+			this.table = new CloudDriveTable<>(this,
+			        (ICloudManager<T>) ReflectionTools.invoke(ParseUtilsExtended.getClazz((String) parameters.get("cloudmanagerclass"), null), "getInstance", null));
 		} catch (ClassNotFoundException e1) {
 			throw new DmsRuntimeException(e1);
 		}
@@ -61,6 +58,7 @@ public class CloudDrivePanel<T extends Serializable> extends Row implements Inte
 		JButton openButton = new JButton(ApplicationManager.getTranslation("dms.open_file"));
 		buttonsPanel.add(openButton);
 		openButton.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CloudDrivePanel.this.table.onFileSelected();
@@ -70,6 +68,7 @@ public class CloudDrivePanel<T extends Serializable> extends Row implements Inte
 		JButton cancelButton = new JButton(ApplicationManager.getTranslation("dms.cancel"));
 		buttonsPanel.add(cancelButton);
 		cancelButton.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				CloudDrivePanel.this.onFileSelected(null);

@@ -16,7 +16,7 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploader;
  */
 public class WebDmsUploader extends AbstractDmsUploader<WebDmsUploadable> {
 
-	private static final Logger	logger	= LoggerFactory.getLogger(WebDmsUploader.class);
+	private static final Logger logger = LoggerFactory.getLogger(WebDmsUploader.class);
 
 	public WebDmsUploader() {
 		super();

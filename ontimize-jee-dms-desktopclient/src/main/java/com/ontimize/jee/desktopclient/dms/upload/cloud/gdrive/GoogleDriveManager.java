@@ -41,6 +41,7 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  * @see https://developers.google.com/drive/quickstart-java"urn:ietf:wg:oauth:2.0:oob";
  */
 public class GoogleDriveManager implements ICloudManager<GoogleFile> {
+
 	private static final Logger				logger					= LoggerFactory.getLogger(GoogleDriveManager.class);
 	protected static final String			APPLICATION_NAME		= "Application";
 	protected static GoogleDriveManager		instance;
@@ -123,7 +124,7 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 
 			GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(this.jsonFactory, readerSecretsLocation);
 			this.flow = new GoogleAuthorizationCodeFlow.Builder(this.httpTransport, this.jsonFactory, clientSecrets, GoogleDriveManager.SCOPES)
-					.setAccessType(GoogleDriveManager.ONLINE).setApprovalPrompt(GoogleDriveManager.AUTO).build();
+			        .setAccessType(GoogleDriveManager.ONLINE).setApprovalPrompt(GoogleDriveManager.AUTO).build();
 		} catch (Exception ex) {
 			throw new DmsRuntimeException(ex);
 		}
@@ -241,7 +242,7 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 	 * @throws IOException
 	 */
 	public List<GoogleFile> retrieveAllFiles() throws DmsException {
-		List<GoogleFile> result = new ArrayList<GoogleFile>();
+		List<GoogleFile> result = new ArrayList<>();
 		Files.List request = null;
 
 		try {
@@ -295,7 +296,7 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 	 */
 	@Override
 	public List<GoogleFile> retrieveFilesInFolder(String folderName) throws DmsException {
-		List<GoogleFile> result = new ArrayList<GoogleFile>();
+		List<GoogleFile> result = new ArrayList<>();
 		Files.List request;
 		try {
 			request = this.service.files().list();
@@ -314,6 +315,7 @@ public class GoogleDriveManager implements ICloudManager<GoogleFile> {
 			}
 		} while ((request.getPageToken() != null) && (request.getPageToken().length() > 0));
 		Collections.sort(result, new Comparator<GoogleFile>() {
+
 			@Override
 			public int compare(GoogleFile o1, GoogleFile o2) {
 				if (o1.getMimeType().endsWith(".folder")) {

@@ -17,7 +17,7 @@ import com.utilmize.client.gui.buttons.UButton;
 
 public abstract class AbstractUploadableSelectionActionListener extends AbstractActionListenerButton {
 
-	private static final Logger	logger	= LoggerFactory.getLogger(AbstractUploadableSelectionActionListener.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractUploadableSelectionActionListener.class);
 
 	public AbstractUploadableSelectionActionListener() throws Exception {
 		super();
@@ -43,8 +43,8 @@ public abstract class AbstractUploadableSelectionActionListener extends Abstract
 			if (transferable != null) {
 				this.getForm().getJDialog().setVisible(false);
 			}
-		} catch (Throwable error) {
-			MessageManager.getMessageManager().showExceptionMessage(error, AbstractUploadableSelectionActionListener.logger);
+		} catch (Exception ex) {
+			MessageManager.getMessageManager().showExceptionMessage(ex, AbstractUploadableSelectionActionListener.LOGGER);
 		}
 	}
 

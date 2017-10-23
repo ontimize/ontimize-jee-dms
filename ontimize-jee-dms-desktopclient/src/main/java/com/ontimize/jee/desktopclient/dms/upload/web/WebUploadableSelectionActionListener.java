@@ -6,16 +6,12 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Hashtable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
 import com.utilmize.client.gui.buttons.UButton;
 
 public class WebUploadableSelectionActionListener extends AbstractUploadableSelectionActionListener {
-	private static final Logger	logger	= LoggerFactory.getLogger(WebUploadableSelectionActionListener.class);
 
 	public WebUploadableSelectionActionListener(UButton button, Hashtable params) throws Exception {
 		super(button, params);

@@ -15,7 +15,7 @@ public class AbstractDmsUploadable extends AbstractDmsTransferable {
 	private Serializable		categoryId;
 
 	/** The description. */
-	private final String	description;
+	private final String		description;
 
 	public AbstractDmsUploadable(String description, String name, Long size) {
 		super(name, size);

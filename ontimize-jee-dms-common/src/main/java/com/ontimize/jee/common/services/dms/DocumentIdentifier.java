@@ -6,6 +6,7 @@ import java.io.Serializable;
  * This class must identify by unique way a file: Document + File + Version
  */
 public class DocumentIdentifier implements Serializable {
+
 	/**
 	 * ID_DMS_DOC
 	 */

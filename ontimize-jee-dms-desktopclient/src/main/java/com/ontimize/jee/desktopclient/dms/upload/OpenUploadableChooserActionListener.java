@@ -79,8 +79,8 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 			if (uploadable != null) {
 				this.upload(uploadable);
 			}
-		} catch (Throwable error) {
-			MessageManager.getMessageManager().showExceptionMessage(error, OpenUploadableChooserActionListener.logger);
+		} catch (Exception ex) {
+			MessageManager.getMessageManager().showExceptionMessage(ex, OpenUploadableChooserActionListener.logger);
 		}
 	}
 
@@ -107,9 +107,9 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 				public void update(Observable observable, Object arg) {
 					CheckingTools.failIf(!(observable instanceof AbstractDmsUploadable), "Observable not instanceof AbstractDmsUploadable");
 					AbstractDmsUploadable uploadable = (AbstractDmsUploadable) observable;
-					if ((uploadable.getStatus()
-							.equals(Status.COMPLETED)) && ((table.getCurrentIdDocument() != null) && table.getCurrentIdDocument().equals(uploadable.getDocumentIdentifier()
-									.getDocumentId())) && ((table.getCurrentIdCategory() == null) || (table.getCurrentIdCategory().equals(uploadable.getCategoryId())))) {
+					if (uploadable.getStatus().equals(Status.COMPLETED) && (table.getCurrentIdDocument() != null) && table.getCurrentIdDocument()
+					        .equals(uploadable.getDocumentIdentifier()
+					                .getDocumentId()) && ((table.getCurrentIdCategory() == null) || table.getCurrentIdCategory().equals(uploadable.getCategoryId()))) {
 						table.refreshInThread(0);
 					}
 				}

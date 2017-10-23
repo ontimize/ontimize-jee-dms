@@ -14,10 +14,10 @@ import com.ontimize.jee.desktopclient.spring.BeansFactory;
  */
 public class DmsTransfererManagerFactory {
 
-	private static final Logger				logger					= LoggerFactory.getLogger(DmsTransfererManagerFactory.class);
+	private static final Logger				logger		= LoggerFactory.getLogger(DmsTransfererManagerFactory.class);
 
 	// The unique instance of this class
-	private static IDmsTransfererManager	sInstance				= null;
+	private static IDmsTransfererManager	sInstance	= null;
 
 	/**
 	 * Get an instance of this class

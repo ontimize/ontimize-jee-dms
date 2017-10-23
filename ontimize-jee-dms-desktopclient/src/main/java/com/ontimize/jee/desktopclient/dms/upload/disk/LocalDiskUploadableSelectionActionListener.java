@@ -17,7 +17,8 @@ import com.utilmize.client.gui.buttons.IUFormComponent;
 import com.utilmize.client.gui.buttons.UButton;
 
 public class LocalDiskUploadableSelectionActionListener extends AbstractUploadableSelectionActionListener {
-	protected EJFileSaveLastDirectory	fileChooser;
+
+	protected EJFileSaveLastDirectory fileChooser;
 
 	public LocalDiskUploadableSelectionActionListener() throws Exception {
 		super();

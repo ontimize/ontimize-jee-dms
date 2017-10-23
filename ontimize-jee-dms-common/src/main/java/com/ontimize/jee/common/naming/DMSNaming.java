@@ -1,6 +1,7 @@
 package com.ontimize.jee.common.naming;
 
 public interface DMSNaming {
+
 	String	DOCUMENT_ID_DMS_DOCUMENT							= "ID_DMS_DOC";
 	String	DOCUMENT_UPDATE_DATE								= "UPDATE_DATE";
 	String	DOCUMENT_UPDATE_BY									= "UPDATE_BY";

@@ -19,8 +19,9 @@ import com.ontimize.gui.table.CellRenderer;
 import com.ontimize.jee.common.tools.FileTools;
 
 public class GoogleDriveTableRenderer extends CellRenderer {
+
 	private static final Logger					logger		= LoggerFactory.getLogger(GoogleDriveTableRenderer.class);
-	private final static Map<String, ImageIcon>	ICON_CACHE	= new HashMap<String, ImageIcon>();
+	private static final Map<String, ImageIcon>	ICON_CACHE	= new HashMap<>();
 	private final SimpleDateFormat				sdf			= new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 	public GoogleDriveTableRenderer() {

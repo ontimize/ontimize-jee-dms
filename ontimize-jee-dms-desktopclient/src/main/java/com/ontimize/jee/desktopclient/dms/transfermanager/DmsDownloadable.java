@@ -60,7 +60,7 @@ public class DmsDownloadable extends AbstractDmsTransferable {
 	protected void init() throws DmsException {
 		if ((this.getName() == null) || (this.getSize() == null)) {
 			EntityResult er = BeansFactory.getBean(IDMSService.class).fileVersionQuery(this.idVersionFile,
-					Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_NAME }));
+			        Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_NAME }));
 			this.setSize(((List<Number>) er.get(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE)).get(0).longValue());
 			this.setName(((List<String>) er.get(DMSNaming.DOCUMENT_FILE_NAME)).get(0));
 		}

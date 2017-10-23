@@ -11,7 +11,7 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 public class DropboxDmsUploadable extends AbstractDmsUploadable {
 
 	/** The file. */
-	private final DbxEntry	file;
+	private final DbxEntry file;
 
 	/**
 	 * Instantiates a new local disk dms transferable.

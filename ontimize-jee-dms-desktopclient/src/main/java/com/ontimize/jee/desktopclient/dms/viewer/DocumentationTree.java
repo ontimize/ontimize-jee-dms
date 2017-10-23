@@ -6,9 +6,6 @@ import javax.swing.DropMode;
 import javax.swing.JTree;
 import javax.swing.tree.TreeSelectionModel;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.IDMSService;
@@ -18,9 +15,6 @@ import com.ontimize.jee.desktopclient.spring.BeansFactory;
  * The Class DocumentationTree.
  */
 public class DocumentationTree extends JTree {
-
-	/** The Constant logger. */
-	private static final Logger	logger	= LoggerFactory.getLogger(DocumentationTree.class);
 
 	/**
 	 * Instantiates a new documentation tree.

@@ -153,7 +153,7 @@ public class DmsException extends OntimizeJEEException {
 	 *            the writable stack trace
 	 */
 	public DmsException(String message, Throwable cause, Object[] msgParameters, MessageType msgType, boolean msgBlocking, boolean silent, boolean enableSuppression,
-			boolean writableStackTrace) {
+	        boolean writableStackTrace) {
 		super(message, cause, msgParameters, msgType, msgBlocking, silent, enableSuppression, writableStackTrace);
 
 	}

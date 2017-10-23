@@ -28,8 +28,7 @@ public class TransferQueueChangedEvent {
 	 * @param addedTransferable
 	 *            the added transferable
 	 */
-	public TransferQueueChangedEvent(List<AbstractDmsTransferable> dmsTransferList, AbstractDmsTransferable finishedTransferable,
-			AbstractDmsTransferable addedTransferable) {
+	public TransferQueueChangedEvent(List<AbstractDmsTransferable> dmsTransferList, AbstractDmsTransferable finishedTransferable, AbstractDmsTransferable addedTransferable) {
 		super();
 		this.dmsTransferList = dmsTransferList;
 		this.finishedTransferable = finishedTransferable;

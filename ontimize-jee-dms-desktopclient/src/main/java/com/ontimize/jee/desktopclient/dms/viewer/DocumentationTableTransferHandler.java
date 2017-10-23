@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -83,12 +84,12 @@ public class DocumentationTableTransferHandler extends TransferHandler {
 	 */
 	@Override
 	protected Transferable createTransferable(JComponent c) {
-		ArrayList<Object> fileIds = new ArrayList<Object>();
+		ArrayList<Object> fileIds = new ArrayList<>();
 		for (int row : this.getTable().getJTable().getSelectedRows()) {
 			fileIds.add(this.getTable().getJTable().getValueAt(row, this.getTable().getColumnIndex(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE)));
 		}
 
-		return new DataWrapperTransferable<ArrayList<Object>>(fileIds, this.getTable(), DocumentationTableTransferHandler.TRANSFER_HANLDER_HUMAN_ID);
+		return new DataWrapperTransferable<>(fileIds, this.getTable(), DocumentationTableTransferHandler.TRANSFER_HANLDER_HUMAN_ID);
 	}
 
 	/*
@@ -104,9 +105,9 @@ public class DocumentationTableTransferHandler extends TransferHandler {
 						DataWrapper<ArrayList<Object>> transferData = (DataWrapper<ArrayList<Object>>) transferable.getTransferData(flavor);
 						ArrayList<Object> data = transferData.getData();
 						for (Object idDocumentFileVersion : data) {
-							Hashtable<String, Object> kv = new Hashtable<String, Object>();
+							Map<String, Object> kv = new Hashtable<>();
 							kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, idDocumentFileVersion);
-							int index = this.getTable().getRowForKeys(kv);
+							int index = this.getTable().getRowForKeys((Hashtable) kv);
 							this.getTable().deleteRow(index);
 						}
 
@@ -151,16 +152,20 @@ public class DocumentationTableTransferHandler extends TransferHandler {
 						DocumentIdentifier docIdf = new DocumentIdentifier(idDocument);
 						LocalDiskDmsUploadable transferable = new LocalDiskDmsUploadable(file, description, docIdf, idCategory);
 						transferable.addObserver(new Observer() {
+
 							@Override
 							public void update(Observable observable, Object arg) {
 								// TODO intentar sólo añadir la información de la nueva fila sin necesidad de refrescar toda la tabla
-								CheckingTools.failIf(!(observable instanceof AbstractDmsUploadable),
-										"observable not instnaceof AbstractDmsUploadable");
+								CheckingTools.failIf(!(observable instanceof AbstractDmsUploadable), "observable not instnaceof AbstractDmsUploadable");
 								AbstractDmsUploadable uploadable = (AbstractDmsUploadable) observable;
-								if ((uploadable.getStatus().equals(Status.COMPLETED)) && ((DocumentationTableTransferHandler.this.table.getCurrentIdDocument() != null) && DocumentationTableTransferHandler.this.table.getCurrentIdDocument()
-										.equals(uploadable.getDocumentIdentifier().getDocumentId())) && ((DocumentationTableTransferHandler.this.table
-												.getCurrentIdCategory() == null) || (DocumentationTableTransferHandler.this.table.getCurrentIdCategory()
-														.equals(uploadable.getCategoryId())))) {
+								if (uploadable.getStatus()
+								        .equals(Status.COMPLETED) && (DocumentationTableTransferHandler.this.table
+								                .getCurrentIdDocument() != null) && DocumentationTableTransferHandler.this.table
+								                        .getCurrentIdDocument()
+								                        .equals(uploadable.getDocumentIdentifier()
+								                                .getDocumentId()) && ((DocumentationTableTransferHandler.this.table
+								                                        .getCurrentIdCategory() == null) || DocumentationTableTransferHandler.this.table.getCurrentIdCategory()
+								                                                .equals(uploadable.getCategoryId()))) {
 									DocumentationTableTransferHandler.this.table.refreshInThread(0);
 								}
 							}

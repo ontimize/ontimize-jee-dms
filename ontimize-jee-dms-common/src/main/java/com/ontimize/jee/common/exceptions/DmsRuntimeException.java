@@ -172,7 +172,7 @@ public class DmsRuntimeException extends OntimizeJEERuntimeException {
 	 *            the writable stack trace
 	 */
 	public DmsRuntimeException(String message, Throwable cause, Object[] msgParameters, MessageType msgType, boolean msgBlocking, boolean silent, boolean enableSuppression,
-			boolean writableStackTrace) {
+	        boolean writableStackTrace) {
 		super(message, cause, msgParameters, msgType, msgBlocking, silent, enableSuppression, writableStackTrace);
 
 	}

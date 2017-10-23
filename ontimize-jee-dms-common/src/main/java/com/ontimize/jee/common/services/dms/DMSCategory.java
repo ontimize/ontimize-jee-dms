@@ -12,25 +12,25 @@ import java.util.Map;
 public class DMSCategory implements Serializable {
 
 	/** The Constant serialVersionUID. */
-	private static final long	serialVersionUID	= 1L;
+	private static final long									serialVersionUID	= 1L;
 
 	/** The id category. */
-	private Serializable		idCategory;
+	private Serializable										idCategory;
 
 	/** The id document. */
-	private Serializable		idDocument;
+	private Serializable										idDocument;
 
 	/** The parent. */
-	private DMSCategory			parent;
+	private DMSCategory											parent;
 
 	/** The name. */
-	private String				name;
+	private String												name;
 
 	/** The other info. */
 	private Map<? extends Serializable, ? extends Serializable>	otherInfo;
 
 	/** The children. */
-	private List<DMSCategory>	children;
+	private List<DMSCategory>									children;
 
 	/**
 	 * Instantiates a new DMS category.
@@ -38,7 +38,7 @@ public class DMSCategory implements Serializable {
 	public DMSCategory() {
 		super();
 		this.otherInfo = new HashMap<>();
-		this.children = new ArrayList<DMSCategory>();
+		this.children = new ArrayList<>();
 	}
 
 	/**
@@ -60,7 +60,7 @@ public class DMSCategory implements Serializable {
 		this.idCategory = idCategory;
 		this.name = name;
 		this.otherInfo = otherInfo == null ? new HashMap<Serializable, Serializable>() : otherInfo;
-		this.children = new ArrayList<DMSCategory>();
+		this.children = new ArrayList<>();
 		this.idDocument = idDocument;
 		this.parent = parent;
 	}

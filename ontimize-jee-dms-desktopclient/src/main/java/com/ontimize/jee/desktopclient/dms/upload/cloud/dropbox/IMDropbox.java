@@ -16,6 +16,7 @@ import com.utilmize.client.fim.UBasicFIM;
 public class IMDropbox extends UBasicFIM implements ICloudFileSelectionListener<DbxEntry> {
 
 	private static final Logger			logger	= LoggerFactory.getLogger(IMDropbox.class);
+
 	@FormComponent(attr = "WEB")
 	private LoginIntoDropboxComponent	moduleWeb;
 	@FormComponent(attr = "cardpanel")

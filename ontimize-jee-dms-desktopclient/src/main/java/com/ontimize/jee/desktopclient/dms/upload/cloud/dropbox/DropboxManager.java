@@ -29,7 +29,6 @@ import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudManager;
  */
 public class DropboxManager implements ICloudManager<DbxEntry> {
 
-	/** The Constant logger. */
 	private static final Logger		logger				= LoggerFactory.getLogger(DropboxManager.class);
 
 	/** The Constant APPLICATION_NAME. */
@@ -37,10 +36,10 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 
 	/** The Constant APP_KEY. */
 	// Get your app key and secret from the Dropbox developers website.
-	final static String				APP_KEY				= "6fwbab6m3ehjfed";
+	static final String				APP_KEY				= "6fwbab6m3ehjfed";
 
 	/** The Constant APP_SECRET. */
-	final static String				APP_SECRET			= "l8jhgqcb1lcfxyv";
+	static final String				APP_SECRET			= "l8jhgqcb1lcfxyv";
 
 	/** The instance. */
 	protected static DropboxManager	instance;
@@ -110,7 +109,6 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 		return this.service != null;
 	}
 
-
 	/**
 	 * Build an authorization flow and store it as a static class attribute.
 	 *
@@ -149,7 +147,7 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 		this.token = authFinish.accessToken;
 		DbxRequestConfig config = new DbxRequestConfig(DropboxManager.APPLICATION_NAME, Locale.getDefault().toString());
 		this.service = new DbxClient(config, this.token);
-		System.out.println("Linked account: " + this.service.getAccountInfo().displayName);
+		DropboxManager.logger.debug("Linked account: " + this.service.getAccountInfo().displayName);
 	}
 
 	/**
@@ -211,7 +209,7 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	}
 
 	/** The Constant BACK_FOLDER. */
-	public static final DbxEntry.Folder	BACK_FOLDER	= new DbxEntry.Folder("/..", null, false);
+	public static final DbxEntry.Folder BACK_FOLDER = new DbxEntry.Folder("/..", null, false);
 
 	/*
 	 * (non-Javadoc)
@@ -223,7 +221,7 @@ public class DropboxManager implements ICloudManager<DbxEntry> {
 	}
 
 	/** The Constant RENDERER. */
-	public static final DropboxTableRenderer	RENDERER	= new DropboxTableRenderer();
+	public static final DropboxTableRenderer RENDERER = new DropboxTableRenderer();
 
 	/*
 	 * (non-Javadoc)

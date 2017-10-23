@@ -7,8 +7,9 @@ import com.ontimize.gui.manager.IFormManager;
 import com.utilmize.client.fim.UBasicFIM;
 
 public class IMMultipleFiles extends UBasicFIM {
+
 	@FormComponent(attr = "cardpanel")
-	private CardPanel	cp;
+	private CardPanel cp;
 
 	@Override
 	public void registerInteractionManager(Form form, IFormManager formManager) {

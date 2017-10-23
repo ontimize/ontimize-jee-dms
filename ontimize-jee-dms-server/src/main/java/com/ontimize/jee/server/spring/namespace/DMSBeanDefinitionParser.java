@@ -2,8 +2,6 @@ package com.ontimize.jee.server.spring.namespace;
 
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -22,10 +20,7 @@ import com.ontimize.jee.server.services.dms.OntimizeDMSEngine;
 public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 
 	/** The Constant SCOPE. */
-	private static final String	SCOPE	= "scope";
-
-	/** The CONSTANT logger */
-	private static final Logger	logger	= LoggerFactory.getLogger(DMSBeanDefinitionParser.class);
+	private static final String SCOPE = "scope";
 
 	/*
 	 * (non-Javadoc)

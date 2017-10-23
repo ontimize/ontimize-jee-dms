@@ -60,7 +60,7 @@ public class DocumentationTreeModel implements TreeModel {
 		}
 		this.rootCategories = this.uncategorized.getChildren();
 		if (this.rootCategories == null) {
-			this.rootCategories = new ArrayList<DMSCategory>();
+			this.rootCategories = new ArrayList<>();
 		}
 		this.uncategorized.setChildren(new ArrayList<DMSCategory>());
 		this.fireTreeStructureChanged(this, new TreePath(this.allFiles));
@@ -86,7 +86,7 @@ public class DocumentationTreeModel implements TreeModel {
 		} else if (this.allFiles.equals(parent)) {
 			if (index == 0) {
 				return this.uncategorized;
-			} else if ((index >= 1) && ((index - 1) < (this.rootCategories.size()))) {
+			} else if ((index >= 1) && ((index - 1) < this.rootCategories.size())) {
 				return this.rootCategories.get(index - 1);
 			}
 		} else if (this.uncategorized.equals(parent)) {
@@ -174,8 +174,8 @@ public class DocumentationTreeModel implements TreeModel {
 	}
 
 	/**
-	 * Notifies all listeners that have registered interest for notification on this event type. The event instance is lazily created using the
-	 * parameters passed into the fire method.
+	 * Notifies all listeners that have registered interest for notification on this event type. The event instance is lazily created using the parameters passed into the fire
+	 * method.
 	 *
 	 * @param source
 	 *            the source of the {@code TreeModelEvent}; typically {@code this}
@@ -200,8 +200,8 @@ public class DocumentationTreeModel implements TreeModel {
 	}
 
 	/**
-	 * Notifies all listeners that have registered interest for notification on this event type. The event instance is lazily created using the
-	 * parameters passed into the fire method.
+	 * Notifies all listeners that have registered interest for notification on this event type. The event instance is lazily created using the parameters passed into the fire
+	 * method.
 	 *
 	 * @param source
 	 *            the source of the {@code TreeModelEvent}; typically {@code this}
@@ -230,8 +230,8 @@ public class DocumentationTreeModel implements TreeModel {
 	}
 
 	/**
-	 * Notifies all listeners that have registered interest for notification on this event type. The event instance is lazily created using the
-	 * parameters passed into the fire method.
+	 * Notifies all listeners that have registered interest for notification on this event type. The event instance is lazily created using the parameters passed into the fire
+	 * method.
 	 *
 	 * @param source
 	 *            the source of the {@code TreeModelEvent}; typically {@code this}
@@ -266,8 +266,7 @@ public class DocumentationTreeModel implements TreeModel {
 	public void insertCategory(DMSCategory parentCategory, DMSCategory newCategory) {
 		if (parentCategory == null) {
 			this.rootCategories.add(newCategory);
-			this.fireTreeNodesInserted(this, new Object[] { this.getRoot(), this.allFiles }, new int[] { (1 + this.rootCategories.size()) - 1 },
-					new Object[] { newCategory });
+			this.fireTreeNodesInserted(this, new Object[] { this.getRoot(), this.allFiles }, new int[] { (1 + this.rootCategories.size()) - 1 }, new Object[] { newCategory });
 		} else {
 			parentCategory.addChildren(newCategory);
 			List<Object> path = new ArrayList<>();

@@ -51,6 +51,7 @@ import com.utilmize.client.gui.field.table.render.UXmlByteSizeCellRenderer;
  * The Class DocumentationTable.
  */
 public class DocumentationTable extends UTable implements InteractionManagerModeListener {
+
 	private static final Logger									logger						= LoggerFactory.getLogger(DocumentationTable.class);
 	protected static final String								AVOID_PARENT_KEYS_NULL		= "avoidparentkeysnull";
 
@@ -71,6 +72,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		this.categoryPanel = ParseUtilsExtended.getBoolean((String) params.get("categorypanel"), true);
 
 		this.categoryTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
+
 			@Override
 			public void valueChanged(TreeSelectionEvent event) {
 				if (!DocumentationTable.this.isIgnoreEvents()) {
@@ -160,7 +162,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		try {
 			this.checkRefreshThread();
 			Arrays.sort(viewRowIndexes);
-			Vector<Object> vRowsValues = new Vector<Object>();
+			Vector<Object> vRowsValues = new Vector<>();
 			for (int k = 0; k < viewRowIndexes.length; k++) {
 				int viewRow = viewRowIndexes[k];
 				Hashtable<Object, Object> kv = this.getParentKeyValues();
@@ -222,7 +224,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 				this.updateRowData(hRowData, newkv);
 
 				long t3 = System.currentTimeMillis();
-				DocumentationTable.logger.trace("Table: Query time: {}  ,  deleteRow-addRow time: {}", (t2 - t), (t3 - t2));
+				DocumentationTable.logger.trace("Table: Query time: {}  ,  deleteRow-addRow time: {}", t2 - t, t3 - t2);
 			}
 		} catch (Exception error) {
 			MessageManager.getMessageManager().showExceptionMessage(error, DocumentationTable.logger);
@@ -263,6 +265,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		this.currentFilter = (Map<Serializable, Serializable>) kv;
 		final EntityResult er = BeansFactory.getBean(IDMSService.class).fileQuery(kv, this.getAttributeList());
 		SwingUtilities.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
 				DocumentationTable.this.setValue(er, false);

@@ -45,12 +45,11 @@ import com.ontimize.jee.desktopclient.spring.BeansFactory;
 public class DmsTransfererManagerDefault implements Observer, IDmsTransfererManager {
 
 	private static final Logger																								logger					= LoggerFactory
-																																							.getLogger(DmsTransfererManagerDefault.class);
+	        .getLogger(DmsTransfererManagerDefault.class);
 
 	// Constant variables
-	private static final Path																								V_SYNC_FOLDER_DEFAULT	= Paths.get(
-																																							System.getProperty("user.home"),
-																																							"DMS");
+	private static final Path																								V_SYNC_FOLDER_DEFAULT	= Paths
+	        .get(System.getProperty("user.home"), "DMS");
 
 	// Member variables
 	private Path																											syncFolder;
@@ -132,8 +131,7 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 		AbstractDmsTransferable transfer = (AbstractDmsTransferable) observable;
 		Status state = transfer.getStatus();
 		if (state.isFinishState()) {
-			this.fireTransferQueueChangedEvent(new TransferQueueChangedEvent(Collections
-					.unmodifiableList(DmsTransfererManagerDefault.this.transfersList), transfer, null));
+			this.fireTransferQueueChangedEvent(new TransferQueueChangedEvent(Collections.unmodifiableList(DmsTransfererManagerDefault.this.transfersList), transfer, null));
 			this.transfersList.remove(transfer);
 		}
 	}
@@ -141,7 +139,7 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 	@Override
 	public Path obtainDmsFileVersion(Serializable idFileVersion) throws DmsException {
 		EntityResult er = BeansFactory.getBean(IDMSService.class).fileVersionQuery(idFileVersion,
-				Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_NAME }));
+		        Arrays.asList(new String[] { DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_NAME }));
 		Long fileSize = ((List<Number>) er.get(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE)).get(0).longValue();
 		String fileName = ((List<String>) er.get(DMSNaming.DOCUMENT_FILE_NAME)).get(0);
 		return this.obtainDmsFileVersion(idFileVersion, fileName, fileSize);
@@ -154,6 +152,7 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 			final DmsDownloadable dmsDownloadable = new DmsDownloadable(idFileVersion, localFile, fileName, fileSize);
 			synchronized (dmsDownloadable) {
 				dmsDownloadable.addObserver(new Observer() {
+
 					@Override
 					public void update(Observable o, Object arg) {
 						if (dmsDownloadable.getStatus().isFinishState()) {
@@ -206,7 +205,8 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 	}
 
 	protected class TransferJob<T extends AbstractDmsTransferable> implements Runnable {
-		protected T	transferable;
+
+		protected T transferable;
 
 		public TransferJob(T transferable) {
 			super();
@@ -216,12 +216,11 @@ public class DmsTransfererManagerDefault implements Observer, IDmsTransfererMana
 		@Override
 		public void run() {
 			try {
-				AbstractDmsTransferer<T> transferer = (AbstractDmsTransferer<T>) DmsTransfererManagerDefault.this
-						.getTransfererForTransferable(this.transferable.getClass());
+				AbstractDmsTransferer<T> transferer = (AbstractDmsTransferer<T>) DmsTransfererManagerDefault.this.getTransfererForTransferable(this.transferable.getClass());
 				DmsTransfererManagerDefault.this.transfersList.add(this.transferable);
 				this.transferable.addObserver(DmsTransfererManagerDefault.this);
-				DmsTransfererManagerDefault.this.fireTransferQueueChangedEvent(new TransferQueueChangedEvent(Collections
-						.unmodifiableList(DmsTransfererManagerDefault.this.transfersList), null, this.transferable));
+				DmsTransfererManagerDefault.this.fireTransferQueueChangedEvent(
+				        new TransferQueueChangedEvent(Collections.unmodifiableList(DmsTransfererManagerDefault.this.transfersList), null, this.transferable));
 				transferer.transfer(this.transferable);
 			} catch (Exception ex) {
 				this.transferable.setStatus(Status.ERROR);

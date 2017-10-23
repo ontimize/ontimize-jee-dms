@@ -26,7 +26,7 @@ import com.ontimize.jee.server.configuration.OntimizeConfiguration;
  */
 public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 
-	/** The CONSTANT logger */
+	/** The CONSTANTLOGGER */
 	private static final Logger					logger		= LoggerFactory.getLogger(OntimizeDMSEngine.class);
 
 	/** The Constant ACTIVE. */
@@ -92,6 +92,7 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 	 */
 	public void setDocumentsBasePath(final String documentsBasePath) {
 		this.documentsBasePathResolver = new AbstractPropertyResolver<String>() {
+
 			@Override
 			public String getValue() {
 				return documentsBasePath;

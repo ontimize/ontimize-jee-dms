@@ -8,17 +8,14 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.dropbox.core.DbxEntry;
 import com.ontimize.gui.images.ImageManager;
 import com.ontimize.gui.table.CellRenderer;
 import com.ontimize.jee.common.tools.FileTools;
 
 public class DropboxTableRenderer extends CellRenderer {
-	private static final Logger		logger	= LoggerFactory.getLogger(DropboxTableRenderer.class);
-	private final SimpleDateFormat	sdf		= new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+
+	private final SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 
 	public DropboxTableRenderer() {
 		super();

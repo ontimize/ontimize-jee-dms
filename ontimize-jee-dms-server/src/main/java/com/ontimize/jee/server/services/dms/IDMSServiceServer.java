@@ -24,7 +24,6 @@ public interface IDMSServiceServer extends IDMSService {
 	 */
 	Path fileGetPath(Serializable fileId) throws DmsException;
 
-
 	/**
 	 * Obtiene el path de una versión dada de un fichero.
 	 *

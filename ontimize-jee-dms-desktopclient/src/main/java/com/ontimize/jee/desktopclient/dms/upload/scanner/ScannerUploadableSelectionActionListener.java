@@ -20,7 +20,8 @@ import com.utilmize.client.gui.buttons.UButton;
 import com.utilmize.client.gui.field.capture.UAcquisitionDataField;
 
 public class ScannerUploadableSelectionActionListener extends AbstractUploadableSelectionActionListener {
-	private UAcquisitionDataField	acquisitionDataField;
+
+	private UAcquisitionDataField acquisitionDataField;
 
 	public ScannerUploadableSelectionActionListener() throws Exception {
 		super();
@@ -51,7 +52,7 @@ public class ScannerUploadableSelectionActionListener extends AbstractUploadable
 			}
 		}
 		List<File> resFile = this.acquisitionDataField.showAcquireDialog(this.getButton(), "dms.scanner_acquisition", this.getResourceBundle());
-		if ((resFile != null) && (!resFile.isEmpty())) {
+		if ((resFile != null) && !resFile.isEmpty()) {
 			List<Path> res = FileTools.toPath(resFile);
 			String fileName = JOptionPane.showInputDialog(ApplicationManager.getTranslation("dms.fileNameInput"));
 			String description = JOptionPane.showInputDialog(ApplicationManager.getTranslation("dms.descriptioninput"));

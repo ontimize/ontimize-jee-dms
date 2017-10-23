@@ -10,6 +10,7 @@ import javax.swing.table.AbstractTableModel;
  * The Class RemoteDriveTableModel.
  */
 public class CloudDriveTableModel<T extends Serializable> extends AbstractTableModel {
+
 	private static final long	serialVersionUID		= 1L;
 	public static final String	COLUMN_DESCRIPTION		= "dms.gfile_description";
 	public static final String	COLUMN_USERMODIFICATION	= "dms.gfile_usermodification";
@@ -18,10 +19,10 @@ public class CloudDriveTableModel<T extends Serializable> extends AbstractTableM
 	public static final String	COLUMN_SIZE				= "dms.gfile_size";
 
 	/** The data list. */
-	private List<T>				dataList				= new ArrayList<T>();
+	private List<T>				dataList				= new ArrayList<>();
 
 	/** The columns. */
-	private static String[]		columns					= new String[] { CloudDriveTableModel.COLUMN_NAME, CloudDriveTableModel.COLUMN_SIZE,CloudDriveTableModel.COLUMN_DATEMODIFICATION, CloudDriveTableModel.COLUMN_USERMODIFICATION, CloudDriveTableModel.COLUMN_DESCRIPTION };
+	private static String[]		columns					= new String[] { CloudDriveTableModel.COLUMN_NAME, CloudDriveTableModel.COLUMN_SIZE, CloudDriveTableModel.COLUMN_DATEMODIFICATION, CloudDriveTableModel.COLUMN_USERMODIFICATION, CloudDriveTableModel.COLUMN_DESCRIPTION };
 
 	/**
 	 * Instantiates a new remote drive table model.
@@ -78,7 +79,7 @@ public class CloudDriveTableModel<T extends Serializable> extends AbstractTableM
 	public void setDataList(List<T> dataList) {
 		this.dataList = dataList;
 		if (this.dataList == null) {
-			this.dataList = new ArrayList<T>();
+			this.dataList = new ArrayList<>();
 		}
 		this.fireTableDataChanged();
 	}

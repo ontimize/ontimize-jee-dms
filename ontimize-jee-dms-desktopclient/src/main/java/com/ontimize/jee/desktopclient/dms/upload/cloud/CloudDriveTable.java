@@ -31,13 +31,13 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 	private static final long						serialVersionUID	= 1L;
 
 	/** The Constant logger. */
-	private static final Logger						logger				= LoggerFactory.getLogger(CloudDriveTable.class);
+	private static final Logger						LOGGER				= LoggerFactory.getLogger(CloudDriveTable.class);
 
 	/** The selection listener. */
 	private final ICloudFileSelectionListener<T>	selectionListener;
 
 	/** The navigation stack. */
-	private final Stack<String>						navigationStack		= new Stack<String>();
+	private final Stack<String>						navigationStack		= new Stack<>();
 
 	/** The current folder id. */
 	private String									currentFolderId;
@@ -132,7 +132,7 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 					CloudDriveTable.this.getRemoteDriveModel().setDataList(files);
 					CloudDriveTable.this.currentFolderId = folderId;
 				} catch (Throwable error) {
-					MessageManager.getMessageManager().showExceptionMessage(error, CloudDriveTable.logger);
+					MessageManager.getMessageManager().showExceptionMessage(error, CloudDriveTable.LOGGER);
 				}
 			};
 

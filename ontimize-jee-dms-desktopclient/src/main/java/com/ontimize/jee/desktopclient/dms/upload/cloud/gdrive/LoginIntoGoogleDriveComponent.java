@@ -23,9 +23,11 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 
 public class LoginIntoGoogleDriveComponent extends Row {
-	private static final String	SUCCESS_CODE	= "Success code=";
-	// private static final String CSS_FILE = "game-forms/components/expression/Expression.css";
+
 	private static final Logger	logger			= LoggerFactory.getLogger(LoginIntoGoogleDriveComponent.class);
+
+	private static final String	SUCCESS_CODE	= "Success code=";
+
 	private WebView				webView;
 	private JFXPanel			fxPanel;
 
@@ -51,6 +53,7 @@ public class LoginIntoGoogleDriveComponent extends Row {
 		synchronized (this.fxPanel) {
 
 			Platform.runLater(new Runnable() {
+
 				@Override
 				public void run() {
 					LoginIntoGoogleDriveComponent.this.fxPanel.setScene(LoginIntoGoogleDriveComponent.this.createBasicScene());
@@ -73,6 +76,7 @@ public class LoginIntoGoogleDriveComponent extends Row {
 
 		// process page loading
 		this.webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+
 			@Override
 			public void changed(ObservableValue<? extends State> ov, State oldState, State newState) {
 				if (newState == State.SUCCEEDED) {
@@ -88,8 +92,8 @@ public class LoginIntoGoogleDriveComponent extends Row {
 					}
 
 				} else if (newState == State.FAILED) {
-					MessageManager.getMessageManager().showExceptionMessage(
-							LoginIntoGoogleDriveComponent.this.webView.getEngine().getLoadWorker().getException(), LoginIntoGoogleDriveComponent.logger);
+					MessageManager.getMessageManager().showExceptionMessage(LoginIntoGoogleDriveComponent.this.webView.getEngine().getLoadWorker().getException(),
+					        LoginIntoGoogleDriveComponent.logger);
 				}
 			}
 		});
@@ -111,7 +115,7 @@ public class LoginIntoGoogleDriveComponent extends Row {
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
-		if ((this.webView != null)) {
+		if (this.webView != null) {
 			this.webView.setDisable(!enabled);
 		}
 	}
@@ -120,6 +124,7 @@ public class LoginIntoGoogleDriveComponent extends Row {
 		try {
 			final String url = GoogleDriveManager.getInstance().getAuthorizationUrl();
 			Platform.runLater(new Runnable() {
+
 				@Override
 				public void run() {
 					LoginIntoGoogleDriveComponent.this.webView.getEngine().load(url);

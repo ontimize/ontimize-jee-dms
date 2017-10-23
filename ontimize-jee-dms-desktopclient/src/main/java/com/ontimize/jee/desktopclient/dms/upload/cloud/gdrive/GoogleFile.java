@@ -26,6 +26,7 @@ import com.google.api.services.drive.model.Property;
 import com.google.api.services.drive.model.User;
 
 public class GoogleFile implements Serializable {
+
 	private static final long	serialVersionUID	= 1L;
 	// TODO ver como serializarlo
 	private transient File		file;

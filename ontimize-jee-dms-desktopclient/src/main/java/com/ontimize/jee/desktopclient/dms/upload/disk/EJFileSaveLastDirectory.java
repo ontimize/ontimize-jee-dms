@@ -69,7 +69,7 @@ public class EJFileSaveLastDirectory extends EJFile {
 	public int showOpenDialog(Component parent) throws HeadlessException {
 		this.setCurrentDirectory(EJFileSaveLastDirectory.getLastDirectory(this.getCurrentDirectory()));
 		int returnValue = super.showOpenDialog(parent);
-		if ((returnValue != JFileChooser.ERROR_OPTION) && (this.getSelectedFile() != null) && (!this.getSelectedFile().getPath().isEmpty())) {
+		if ((returnValue != JFileChooser.ERROR_OPTION) && (this.getSelectedFile() != null) && !this.getSelectedFile().getPath().isEmpty()) {
 			EJFileSaveLastDirectory.updateLastDirectory(this.getSelectedFile().getParent());
 		}
 		return returnValue;

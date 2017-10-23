@@ -12,7 +12,7 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 public class WebDmsUploadable extends AbstractDmsUploadable {
 
 	/** The file. */
-	private final URI	uri;
+	private final URI uri;
 
 	/**
 	 * Instantiates a new local disk dms transferable.

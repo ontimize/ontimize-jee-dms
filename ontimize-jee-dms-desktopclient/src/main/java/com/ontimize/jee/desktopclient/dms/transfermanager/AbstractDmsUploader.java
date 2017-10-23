@@ -25,7 +25,8 @@ import com.ontimize.jee.desktopclient.dms.util.ProgressInputStream;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
 
 public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> extends AbstractDmsTransferer<T> {
-	private static final Logger	logger	= LoggerFactory.getLogger(AbstractDmsUploader.class);
+
+	private static final Logger logger = LoggerFactory.getLogger(AbstractDmsUploader.class);
 
 	@Override
 	protected void doTransfer(T transferable) throws DmsException {
@@ -37,19 +38,17 @@ public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> exten
 
 	protected abstract InputStream doDownloadFromSource(T transferable) throws DmsException;
 
-	//@formatter:off
+	// @formatter:off
 	/**
-	 *  Depending on values received in transferable DocumentIdentifier we will decide between:
-	 * 	 · (A) Insert  complete Document + File + Version    ---> When no identifier data
-	 * 	 · (B) Insert  File + Version    ---> When identifier only has document identifier
-	 * 	 · (C) Insert  only new  Version    ---> When identifier has document and  file ids
-	 * 	 Note: has no sense to send version identifier
-	 * 	 Finally information will be notified in own transferable document identifier object
+	 * Depending on values received in transferable DocumentIdentifier we will decide between: · (A) Insert complete Document + File + Version ---> When no identifier data · (B)
+	 * Insert File + Version ---> When identifier only has document identifier · (C) Insert only new Version ---> When identifier has document and file ids Note: has no sense to
+	 * send version identifier Finally information will be notified in own transferable document identifier object
+	 *
 	 * @param is
 	 * @param transferable
 	 * @throws DmsException
 	 */
-	//@formatter:on
+	// @formatter:on
 	protected void doUploadToDms(InputStream is, T transferable) throws DmsException {
 		try {
 			DocumentIdentifier sourceDocIdF = transferable.getDocumentIdentifier();
@@ -72,15 +71,13 @@ public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> exten
 
 			if (sourceDocIdF.getFileId() == null) {
 				// Case (B)
-				DocumentIdentifier newFileInfo = dmsService.fileInsert(sourceDocIdF.getDocumentId(), attrs, new ProgressInputStream(is, transferable,
-						transferable.getSize()));
+				DocumentIdentifier newFileInfo = dmsService.fileInsert(sourceDocIdF.getDocumentId(), attrs, new ProgressInputStream(is, transferable, transferable.getSize()));
 
 				// Update source document identifier
 				sourceDocIdF.setFileId(newFileInfo.getFileId());
 				sourceDocIdF.setVersionId(newFileInfo.getVersionId());
 			} else {
-				DocumentIdentifier newFileInfo = dmsService.fileUpdate(sourceDocIdF.getFileId(), attrs, new ProgressInputStream(is, transferable,
-						transferable.getSize()));
+				DocumentIdentifier newFileInfo = dmsService.fileUpdate(sourceDocIdF.getFileId(), attrs, new ProgressInputStream(is, transferable, transferable.getSize()));
 
 				// Update source document identifier
 				sourceDocIdF.setVersionId(newFileInfo.getVersionId());
@@ -95,7 +92,7 @@ public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> exten
 	}
 
 	private Map<String, Object> getAVFromTransferable(T transferable) {
-		Map<String, Object> attrs = new HashMap<String, Object>();
+		Map<String, Object> attrs = new HashMap<>();
 		MapTools.safePut(attrs, DMSNaming.DOCUMENT_FILE_NAME, transferable.getName());
 		MapTools.safePut(attrs, DMSNaming.CATEGORY_ID_CATEGORY, transferable.getCategoryId());
 		MapTools.safePut(attrs, DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION, transferable.getDescription());

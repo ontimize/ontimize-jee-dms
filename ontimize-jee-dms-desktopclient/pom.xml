@@ -37,12 +37,10 @@
 		<dependency>
 			<groupId>com.imatia.utilmize</groupId>
 			<artifactId>utilmize-client</artifactId>
-			<version>3.0.8-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>com.imatia.utilmize</groupId>
 			<artifactId>utilcapturer</artifactId>
-			<version>3.0.8-SNAPSHOT</version>
 		</dependency>
 		<!-- Google Drive API -->
 		<dependency>

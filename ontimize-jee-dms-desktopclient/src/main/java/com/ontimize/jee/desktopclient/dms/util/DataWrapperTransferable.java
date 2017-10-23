@@ -33,7 +33,7 @@ public class DataWrapperTransferable<T> implements Transferable {
 	 *            the human readable
 	 */
 	public DataWrapperTransferable(T data, Object source, String humanReadable) {
-		this.dataWrapper = new DataWrapper<T>(data, source);
+		this.dataWrapper = new DataWrapper<>(data, source);
 		this.flavor = new DataFlavor(DataWrapper.class, humanReadable);
 		this.flavors = new DataFlavor[] { this.flavor };
 	}

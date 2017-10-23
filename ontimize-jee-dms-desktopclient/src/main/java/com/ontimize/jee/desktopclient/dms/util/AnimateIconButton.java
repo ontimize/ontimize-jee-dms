@@ -20,8 +20,7 @@ public class AnimateIconButton {
 	public AnimateIconButton() {}
 
 	/**
-	 * Animate a button with alternated defaultIcon and alertIcon a finite number of cycles. The transition of the animations is defined in the period
-	 * argument.
+	 * Animate a button with alternated defaultIcon and alertIcon a finite number of cycles. The transition of the animations is defined in the period argument.
 	 *
 	 * @param button
 	 *            button to apply the animation
@@ -75,6 +74,7 @@ public class AnimateIconButton {
 	 */
 	public static void animateGIF(final AbstractButton button, final ImageIcon imageIcon) {
 		SwingUtilities.invokeLater(new Runnable() {
+
 			@Override
 			public void run() {
 				if (imageIcon != null) {
@@ -95,6 +95,7 @@ public class AnimateIconButton {
  *
  */
 class TaskAnimateIcon extends TimerTask {
+
 	private int						animationTimes	= 10;
 	private int						counter			= 0;
 	private final ImageIcon			defaultIco;

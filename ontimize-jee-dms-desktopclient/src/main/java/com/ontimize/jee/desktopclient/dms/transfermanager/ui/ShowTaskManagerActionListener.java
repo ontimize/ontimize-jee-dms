@@ -37,7 +37,7 @@ public class ShowTaskManagerActionListener extends AbstractActionListenerButton 
 	public void actionPerformed(ActionEvent e) {
 		try {
 			this.toggleDialog();
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			MessageManager.getMessageManager().showExceptionMessage(ex, ShowTaskManagerActionListener.logger);
 		}
 	}

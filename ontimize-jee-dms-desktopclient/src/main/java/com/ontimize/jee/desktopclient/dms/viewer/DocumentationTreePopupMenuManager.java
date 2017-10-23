@@ -138,17 +138,14 @@ public class DocumentationTreePopupMenuManager extends MouseAdapter {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				String categoryName = JOptionPane.showInputDialog(DocumentationTreePopupMenuManager.this.getTree(),
-						ApplicationManager.getTranslation("dms.categorynameinput"));
+				String categoryName = JOptionPane.showInputDialog(DocumentationTreePopupMenuManager.this.getTree(), ApplicationManager.getTranslation("dms.categorynameinput"));
 				if (categoryName != null) {
 					Serializable idDocument = DocumentationTreePopupMenuManager.this.tree.getDocumentationModel().getIdDocument();
 					Serializable idParentCategory = DocumentationTreePopupMenuManager.this.currentPopupCategory == null ? null : DocumentationTreePopupMenuManager.this.currentPopupCategory
-							.getIdCategory();
+					        .getIdCategory();
 					Serializable idCategory = BeansFactory.getBean(IDMSService.class).categoryInsert(idDocument, categoryName, idParentCategory, null);
-					DMSCategory newCategory = new DMSCategory(idDocument, idCategory, categoryName, null,
-							DocumentationTreePopupMenuManager.this.currentPopupCategory);
-					DocumentationTreePopupMenuManager.this.tree.getDocumentationModel().insertCategory(
-							DocumentationTreePopupMenuManager.this.currentPopupCategory, newCategory);
+					DMSCategory newCategory = new DMSCategory(idDocument, idCategory, categoryName, null, DocumentationTreePopupMenuManager.this.currentPopupCategory);
+					DocumentationTreePopupMenuManager.this.tree.getDocumentationModel().insertCategory(DocumentationTreePopupMenuManager.this.currentPopupCategory, newCategory);
 				}
 			} catch (Exception ex) {
 				MessageManager.getMessageManager().showExceptionMessage(ex, DocumentationTreePopupMenuManager.logger);
@@ -168,17 +165,13 @@ public class DocumentationTreePopupMenuManager extends MouseAdapter {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			try {
-				if (JOptionPane
-						.showConfirmDialog(DocumentationTreePopupMenuManager.this.getTree(),
-								ApplicationManager.getTranslation("dms.questiondeletecategory"),
-								ApplicationManager.getTranslation("dms.questiondeletecategorytitle"), JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+				if (JOptionPane.showConfirmDialog(DocumentationTreePopupMenuManager.this.getTree(), ApplicationManager.getTranslation("dms.questiondeletecategory"),
+				        ApplicationManager.getTranslation("dms.questiondeletecategorytitle"), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
 					return;
 				}
 
 				BeansFactory.getBean(IDMSService.class).categoryDelete(DocumentationTreePopupMenuManager.this.currentPopupCategory.getIdCategory());
-				DocumentationTreePopupMenuManager.this.getTree().refreshModel(
-						DocumentationTreePopupMenuManager.this.currentPopupCategory.getIdDocument());
+				DocumentationTreePopupMenuManager.this.getTree().refreshModel(DocumentationTreePopupMenuManager.this.currentPopupCategory.getIdDocument());
 			} catch (Exception ex) {
 				MessageManager.getMessageManager().showExceptionMessage(ex, DocumentationTreePopupMenuManager.logger);
 			}

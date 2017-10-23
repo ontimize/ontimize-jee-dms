@@ -8,9 +8,6 @@ import org.w3c.dom.Element;
 
 public class OntimizeDMSConfigurationBeanDefinitionParser extends AbstractSimpleBeanDefinitionParser {
 
-	/** The Constant SCOPE. */
-	private static final String SCOPE = "scope";
-
 	@Override
 	protected Class<?> getBeanClass(Element element) {
 		return OntimizeDMSConfiguration.class;

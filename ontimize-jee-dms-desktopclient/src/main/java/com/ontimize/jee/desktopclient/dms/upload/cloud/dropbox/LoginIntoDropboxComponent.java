@@ -25,6 +25,7 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.web.WebView;
 
 public class LoginIntoDropboxComponent extends Row {
+
 	private static final Logger	logger	= LoggerFactory.getLogger(LoginIntoDropboxComponent.class);
 	private WebView				webView;
 	private JFXPanel			fxPanel;
@@ -51,6 +52,7 @@ public class LoginIntoDropboxComponent extends Row {
 		synchronized (this.fxPanel) {
 
 			Platform.runLater(new Runnable() {
+
 				@Override
 				public void run() {
 					LoginIntoDropboxComponent.this.fxPanel.setScene(LoginIntoDropboxComponent.this.createBasicScene());
@@ -73,6 +75,7 @@ public class LoginIntoDropboxComponent extends Row {
 
 		// process page loading
 		this.webView.getEngine().getLoadWorker().stateProperty().addListener(new ChangeListener<State>() {
+
 			@Override
 			public void changed(ObservableValue<? extends State> ov, State oldState, State newState) {
 				if (newState == State.SUCCEEDED) {
@@ -87,16 +90,15 @@ public class LoginIntoDropboxComponent extends Row {
 						}
 					}
 				} else if (newState == State.FAILED) {
-					MessageManager.getMessageManager().showExceptionMessage(
-							LoginIntoDropboxComponent.this.webView.getEngine().getLoadWorker().getException(), LoginIntoDropboxComponent.logger);
+					MessageManager.getMessageManager().showExceptionMessage(LoginIntoDropboxComponent.this.webView.getEngine().getLoadWorker().getException(),
+					        LoginIntoDropboxComponent.logger);
 					LoginIntoDropboxComponent.this.showLoginScreen();
 				}
 			}
 
 			private String findAuthCode(Element documentElement) {
-				if ((documentElement.getAttributes() != null) && (documentElement.getAttributes().getLength() > 0) && (documentElement
-						.getAttributes().getNamedItem("id") != null) && "auth-code"
-						.equals(documentElement.getAttributes().getNamedItem("id").getNodeValue())) {
+				if ((documentElement.getAttributes() != null) && (documentElement.getAttributes().getLength() > 0) && (documentElement.getAttributes()
+				        .getNamedItem("id") != null) && "auth-code".equals(documentElement.getAttributes().getNamedItem("id").getNodeValue())) {
 					return documentElement.getChildNodes().item(0).getNodeValue();
 				}
 				for (int i = 0; i < documentElement.getChildNodes().getLength(); i++) {
@@ -129,7 +131,7 @@ public class LoginIntoDropboxComponent extends Row {
 	@Override
 	public void setEnabled(boolean enabled) {
 		super.setEnabled(enabled);
-		if ((this.webView != null)) {
+		if (this.webView != null) {
 			this.webView.setDisable(!enabled);
 		}
 	}
@@ -138,6 +140,7 @@ public class LoginIntoDropboxComponent extends Row {
 		try {
 			final String url = DropboxManager.getInstance().getAuthorizationUrl();
 			Platform.runLater(new Runnable() {
+
 				@Override
 				public void run() {
 					LoginIntoDropboxComponent.this.webView.getEngine().load(url);

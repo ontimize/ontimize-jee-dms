@@ -15,7 +15,7 @@ import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 public class LocalDiskDmsUploadable extends AbstractDmsUploadable {
 
 	/** The file. */
-	private final Path	file;
+	private final Path file;
 
 	/**
 	 * Instantiates a new local disk dms transferable.

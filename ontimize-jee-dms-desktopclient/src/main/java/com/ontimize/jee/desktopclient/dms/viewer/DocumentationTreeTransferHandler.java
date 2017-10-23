@@ -77,8 +77,7 @@ public class DocumentationTreeTransferHandler extends TransferHandler {
 				try {
 					DataWrapper<ArrayList<Serializable>> transferData = (DataWrapper<ArrayList<Serializable>>) transferable.getTransferData(flavor);
 					ArrayList<Serializable> data = transferData.getData();
-					TreePath pathForLocation = this.getTree().getPathForLocation(support.getDropLocation().getDropPoint().x,
-							support.getDropLocation().getDropPoint().y);
+					TreePath pathForLocation = this.getTree().getPathForLocation(support.getDropLocation().getDropPoint().x, support.getDropLocation().getDropPoint().y);
 					if (pathForLocation == null) {
 						return false;
 					}

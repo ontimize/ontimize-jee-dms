@@ -23,7 +23,7 @@ import com.ontimize.jee.desktopclient.spring.BeansFactory;
  */
 public class DmsDownloader extends AbstractDmsTransferer<DmsDownloadable> {
 
-	private static final Logger	logger	= LoggerFactory.getLogger(DmsDownloader.class);
+	private static final Logger logger = LoggerFactory.getLogger(DmsDownloader.class);
 
 	@Override
 	protected void doTransfer(DmsDownloadable transferable) throws DmsException {
