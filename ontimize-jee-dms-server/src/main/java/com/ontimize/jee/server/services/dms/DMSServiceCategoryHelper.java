@@ -64,13 +64,14 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 		if (attribs == null) {
 			attribs = new ArrayList<>();
 		}
+		this.getColumnHelper().translate(attribs);
 		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryIdColumn());
 		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryNameColumn());
 		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryParentColumn());
 
 		Map<Object, Object> filter = EntityResultTools.keysvalues(this.getColumnHelper().getDocumentIdColumn(), idDocument);
 		EntityResult er = this.daoHelper.query(this.categoryDao, filter, attribs);
-		return this.convertCategoryResultSet(idDocument, er);
+		return this.convertCategoryResultSet(idDocument, this.getColumnHelper().translateResult(er));
 	}
 
 	/**
@@ -191,14 +192,14 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 	 * @return the list
 	 */
 	private List<DMSCategory> removeCategoriesForParentId(EntityResult er, DMSCategory parentCategory, Serializable idDocument) {
-		List<Serializable> listIdParentCategory = (List<Serializable>) er.get(this.getColumnHelper().getCategoryParentColumn());
+		List<Serializable> listIdParentCategory = (List<Serializable>) er.get(DMSNaming.CATEGORY_ID_CATEGORY_PARENT);
 		List<DMSCategory> res = new ArrayList<>();
 		if (listIdParentCategory != null) {
 			for (int i = 0; i < listIdParentCategory.size(); i++) {
 				if (ObjectTools.safeIsEquals(listIdParentCategory.get(i), parentCategory.getIdCategory())) {
 					Map<? extends Serializable, ? extends Serializable> recordValues = er.getRecordValues(i);
-					Serializable idCategory = recordValues.remove(this.getColumnHelper().getCategoryIdColumn());
-					String categoryName = (String) recordValues.remove(this.getColumnHelper().getCategoryNameColumn());
+					Serializable idCategory = recordValues.remove(DMSNaming.CATEGORY_ID_CATEGORY);
+					String categoryName = (String) recordValues.remove(DMSNaming.CATEGORY_CATEGORY_NAME);
 					res.add(new DMSCategory(idDocument, idCategory, categoryName, recordValues, parentCategory));
 					er.deleteRecord(i);
 					i--;

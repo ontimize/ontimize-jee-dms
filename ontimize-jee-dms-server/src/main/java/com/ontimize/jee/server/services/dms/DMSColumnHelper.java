@@ -1,12 +1,19 @@
 package com.ontimize.jee.server.services.dms;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import com.ontimize.db.EntityResult;
+import com.ontimize.db.SQLStatementBuilder.BasicExpression;
+import com.ontimize.db.SQLStatementBuilder.ExtendedSQLConditionValuesProcessor;
 import com.ontimize.jee.common.naming.DMSNaming;
+import com.ontimize.jee.common.tools.BasicExpressionTools;
 import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.MapTools;
+import com.ontimize.jee.common.tools.ObjectTools;
 
 /**
  * This class will manage all behaviour around DMS columns naming. <br>From client side will be used allways configured values in DMSNaming. <br>To dao side will by applied this
@@ -73,6 +80,18 @@ public class DMSColumnHelper {
 		return this.columnsMapping.containsKey(column) ? this.columnsMapping.get(column) : column;
 	}
 
+	public String getColumnSource(String column) {
+		if (!this.columnsMapping.containsValue(column)) {
+			return column;
+		}
+		for (Entry<String, String> entry : this.columnsMapping.entrySet()) {
+			if (ObjectTools.safeIsEquals(entry.getValue(), column)) {
+				return entry.getKey();
+			}
+		}
+		return column;
+	}
+
 	public void addColumnMapping(String column, String daoColumn) {
 		this.addColumnMapping(column, daoColumn, false);
 	}
@@ -84,13 +103,13 @@ public class DMSColumnHelper {
 	////// DOCUMENT methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public List<String> getDocumentColumns() {
 		return EntityResultTools.attributes(//
-		        DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, //
-		        DMSNaming.DOCUMENT_UPDATE_DATE, //
-		        DMSNaming.DOCUMENT_UPDATE_BY, //
-		        DMSNaming.DOCUMENT_DOCUMENT_NAME, //
-		        DMSNaming.DOCUMENT_OWNER_ID, //
-		        DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION, //
-		        DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS//
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_UPDATE_DATE), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_UPDATE_BY), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_DOCUMENT_NAME), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_OWNER_ID), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS)//
 		);
 	}
 
@@ -125,12 +144,12 @@ public class DMSColumnHelper {
 	////// FILE methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public List<String> getFileColumns() {
 		return EntityResultTools.attributes(//
-		        DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, //
-		        DMSNaming.DOCUMENT_FILE_NAME, //
-		        DMSNaming.DOCUMENT_FILE_TYPE, //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_NAME), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_TYPE), //
 		        // Foreign columns
-		        DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, //
-		        DMSNaming.CATEGORY_ID_CATEGORY//
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT), //
+		        this.getColumnEquivalence(DMSNaming.CATEGORY_ID_CATEGORY)//
 		);
 	}
 
@@ -145,17 +164,17 @@ public class DMSColumnHelper {
 	////// VERSION methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public List<String> getVersionColumns() {
 		return EntityResultTools.attributes(//
-		        DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_VERSION, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_DATE, //
-		        DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_USER, //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_VERSION), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_DATE), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_USER), //
 		        // Foreign columns
-		        DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE//
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE)//
 		);
 	}
 
@@ -198,11 +217,11 @@ public class DMSColumnHelper {
 	////// CATEGORY methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public List<String> getCategoryColumns() {
 		return EntityResultTools.attributes(//
-		        DMSNaming.CATEGORY_ID_CATEGORY, //
-		        DMSNaming.CATEGORY_CATEGORY_NAME, //
-		        DMSNaming.CATEGORY_ID_CATEGORY_PARENT, //
+		        this.getColumnEquivalence(DMSNaming.CATEGORY_ID_CATEGORY), //
+		        this.getColumnEquivalence(DMSNaming.CATEGORY_CATEGORY_NAME), //
+		        this.getColumnEquivalence(DMSNaming.CATEGORY_ID_CATEGORY_PARENT), //
 		        // Foreign columns
-		        DMSNaming.DOCUMENT_ID_DMS_DOCUMENT//
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT)//
 		);
 	}
 
@@ -221,11 +240,11 @@ public class DMSColumnHelper {
 	////// PROPERTY methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public List<String> getPropertyColumns() {
 		return EntityResultTools.attributes(//
-		        DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY, //
-		        DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY, //
-		        DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE, //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY), //
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE), //
 		        // Foreign columns
-		        DMSNaming.DOCUMENT_ID_DMS_DOCUMENT//
+		        this.getColumnEquivalence(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT)//
 		);
 	}
 
@@ -244,9 +263,9 @@ public class DMSColumnHelper {
 	////// DOCUMENT RELATIONS methods ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public List<String> getDocumentRelatedColumns() {
 		return EntityResultTools.attributes(//
-		        DMSNaming.RELATED_DOCUMENT_ID_DMS_RELATED_DOCUMENT, //
-		        DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER, //
-		        DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD);
+		        this.getColumnEquivalence(DMSNaming.RELATED_DOCUMENT_ID_DMS_RELATED_DOCUMENT), //
+		        this.getColumnEquivalence(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER), //
+		        this.getColumnEquivalence(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD));
 	}
 
 	public String getDocumentRelatedIdColumn() {
@@ -259,5 +278,44 @@ public class DMSColumnHelper {
 
 	public String getDocumentRelatedChildColumn() {
 		return this.getColumnEquivalence(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD);
+	}
+
+	public List<?> translate(List<?> attributes) {
+		List<Object> newAttributes = new ArrayList<>();
+		if (attributes != null) {
+			for (Object key : attributes) {
+				newAttributes.add(this.getColumnEquivalence((String) key));
+			}
+		}
+		return newAttributes;
+	}
+
+	public Map<?, ?> translate(Map<?, ?> criteria) {
+		Map<Object, Object> newCriteria = new HashMap<>();
+		if (criteria != null) {
+			BasicExpression expr = (BasicExpression) criteria.get(ExtendedSQLConditionValuesProcessor.EXPRESSION_KEY);
+			for (Entry<String, String> entry : this.getColumnsMapping().entrySet()) {
+				if (criteria.containsKey(entry.getKey())) {
+					newCriteria.put(entry.getValue(), criteria.get(entry.getKey()));
+				} else if (criteria.containsKey(entry.getValue())) {
+					newCriteria.put(entry.getValue(), criteria.get(entry.getValue()));
+				}
+				if (expr != null) {
+					BasicExpressionTools.renameField(expr, entry.getKey(), entry.getValue());
+					newCriteria.put(ExtendedSQLConditionValuesProcessor.EXPRESSION_KEY, expr);
+				}
+			}
+		}
+		return newCriteria;
+	}
+
+	public EntityResult translateResult(EntityResult query) {
+		if (query != null) {
+			List<Object> keys = new ArrayList<>(query.keySet());
+			for (Object key : keys) {
+				EntityResultTools.renameColumn(query, (String) key, this.getColumnSource((String) key));
+			}
+		}
+		return query;
 	}
 }

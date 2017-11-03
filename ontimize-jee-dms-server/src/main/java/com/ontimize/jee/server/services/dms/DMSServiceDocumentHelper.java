@@ -68,7 +68,8 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	 * @return the entity result
 	 */
 	public EntityResult documentQuery(List<?> attributes, Map<?, ?> criteria) {
-		return this.daoHelper.query(this.documentDao, criteria, attributes);
+		return this.getColumnHelper()
+		        .translateResult(this.daoHelper.query(this.documentDao, this.getColumnHelper().translate(criteria), this.getColumnHelper().translate(attributes)));
 	}
 
 	/**
@@ -86,7 +87,8 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 		if (av.get(this.getColumnHelper().getDocumentOwnerColumn()) == null) {
 			((Map<Object, Object>) av).put(this.getColumnHelper().getDocumentOwnerColumn(), Integer.valueOf(1));
 		}
-		EntityResult res = this.daoHelper.insert(this.documentDao, av);
+
+		EntityResult res = this.daoHelper.insert(this.documentDao, this.getColumnHelper().translate(av));
 
 		DocumentIdentifier result = new DocumentIdentifier((Serializable) res.get(this.getColumnHelper().getDocumentIdColumn()));
 		return result;
@@ -104,7 +106,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
 		kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-		this.daoHelper.update(this.documentDao, attributesValues, kv);
+		this.daoHelper.update(this.documentDao, this.getColumnHelper().translate(attributesValues), kv);
 	}
 
 	/**
@@ -135,8 +137,9 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 		if (vDocumentId != null) {
 			for (Serializable fileId : vDocumentId) {
 
-				EntityResult res = this.serviceFileHelper.fileGetVersions(fileId, new HashMap<>(), EntityResultTools.attributes(this.getColumnHelper().getVersionIdColumn()));
-				List<Serializable> fileVersionIds = (List<Serializable>) res.get(this.getColumnHelper().getVersionIdColumn());
+				EntityResult res = this.serviceFileHelper.fileGetVersions(fileId, new HashMap<>(),
+				        EntityResultTools.attributes(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION));
+				List<Serializable> fileVersionIds = (List<Serializable>) res.get(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
 
 				// borramos las versiones, sin borrar los ficheros
 				List<Path> toDeletePartial = this.serviceFileHelper.deleteFileVersionsWithoutDeleteFiles(fileId, fileVersionIds);
@@ -244,7 +247,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	public Map<String, String> documentGetProperties(Serializable documentId, Map<?, ?> kv) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-		EntityResult rs = this.daoHelper.query(this.documentPropertyDao, kv, this.getColumnHelper().getPropertyColumns());
+		EntityResult rs = this.daoHelper.query(this.documentPropertyDao, this.getColumnHelper().translate(kv), this.getColumnHelper().getPropertyColumns());
 		Map<String, String> res = new HashMap<>();
 		int nregs = rs.calculateRecordNumber();
 		for (int i = 0; i < nregs; i++) {
@@ -268,7 +271,8 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	public EntityResult documentGetFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-		return this.daoHelper.query(this.documentFileDao, kv, attributes);
+		return this.getColumnHelper()
+		        .translateResult(this.daoHelper.query(this.documentFileDao, this.getColumnHelper().translate(kv), this.getColumnHelper().translate(attributes)));
 	}
 
 	/**
@@ -287,7 +291,8 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 	public EntityResult documentGetAllFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) throws DmsException {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-		return this.daoHelper.query(this.documentFileDao, kv, attributes, "allfiles");
+		return this.getColumnHelper()
+		        .translateResult(this.daoHelper.query(this.documentFileDao, this.getColumnHelper().translate(kv), this.getColumnHelper().translate(attributes), "allfiles"));
 	}
 
 	/**
@@ -301,7 +306,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
 		CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> kv = new HashMap<>();
 		kv.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), documentId);
-		return this.daoHelper.query(this.relatedDocumentDao, kv, this.getColumnHelper().getDocumentRelatedColumns());
+		return this.getColumnHelper().translateResult(this.daoHelper.query(this.relatedDocumentDao, kv, this.getColumnHelper().getDocumentRelatedColumns()));
 	}
 
 	/**
