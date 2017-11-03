@@ -54,7 +54,7 @@ public class LocalDiskUploadableSelectionActionListener extends AbstractUploadab
 		}
 		this.fileChooser.getPanel().clearValues();
 		this.fileChooser.setSelectedFile(null);
-		if (JFileChooser.APPROVE_OPTION == this.fileChooser.showOpenDialog(this.getForm())) {
+		if ((JFileChooser.APPROVE_OPTION == this.fileChooser.showOpenDialog(this.getForm())) && (this.fileChooser.getSelectedFile() != null)) {
 			String description = this.fileChooser.getPanel().getDescription();
 			Path file = this.fileChooser.getSelectedFile().toPath();
 			if (file != null) {
