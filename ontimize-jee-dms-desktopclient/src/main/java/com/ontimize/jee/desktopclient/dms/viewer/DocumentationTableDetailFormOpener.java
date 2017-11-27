@@ -36,7 +36,7 @@ public class DocumentationTableDetailFormOpener implements IDetailFormOpener {
 				try {
 					Path file = this.uget();
 					Desktop.getDesktop().open(file.toFile());
-				} catch (Throwable ex) {
+				} catch (Exception ex) {
 					MessageManager.getMessageManager().showExceptionMessage(ex, DocumentationTableDetailFormOpener.LOGGER);
 
 				}

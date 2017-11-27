@@ -131,7 +131,7 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 					}
 					CloudDriveTable.this.getRemoteDriveModel().setDataList(files);
 					CloudDriveTable.this.currentFolderId = folderId;
-				} catch (Throwable error) {
+				} catch (Exception error) {
 					MessageManager.getMessageManager().showExceptionMessage(error, CloudDriveTable.LOGGER);
 				}
 			};
