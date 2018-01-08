@@ -12,9 +12,7 @@
 		<version>1.0.1-SNAPSHOT</version>
 	</parent>
 
-	<properties>
-		<utilmize.version>3.0.8-SNAPSHOT</utilmize.version>
-	</properties>
+
 
 	<build>
 		<pluginManagement>
@@ -41,6 +39,7 @@
 
 	<profiles>
 		<profile>
+
 			<id>generate-version</id>
 			<build>
 				<plugins>
@@ -56,22 +55,16 @@
 					</plugin>
 				</plugins>
 			</build>
+
+			<modules>
+				<module>ontimize-jee-dms-common</module>
+				<module>ontimize-jee-dms-server</module>
+			</modules>
 		</profile>
 	</profiles>
 
 	<dependencyManagement>
 		<dependencies>
-			<dependency>
-				<groupId>com.imatia.utilmize</groupId>
-				<artifactId>utilmize-client</artifactId>
-				<version>${utilmize.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.imatia.utilmize</groupId>
-				<artifactId>utilcapturer</artifactId>
-				<version>${utilmize.version}</version>
-			</dependency>
-
 			<!-- Ontimize DMS -->
 			<dependency>
 				<groupId>${project.groupId}</groupId>
@@ -89,7 +82,7 @@
 	<modules>
 		<module>ontimize-jee-dms-common</module>
 		<module>ontimize-jee-dms-server</module>
-		
+
 		<module>ontimize-jee-dms-desktopclient</module>
 	</modules>
 </project>
