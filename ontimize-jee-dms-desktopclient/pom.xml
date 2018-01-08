@@ -6,8 +6,13 @@
 		<artifactId>ontimize-jee-dms</artifactId>
 		<version>1.0.1-SNAPSHOT</version>
 	</parent>
+	
 	<artifactId>ontimize-jee-dms-desktopclient</artifactId>
 
+	<properties>
+		<utilmize.version>3.0.8-SNAPSHOT</utilmize.version>
+	</properties>
+	
 	<build>
 		<plugins>
 			<!-- Compiler configuration -->
@@ -37,11 +42,14 @@
 		<dependency>
 			<groupId>com.imatia.utilmize</groupId>
 			<artifactId>utilmize-client</artifactId>
+			<version>${utilmize.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.imatia.utilmize</groupId>
 			<artifactId>utilcapturer</artifactId>
+			<version>${utilmize.version}</version>
 		</dependency>
+		
 		<!-- Google Drive API -->
 		<dependency>
 			<groupId>com.google.api-client</groupId>
