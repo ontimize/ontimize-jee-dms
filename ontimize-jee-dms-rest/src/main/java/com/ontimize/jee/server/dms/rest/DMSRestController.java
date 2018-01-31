@@ -1,0 +1,422 @@
+package com.ontimize.jee.server.dms.rest;
+
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.ontimize.db.EntityResult;
+import com.ontimize.gui.SearchValue;
+import com.ontimize.jee.common.exceptions.DmsException;
+import com.ontimize.jee.common.services.dms.DMSCategory;
+import com.ontimize.jee.common.services.dms.DocumentIdentifier;
+import com.ontimize.jee.common.services.dms.IDMSService;
+import com.ontimize.jee.common.tools.CheckingTools;
+import com.ontimize.jee.server.dms.model.OFile;
+import com.ontimize.jee.server.rest.FileListParameter;
+import com.ontimize.jee.server.rest.InsertParameter;
+import com.ontimize.jee.server.rest.QueryParameter;
+
+public abstract class DMSRestController<T extends IDMSService, N extends IDMSNameConverter> {
+
+	protected static final String	CATEGORY_FILTER_KEY	= "FM_FOLDER_PARENT_KEY";
+
+	/** The logger. */
+	private final static Logger		logger				= LoggerFactory.getLogger(DMSRestController.class);
+
+	public abstract T getService();
+
+	/** The bean property converter. */
+	@Autowired(required = false)
+	private N dmsNameConverter;
+
+	/**
+	 * Get document files. Only active files/versions by default
+	 * 
+	 * @param workspaceId
+	 *            the work space identifier
+	 * @param queryParam
+	 *            the query parameters
+	 * @return
+	 */
+	@RequestMapping(path = "/queryFiles/{workspaceId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<List<? extends OFile>> documentGetFiles(@PathVariable("workspaceId") Integer workspaceId, @RequestBody QueryParameter queryParam) {
+		try {
+			List<OFile> files = new ArrayList<>();
+			Map<Object, Object> filter = queryParam.getFilter();
+			List<Object> columns = queryParam.getColumns();
+
+			Object parentCategory = null;
+			if (filter.containsKey(DMSRestController.CATEGORY_FILTER_KEY)) {
+				parentCategory = filter.remove(DMSRestController.CATEGORY_FILTER_KEY);
+				filter.put(this.dmsNameConverter.getCategoryIdColumn(), parentCategory);
+			} else {
+				filter.put(this.dmsNameConverter.getCategoryIdColumn(), new SearchValue(SearchValue.NULL, null));
+			}
+
+			// Get categories and add them as folders
+			DMSCategory categories = this.getService().categoryGetForDocument(workspaceId, this.getCategoryColumns(columns));
+			this.getCategoriesAsFiles(categories, parentCategory, files, false);
+
+			// Get files and add them
+			EntityResult er = this.getService().documentGetFiles(workspaceId, filter, this.getFileColumns(columns));
+			if (EntityResult.OPERATION_WRONG != er.getCode()) {
+				for (int i = 0; i < er.calculateRecordNumber(); i++) {
+					files.add(this.dmsNameConverter.createOFile(er.getRecordValues(i)));
+				}
+			}
+			return new ResponseEntity<List<? extends OFile>>(files, HttpStatus.OK);
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * Get file content
+	 * 
+	 * @param fileId
+	 *            the file identifier
+	 * @param response
+	 */
+	@RequestMapping(path = "/getFile/{fileId}", method = RequestMethod.GET, produces = " application/octet-stream")
+	public @ResponseBody void fileGetContent(@PathVariable("fileId") Integer fileId, HttpServletResponse response) {
+		InputStream fis = null;
+		try {
+			Map<Object, Object> criteria = new HashMap<>();
+			criteria.put(this.dmsNameConverter.getFileIdColumn(), fileId);
+			EntityResult er = this.getService().fileQuery(criteria, this.getFileColumns(null));
+			if (EntityResult.OPERATION_WRONG != er.getCode() && er.calculateRecordNumber() > 0) {
+				fis = this.getService().fileGetContent(fileId);
+				FileCopyUtils.copy(fis, response.getOutputStream());
+
+				String fileName = (String) er.getRecordValues(0).get(this.dmsNameConverter.getFileNameColumn());
+				Integer fileSize = (Integer) er.getRecordValues(0).get(this.dmsNameConverter.getFileSizeColumn());
+
+				response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+				response.setContentLengthLong(fileSize.longValue());
+			} else {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			}
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} finally {
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					DMSRestController.logger.error("{}", e.getMessage(), e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param documentId
+	 *            the document identifier
+	 * @param files
+	 *            the file list for downloading
+	 * @return
+	 * @throws DmsException
+	 */
+	@RequestMapping(path = "/getFiles/{documentId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<Map<String, String>> fileGetContent(@PathVariable("documentId") Integer documentId, @RequestBody List<OFile> files) throws DmsException {
+		ZipOutputStream zos = null;
+		try {
+			File zipFile = File.createTempFile("download_", ".zip");
+			zos = new ZipOutputStream(new FileOutputStream(zipFile));
+			this.addFilesToZip(documentId, files, zos, null);
+
+			if (zipFile != null) {
+				String zipFileName = zipFile.getName();
+				Map<String, String> response = new HashMap<>();
+				response.put("file", zipFileName);
+				return new ResponseEntity<>(response, HttpStatus.OK);
+			}
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} finally {
+			try {
+				if (zos != null) {
+					zos.close();
+				}
+			} catch (IOException e) {
+				DMSRestController.logger.error("{}", e.getMessage(), e);
+			}
+		}
+	}
+
+	/**
+	 * Download the zip file provided stored in temporary files folder.
+	 * 
+	 * @param file
+	 *            the file name
+	 * @param response
+	 * @throws DmsException
+	 */
+	@RequestMapping(path = "/getZipFile/{file}", method = RequestMethod.GET, produces = " application/octet-stream")
+	public @ResponseBody void fileGetZip(@PathVariable("file") String file, HttpServletResponse response) throws DmsException {
+		InputStream fis = null;
+		File zipFile = null;
+		try {
+			zipFile = new File(System.getProperty("java.io.tmpdir") + file + ".zip");
+			fis = new FileInputStream(zipFile);
+			FileCopyUtils.copy(fis, response.getOutputStream());
+
+			response.setHeader("Content-Disposition", "attachment; filename=\"" + zipFile.getName() + "\"");
+			response.setContentLengthLong(file.length());
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		} finally {
+			if (zipFile != null) {
+				zipFile.delete();
+			}
+			if (fis != null) {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					DMSRestController.logger.error("{}", e.getMessage(), e);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Insert a file in the specified folder for the specified document
+	 * 
+	 * @param documentId
+	 *            the document identifier
+	 * @param categoryId
+	 *            the folder identifier
+	 * @param multipart
+	 *            the file
+	 * @return
+	 * @throws DmsException
+	 */
+	@RequestMapping(path = "/insertFile/{documentId}", method = RequestMethod.POST)
+	public ResponseEntity<DocumentIdentifier> fileInsert(@PathVariable("documentId") Integer documentId, @RequestParam("file") MultipartFile multipart,
+			@RequestParam("folderId") Object folderId) throws DmsException {
+		try {
+			InputStream is = new ByteArrayInputStream(multipart.getBytes());
+			Map<Object, Object> av = new HashMap<>();
+			av.put(this.dmsNameConverter.getFileNameColumn(), multipart.getOriginalFilename());
+			if (folderId != null) {
+				av.put(this.dmsNameConverter.getCategoryIdColumn(), folderId);
+			}
+			DocumentIdentifier id = this.getService().fileInsert(documentId, av, is);
+			return new ResponseEntity<DocumentIdentifier>(id, HttpStatus.OK);
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * 
+	 * @param documentId
+	 * @param deleteParameter
+	 * @return
+	 * @throws DmsException
+	 */
+	@RequestMapping(value = "/deleteFiles/{documentId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> delete(@PathVariable("documentId") Integer documentId, @RequestBody FileListParameter deleteParameter) throws DmsException {
+		Object service = this.getService();
+		CheckingTools.failIf(service == null, NullPointerException.class, "Service is null");
+		try {
+			List<OFile> fileList = deleteParameter.getFileList();
+			for (OFile file : fileList) {
+				if (file.isDirectory()) {
+					List<OFile> categoryFileList = this.getCategoryFiles(documentId, file.getId(), true);
+					for (OFile cFile : categoryFileList) {
+						this.deleteOFile(cFile);
+					}
+				}
+				this.deleteOFile(file);
+			}
+			return new ResponseEntity<>(HttpStatus.OK);
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	/**
+	 * 
+	 * @param documentId
+	 * @param name
+	 * @param insertParam
+	 * @return
+	 * @throws DmsException
+	 */
+	@RequestMapping(path = "/insertFolder/{documentId}/{name}", method = RequestMethod.POST)
+	public ResponseEntity<Void> folderInsert(@PathVariable("documentId") Integer documentId, @PathVariable("name") String name, @RequestBody InsertParameter insertParam)
+			throws DmsException {
+
+		try {
+			Map<Object, Object> data = insertParam.getData();
+			Object categoryId = null;
+			if (data.containsKey(DMSRestController.CATEGORY_FILTER_KEY)) {
+				categoryId = data.remove(DMSRestController.CATEGORY_FILTER_KEY);
+			}
+			this.getService().categoryInsert(documentId, name, (Serializable) categoryId, null);
+			return new ResponseEntity<Void>(HttpStatus.OK);
+		} catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	// ---------------------------------------------------------------------------------------------------------------------------- //
+	// -------------------------------------------------------- Converters -------------------------------------------------------- //
+	// ---------------------------------------------------------------------------------------------------------------------------- //
+
+	protected List<?> getFileColumns(List<?> columns) {
+		if (this.dmsNameConverter != null) {
+			return this.dmsNameConverter.getFileColumns(columns);
+		}
+		return columns;
+	}
+
+	protected List<?> getCategoryColumns(List<?> columns) {
+		if (this.dmsNameConverter != null) {
+			return this.dmsNameConverter.getCategoryColumns(columns);
+		}
+		return columns;
+	}
+
+	// ---------------------------------------------------------------------------------------------------------------------------- //
+	// -------------------------------------------------------- Utilities --------------------------------------------------------- //
+	// ---------------------------------------------------------------------------------------------------------------------------- //
+
+	protected void getCategoriesAsFiles(DMSCategory category, Object parentId, List<OFile> files, boolean recursive) {
+		for (DMSCategory cat : category.getChildren()) {
+			Object catId = category.getIdCategory();
+			if ((catId == null && parentId == null) || (catId != null && parentId != null && catId.equals(parentId))) {
+				files.add(this.categoryToFile(cat));
+				if (recursive) {
+					this.getCategoriesAsFiles(cat, cat.getIdCategory(), files, recursive);
+				}
+			} else {
+				this.getCategoriesAsFiles(cat, parentId, files, recursive);
+			}
+		}
+	}
+
+	protected OFile categoryToFile(DMSCategory cat) {
+		OFile dmsFile = new OFile();
+		dmsFile.setId((Integer) cat.getIdCategory());
+		dmsFile.setName(cat.getName());
+		dmsFile.setDirectory(true);
+		return dmsFile;
+	}
+
+	protected void deleteOFile(OFile file) throws DmsException {
+		if (file.isDirectory()) {
+			this.getService().categoryDelete(file.getId());
+		} else {
+			this.getService().fileDelete(file.getId());
+		}
+	}
+
+	/**
+	 * Get the files contained in a category
+	 * 
+	 * @param documentId
+	 *            the document identifier
+	 * @param categoryId
+	 *            the category identifier
+	 * @param includeSubCategories
+	 *            include the files in sub-categories or not
+	 * @return
+	 * @throws DmsException
+	 */
+	protected List<OFile> getCategoryFiles(Integer documentId, Integer categoryId, boolean includeSubCategories) throws DmsException {
+		List<OFile> files = new ArrayList<OFile>();
+
+		DMSCategory categories = this.getService().categoryGetForDocument(documentId, this.getCategoryColumns(null));
+		this.getCategoriesAsFiles(categories, categoryId, files, includeSubCategories);
+
+		Map<Object, Object> filter = new HashMap<Object, Object>();
+		List<Object> categoriesIds = new ArrayList<Object>();
+		categoriesIds.add(categoryId);
+		if (includeSubCategories) {
+			for (OFile file : files) {
+				categoriesIds.add(file.getId());
+			}
+		}
+
+		filter.put(this.dmsNameConverter.getCategoryIdColumn(), new SearchValue(SearchValue.IN, categoriesIds));
+
+		EntityResult er = this.getService().documentGetFiles(documentId, filter, this.getFileColumns(null));
+		if (EntityResult.OPERATION_WRONG != er.getCode()) {
+			for (int i = 0; i < er.calculateRecordNumber(); i++) {
+				files.add(this.dmsNameConverter.createOFile(er.getRecordValues(i)));
+			}
+		}
+		return files;
+	}
+
+	protected void addFilesToZip(Integer documentId, List<OFile> oFiles, ZipOutputStream zos, String parentPath) throws DmsException, IOException {
+		if (parentPath == null) {
+			parentPath = "";
+		}
+		String tmpDir = System.getProperty("java.io.tmpdir") + parentPath;
+		for (OFile oFile : oFiles) {
+			if (oFile.isDirectory()) {
+				File directory = new File(tmpDir + oFile.getName());
+				directory.mkdirs();
+				List<OFile> categoryFiles = this.getCategoryFiles(documentId, oFile.getId(), false);
+				String folderName = parentPath + directory.getName() + File.separatorChar;
+				zos.putNextEntry(new ZipEntry(folderName));
+				this.addFilesToZip(documentId, categoryFiles, zos, folderName);
+			} else {
+				byte[] buffer = new byte[1024];
+				Map<Object, Object> criteria = new HashMap<>();
+				criteria.put(this.dmsNameConverter.getFileIdColumn(), oFile.getId());
+				EntityResult er = this.getService().fileQuery(criteria, this.getFileColumns(null));
+				if (EntityResult.OPERATION_WRONG != er.getCode() && er.calculateRecordNumber() > 0) {
+					InputStream fis = this.getService().fileGetContent(oFile.getId());
+					String fileName = parentPath + oFile.getName();
+					zos.putNextEntry(new ZipEntry(fileName));
+					int length;
+					while ((length = fis.read(buffer)) > 0) {
+						zos.write(buffer, 0, length);
+					}
+					zos.closeEntry();
+					fis.close();
+				}
+			}
+		}
+	}
+
+}
