@@ -12,7 +12,6 @@
 			<groupId>com.ontimize.jee.dms</groupId>
 			<artifactId>ontimize-jee-dms-common</artifactId>
 		</dependency>
-		
 		<dependency>
 			<groupId>com.ontimize.jee</groupId>
 			<artifactId>ontimize-jee-server-rest</artifactId>

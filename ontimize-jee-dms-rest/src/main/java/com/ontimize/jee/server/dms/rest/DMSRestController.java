@@ -139,20 +139,21 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 	}
 
 	/**
-	 * @param documentId
-	 *            the document identifier
+	 * Get files and folders compressed on a zip file
+	 * 
+	 * @param workspaceId
+	 *            the work space identifier
 	 * @param files
 	 *            the file list for downloading
 	 * @return
-	 * @throws DmsException
 	 */
-	@RequestMapping(path = "/getFiles/{documentId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody ResponseEntity<Map<String, String>> fileGetContent(@PathVariable("documentId") Integer documentId, @RequestBody List<OFile> files) throws DmsException {
+	@RequestMapping(path = "/getFiles/{workspaceId}", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+	public @ResponseBody ResponseEntity<Map<String, String>> fileGetContent(@PathVariable("workspaceId") Integer workspaceId, @RequestBody List<OFile> files) {
 		ZipOutputStream zos = null;
 		try {
 			File zipFile = File.createTempFile("download_", ".zip");
 			zos = new ZipOutputStream(new FileOutputStream(zipFile));
-			this.addFilesToZip(documentId, files, zos, null);
+			this.addFilesToZip(workspaceId, files, zos, null);
 
 			if (zipFile != null) {
 				String zipFileName = zipFile.getName();
@@ -181,10 +182,9 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 	 * @param file
 	 *            the file name
 	 * @param response
-	 * @throws DmsException
 	 */
 	@RequestMapping(path = "/getZipFile/{file}", method = RequestMethod.GET, produces = " application/octet-stream")
-	public @ResponseBody void fileGetZip(@PathVariable("file") String file, HttpServletResponse response) throws DmsException {
+	public @ResponseBody void fileGetZip(@PathVariable("file") String file, HttpServletResponse response) {
 		InputStream fis = null;
 		File zipFile = null;
 		try {
@@ -214,18 +214,17 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 	/**
 	 * Insert a file in the specified folder for the specified document
 	 * 
-	 * @param documentId
-	 *            the document identifier
-	 * @param categoryId
-	 *            the folder identifier
+	 * @param workspaceId
+	 *            the work space identifier
 	 * @param multipart
 	 *            the file
+	 * @param folderId
+	 *            the folder identifier
 	 * @return
-	 * @throws DmsException
 	 */
-	@RequestMapping(path = "/insertFile/{documentId}", method = RequestMethod.POST)
-	public ResponseEntity<DocumentIdentifier> fileInsert(@PathVariable("documentId") Integer documentId, @RequestParam("file") MultipartFile multipart,
-			@RequestParam("folderId") Object folderId) throws DmsException {
+	@RequestMapping(path = "/insertFile/{workspaceId}", method = RequestMethod.POST)
+	public ResponseEntity<DocumentIdentifier> fileInsert(@PathVariable("workspaceId") Integer workspaceId, @RequestParam("file") MultipartFile multipart,
+			@RequestParam(name = "folderId", required = false) Object folderId) {
 		try {
 			InputStream is = new ByteArrayInputStream(multipart.getBytes());
 			Map<Object, Object> av = new HashMap<>();
@@ -233,7 +232,7 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 			if (folderId != null) {
 				av.put(this.dmsNameConverter.getCategoryIdColumn(), folderId);
 			}
-			DocumentIdentifier id = this.getService().fileInsert(documentId, av, is);
+			DocumentIdentifier id = this.getService().fileInsert(workspaceId, av, is);
 			return new ResponseEntity<DocumentIdentifier>(id, HttpStatus.OK);
 		} catch (Exception e) {
 			DMSRestController.logger.error("{}", e.getMessage(), e);
@@ -242,21 +241,22 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 	}
 
 	/**
+	 * Delete the files provided
 	 * 
-	 * @param documentId
+	 * @param workspaceId
+	 *            the work space identifier
 	 * @param deleteParameter
 	 * @return
-	 * @throws DmsException
 	 */
-	@RequestMapping(value = "/deleteFiles/{documentId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<Void> delete(@PathVariable("documentId") Integer documentId, @RequestBody FileListParameter deleteParameter) throws DmsException {
+	@RequestMapping(value = "/deleteFiles/{workspaceId}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<Void> delete(@PathVariable("workspaceId") Integer workspaceId, @RequestBody FileListParameter deleteParameter) throws DmsException {
 		Object service = this.getService();
 		CheckingTools.failIf(service == null, NullPointerException.class, "Service is null");
 		try {
 			List<OFile> fileList = deleteParameter.getFileList();
 			for (OFile file : fileList) {
 				if (file.isDirectory()) {
-					List<OFile> categoryFileList = this.getCategoryFiles(documentId, file.getId(), true);
+					List<OFile> categoryFileList = this.getCategoryFiles(workspaceId, file.getId(), true);
 					for (OFile cFile : categoryFileList) {
 						this.deleteOFile(cFile);
 					}
@@ -271,16 +271,15 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 	}
 
 	/**
-	 * 
-	 * @param documentId
+	 * @param workspaceId
+	 *            the work space identifier
 	 * @param name
+	 *            the folder name
 	 * @param insertParam
 	 * @return
-	 * @throws DmsException
 	 */
-	@RequestMapping(path = "/insertFolder/{documentId}/{name}", method = RequestMethod.POST)
-	public ResponseEntity<Void> folderInsert(@PathVariable("documentId") Integer documentId, @PathVariable("name") String name, @RequestBody InsertParameter insertParam)
-			throws DmsException {
+	@RequestMapping(path = "/insertFolder/{workspaceId}/{name}", method = RequestMethod.POST)
+	public ResponseEntity<Void> folderInsert(@PathVariable("workspaceId") Integer workspaceId, @PathVariable("name") String name, @RequestBody InsertParameter insertParam) {
 
 		try {
 			Map<Object, Object> data = insertParam.getData();
@@ -288,7 +287,7 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 			if (data.containsKey(DMSRestController.CATEGORY_FILTER_KEY)) {
 				categoryId = data.remove(DMSRestController.CATEGORY_FILTER_KEY);
 			}
-			this.getService().categoryInsert(documentId, name, (Serializable) categoryId, null);
+			this.getService().categoryInsert(workspaceId, name, (Serializable) categoryId, null);
 			return new ResponseEntity<Void>(HttpStatus.OK);
 		} catch (Exception e) {
 			DMSRestController.logger.error("{}", e.getMessage(), e);
