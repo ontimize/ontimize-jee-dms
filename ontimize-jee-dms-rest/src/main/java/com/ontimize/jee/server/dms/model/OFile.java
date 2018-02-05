@@ -6,7 +6,7 @@ public class OFile {
 	protected String	name;
 	protected String	type;
 	protected Integer	size;
-	protected long		creationDate;
+	protected Long		creationDate;
 	protected boolean	directory;
 	protected Integer	parent;
 
@@ -44,11 +44,11 @@ public class OFile {
 		this.size = size;
 	}
 
-	public long getCreationDate() {
+	public Long getCreationDate() {
 		return creationDate;
 	}
 
-	public void setCreationDate(long creationDate) {
+	public void setCreationDate(Long creationDate) {
 		this.creationDate = creationDate;
 	}
 
