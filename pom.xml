@@ -3,13 +3,13 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.ontimize.jee.dms</groupId>
 	<artifactId>ontimize-jee-dms</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<parent>
 		<groupId>com.ontimize.jee</groupId>
 		<artifactId>ontimize-jee</artifactId>
-		<version>1.0.1</version>
+		<version>1.0.2-SNAPSHOT</version>
 	</parent>
 
 
@@ -84,6 +84,6 @@
 		<module>ontimize-jee-dms-common</module>
 		<module>ontimize-jee-dms-server</module>
 		<module>ontimize-jee-dms-rest</module>
-<!-- 		<module>ontimize-jee-dms-desktopclient</module> -->
+		<module>ontimize-jee-dms-desktopclient</module>
 	</modules>
 </project>
