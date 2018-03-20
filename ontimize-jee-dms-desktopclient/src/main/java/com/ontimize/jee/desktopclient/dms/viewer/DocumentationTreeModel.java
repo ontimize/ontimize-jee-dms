@@ -41,7 +41,6 @@ public class DocumentationTreeModel implements TreeModel {
 	 */
 	public DocumentationTreeModel() {
 		super();
-		// this.setCellRenderer(new DocumentationTreeRenderer());
 		this.setCategoryTree(new DMSCategory(null, null, "/", null, null), null);
 	}
 

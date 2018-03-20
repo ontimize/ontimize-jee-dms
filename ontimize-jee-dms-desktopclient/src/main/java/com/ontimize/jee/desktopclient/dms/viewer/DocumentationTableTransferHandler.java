@@ -101,21 +101,25 @@ public class DocumentationTableTransferHandler extends TransferHandler {
 		if (act == TransferHandler.MOVE) {
 			for (DataFlavor flavor : transferable.getTransferDataFlavors()) {
 				if (DocumentationTableTransferHandler.TRANSFER_HANLDER_HUMAN_ID.equals(flavor.getHumanPresentableName())) {
-					try {
-						DataWrapper<ArrayList<Object>> transferData = (DataWrapper<ArrayList<Object>>) transferable.getTransferData(flavor);
-						ArrayList<Object> data = transferData.getData();
-						for (Object idDocumentFileVersion : data) {
-							Map<String, Object> kv = new Hashtable<>();
-							kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, idDocumentFileVersion);
-							int index = this.getTable().getRowForKeys((Hashtable) kv);
-							this.getTable().deleteRow(index);
-						}
-
-					} catch (Exception error) {
-						DocumentationTableTransferHandler.logger.error(null, error);
-					}
+					this.exportDoneFlavor(transferable, flavor);
 				}
 			}
+		}
+	}
+
+	private void exportDoneFlavor(Transferable transferable, DataFlavor flavor) {
+		try {
+			DataWrapper<ArrayList<Object>> transferData = (DataWrapper<ArrayList<Object>>) transferable.getTransferData(flavor);
+			ArrayList<Object> data = transferData.getData();
+			for (Object idDocumentFileVersion : data) {
+				Map<String, Object> kv = new Hashtable<>();
+				kv.put(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE, idDocumentFileVersion);
+				int index = this.getTable().getRowForKeys((Hashtable) kv);
+				this.getTable().deleteRow(index);
+			}
+
+		} catch (Exception error) {
+			DocumentationTableTransferHandler.logger.error(null, error);
 		}
 	}
 
@@ -142,42 +146,49 @@ public class DocumentationTableTransferHandler extends TransferHandler {
 	public boolean importData(JComponent comp, Transferable t) {
 		Serializable idDocument = this.getTable().getCurrentIdDocument();
 		Serializable idCategory = this.getTable().getCurrentIdCategory();
-		DataFlavor[] dataFlavors = t.getTransferDataFlavors();
-		for (DataFlavor df : dataFlavors) {
-			if (df.getMimeType().toLowerCase().startsWith("application/x-java-file")) {
-				try {
-					List<Path> transferData = FileTools.toPath((List<File>) t.getTransferData(df));
-					String description = JOptionPane.showInputDialog(ApplicationManager.getTranslation("dms.descriptioninput"));
-					for (Path file : transferData) {
-						DocumentIdentifier docIdf = new DocumentIdentifier(idDocument);
-						LocalDiskDmsUploadable transferable = new LocalDiskDmsUploadable(file, description, docIdf, idCategory);
-						transferable.addObserver(new Observer() {
-
-							@Override
-							public void update(Observable observable, Object arg) {
-								// TODO intentar sólo añadir la información de la nueva fila sin necesidad de refrescar toda la tabla
-								CheckingTools.failIf(!(observable instanceof AbstractDmsUploadable), "observable not instnaceof AbstractDmsUploadable");
-								AbstractDmsUploadable uploadable = (AbstractDmsUploadable) observable;
-								if (uploadable.getStatus()
-								        .equals(Status.COMPLETED) && (DocumentationTableTransferHandler.this.table
-								                .getCurrentIdDocument() != null) && DocumentationTableTransferHandler.this.table
-								                        .getCurrentIdDocument()
-								                        .equals(uploadable.getDocumentIdentifier()
-								                                .getDocumentId()) && ((DocumentationTableTransferHandler.this.table
-								                                        .getCurrentIdCategory() == null) || DocumentationTableTransferHandler.this.table.getCurrentIdCategory()
-								                                                .equals(uploadable.getCategoryId()))) {
-									DocumentationTableTransferHandler.this.table.refreshInThread(0);
-								}
-							}
-						});
-						DmsTransfererManagerFactory.getInstance().transfer(transferable);
-					}
-					return true;
-				} catch (Exception error) {
-					MessageManager.getMessageManager().showExceptionMessage(error, DocumentationTableTransferHandler.logger);
-				}
+		boolean someImported = false;
+		for (DataFlavor df : t.getTransferDataFlavors()) {
+			if (!df.getMimeType().toLowerCase().startsWith("application/x-java-file")) {
+				continue;
 			}
+			someImported |= this.importDataFlavor(t, df, idDocument, idCategory);
 		}
-		return false;
+		return someImported;
+	}
+
+	private boolean importDataFlavor(Transferable t, DataFlavor df, Serializable idDocument, Serializable idCategory) {
+		boolean someImported = false;
+		try {
+			List<Path> transferData = FileTools.toPath((List<File>) t.getTransferData(df));
+			String description = JOptionPane.showInputDialog(ApplicationManager.getTranslation("dms.descriptioninput"));
+			for (Path file : transferData) {
+				DocumentIdentifier docIdf = new DocumentIdentifier(idDocument);
+				LocalDiskDmsUploadable transferable = new LocalDiskDmsUploadable(file, description, docIdf, idCategory);
+				transferable.addObserver(new Observer() {
+
+					@Override
+					public void update(Observable observable, Object arg) {
+						// TODO intentar sólo añadir la información de la nueva fila sin necesidad de refrescar toda la tabla
+						CheckingTools.failIf(!(observable instanceof AbstractDmsUploadable), "observable not instnaceof AbstractDmsUploadable");
+						AbstractDmsUploadable uploadable = (AbstractDmsUploadable) observable;
+						if (uploadable.getStatus()
+								.equals(Status.COMPLETED) && (DocumentationTableTransferHandler.this.table
+										.getCurrentIdDocument() != null) && DocumentationTableTransferHandler.this.table
+								.getCurrentIdDocument()
+								.equals(uploadable.getDocumentIdentifier()
+										.getDocumentId()) && ((DocumentationTableTransferHandler.this.table
+												.getCurrentIdCategory() == null) || DocumentationTableTransferHandler.this.table.getCurrentIdCategory()
+												.equals(uploadable.getCategoryId()))) {
+							DocumentationTableTransferHandler.this.table.refreshInThread(0);
+						}
+					}
+				});
+				DmsTransfererManagerFactory.getInstance().transfer(transferable);
+				someImported = true;
+			}
+		} catch (Exception error) {
+			MessageManager.getMessageManager().showExceptionMessage(error, DocumentationTableTransferHandler.logger);
+		}
+		return someImported;
 	}
 }

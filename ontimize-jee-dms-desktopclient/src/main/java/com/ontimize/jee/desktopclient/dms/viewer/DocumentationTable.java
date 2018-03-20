@@ -196,7 +196,6 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	public void refreshRow(int viewRowIndex, Hashtable oldkv) {
 		try {
 			this.checkRefreshThread();
-			// Entity ent = this.locator.getEntityReference(this.getEntityName());
 			Hashtable<Object, Object> kv = this.getParentKeyValues();
 			// Put the row keys
 			Vector<?> vKeys = this.getKeys();
