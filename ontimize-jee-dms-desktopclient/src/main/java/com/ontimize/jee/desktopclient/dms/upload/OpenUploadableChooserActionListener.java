@@ -14,7 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ontimize.gui.Form;
-import com.ontimize.gui.InteractionManagerModeEvent;
 import com.ontimize.gui.container.CardPanel;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.naming.DMSNaming;
@@ -61,12 +60,9 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 		final DocumentationTable table = this.getDocumentationTable();
 		if (table != null) {
 			table.addPropertyChangeListener("enable", new PropertyChangeListener() {
-
 				@Override
 				public void propertyChange(PropertyChangeEvent evt) {
-					if (!(boolean) evt.getNewValue()) {
-						OpenUploadableChooserActionListener.this.getButton().setEnabled(false);
-					}
+					OpenUploadableChooserActionListener.this.considerToEnableButton();
 				}
 			});
 		}
@@ -108,8 +104,8 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 					CheckingTools.failIf(!(observable instanceof AbstractDmsUploadable), "Observable not instanceof AbstractDmsUploadable");
 					AbstractDmsUploadable uploadable = (AbstractDmsUploadable) observable;
 					if (uploadable.getStatus().equals(Status.COMPLETED) && (table.getCurrentIdDocument() != null) && table.getCurrentIdDocument()
-					        .equals(uploadable.getDocumentIdentifier()
-					                .getDocumentId()) && ((table.getCurrentIdCategory() == null) || table.getCurrentIdCategory().equals(uploadable.getCategoryId()))) {
+							.equals(uploadable.getDocumentIdentifier()
+									.getDocumentId()) && ((table.getCurrentIdCategory() == null) || table.getCurrentIdCategory().equals(uploadable.getCategoryId()))) {
 						table.refreshInThread(0);
 					}
 				}
@@ -154,10 +150,7 @@ public class OpenUploadableChooserActionListener extends AbstractActionListenerB
 	}
 
 	@Override
-	public void interactionManagerModeChanged(InteractionManagerModeEvent interactionmanagermodeevent) {
-		super.interactionManagerModeChanged(interactionmanagermodeevent);
-		if (!this.getDocumentationTable().isEnabled()) {
-			this.getButton().setEnabled(false);
-		}
+	protected boolean getEnableValueToSet() {
+		return super.getEnableValueToSet() && this.getDocumentationTable().isEnabled();
 	}
 }
