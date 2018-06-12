@@ -15,6 +15,8 @@ public interface IDMSNameConverter {
 
 	public Object getCategoryIdColumn();
 
+	public Object getCategoryNameColumn();
+
 	public OFile createOFile(Map<?, ?> params);
 
 	public List<?> getFileColumns(List<?> columns);
