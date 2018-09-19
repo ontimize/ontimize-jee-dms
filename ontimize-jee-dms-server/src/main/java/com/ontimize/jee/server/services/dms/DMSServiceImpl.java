@@ -124,6 +124,16 @@ public class DMSServiceImpl implements IDMSServiceServer, ApplicationContextAwar
 
 	/*
 	 * (non-Javadoc)
+	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileUpdate(java.lang.Object , java.util.Map, java.io.InputStream)
+	 */
+	@Secured({ PermissionsProviderSecured.SECURED })
+	@Override
+	public DocumentIdentifier fileVersionOverrideContent(Serializable fileVersionId, InputStream is) throws DmsException {
+		return this.getEngine().fileVersionOverrideContent(fileVersionId, is);
+	}
+
+	/*
+	 * (non-Javadoc)
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileQuery(java.util.List, java.util.Map)
 	 */
 	@Secured({ PermissionsProviderSecured.SECURED })

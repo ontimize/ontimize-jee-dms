@@ -183,6 +183,11 @@ public class OntimizeDMSEngine implements IDMSServiceServer, InitializingBean {
 		return this.fileHelper.fileUpdate(fileId, attributesValues, is);
 	}
 
+	@Override
+	public DocumentIdentifier fileVersionOverrideContent(Serializable versionId, InputStream is) throws DmsException {
+		return this.fileHelper.fileVersionOverrideContent(versionId, is);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * @see com.ontimize.jee.common.services.dms.IDMSService#fileQuery(java.util.List, java.util.Map)

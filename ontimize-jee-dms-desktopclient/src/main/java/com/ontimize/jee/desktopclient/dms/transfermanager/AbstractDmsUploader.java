@@ -67,7 +67,10 @@ public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> exten
 			}
 
 			Map<String, Object> attrs = this.getAVFromTransferable(transferable);
-			this.checkForNewVersionofExistentFile(dmsService, attrs, sourceDocIdF);
+			boolean continue_ = this.checkForNewVersionofExistentFile(dmsService, attrs, sourceDocIdF);
+			if (!continue_) {
+				return;
+			}
 
 			if (sourceDocIdF.getFileId() == null) {
 				// Case (B)
@@ -107,7 +110,7 @@ public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> exten
 	 * @param sourceDocIdF
 	 * @throws DmsException
 	 */
-	private void checkForNewVersionofExistentFile(IDMSService dmsService, Map<String, Object> attrs, DocumentIdentifier sourceDocIdF) throws DmsException {
+	private boolean checkForNewVersionofExistentFile(IDMSService dmsService, Map<String, Object> attrs, DocumentIdentifier sourceDocIdF) throws DmsException {
 		Map<String, Object> attrs2 = new HashMap<>();
 		MapTools.safePut(attrs2, DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, sourceDocIdF.getDocumentId());
 		MapTools.safePut(attrs2, DMSNaming.DOCUMENT_FILE_NAME, attrs.get(DMSNaming.DOCUMENT_FILE_NAME));
@@ -117,11 +120,12 @@ public abstract class AbstractDmsUploader<T extends AbstractDmsUploadable> exten
 			// Special case: already exists one file with the same fileName in the same category -> Ask user if it is a new version or a distinct file.
 			int confirm = JOptionPane.showConfirmDialog(null, ApplicationManager.getTranslation("dms.isnewversionquestion"));
 			if (confirm == JOptionPane.CANCEL_OPTION) {
-				return;
+				return false;
 			} else if (confirm == JOptionPane.OK_OPTION) {
 				sourceDocIdF.setFileId(((List<Serializable>) fileQuery.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE)).get(0));// TODO allow user to select moret han one match
 			}
 		}
+		return true;
 	}
 
 }

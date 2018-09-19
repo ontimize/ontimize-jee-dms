@@ -73,5 +73,4 @@ public class DMSCreationHelper extends AbstractDMSServiceHelper {
 		av.put(this.getColumnHelper().getDocumentNameColumn(), docName == null ? "docname" : docName);
 		return this.dmsService.documentInsert(av);
 	}
-
 }

@@ -64,7 +64,7 @@ public interface IDMSService {
 	void fileDelete(Serializable fileId) throws DmsException;
 
 	/**
-	 * Actualiza un fichero. Si file != null, se crea una nueva versiÃ³n
+	 * Actualiza un fichero. Si file != null, se crea una nueva versión
 	 *
 	 * @param fileId
 	 *            the file id
@@ -76,6 +76,18 @@ public interface IDMSService {
 	 *             the ontimize jee runtime exception
 	 */
 	DocumentIdentifier fileUpdate(Serializable fileId, Map<?, ?> attributesValues, InputStream file) throws DmsException;
+
+	/**
+	 * Allows to modify file version content, that is override current version content.
+	 *
+	 * @param fileVersionId
+	 * @param toChange
+	 * @param bufferedInputStream
+	 * @return
+	 * @throws DmsException
+	 *             the ontimize jee runtime exception
+	 */
+	DocumentIdentifier fileVersionOverrideContent(Serializable fileVersionId, InputStream file) throws DmsException;
 
 	/**
 	 * Obtiene las versiones de un fichero.
@@ -340,4 +352,5 @@ public interface IDMSService {
 	 *             the ontimize jee runtime exception
 	 */
 	void moveFilesToCategory(Serializable idCategory, List<Serializable> idFiles) throws DmsException;
+
 }
