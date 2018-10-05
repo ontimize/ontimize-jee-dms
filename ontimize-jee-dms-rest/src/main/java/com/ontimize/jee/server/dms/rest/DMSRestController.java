@@ -189,7 +189,7 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 		InputStream fis = null;
 		File zipFile = null;
 		try {
-			zipFile = new File(System.getProperty("java.io.tmpdir") + file + ".zip");
+			zipFile = new File(System.getProperty("java.io.tmpdir"), file + ".zip");
 			fis = new FileInputStream(zipFile);
 			FileCopyUtils.copy(fis, response.getOutputStream());
 
@@ -414,10 +414,10 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 		if (parentPath == null) {
 			parentPath = "";
 		}
-		String tmpDir = System.getProperty("java.io.tmpdir") + parentPath;
+		File tmpDir = new File(System.getProperty("java.io.tmpdir"), parentPath);
 		for (OFile oFile : oFiles) {
 			if (oFile.isDirectory()) {
-				File directory = new File(tmpDir + oFile.getName());
+				File directory = new File(tmpDir, oFile.getName());
 				directory.mkdirs();
 				List<OFile> categoryFiles = this.getCategoryFiles(documentId, oFile.getId(), false);
 				String folderName = parentPath + directory.getName() + File.separatorChar;
