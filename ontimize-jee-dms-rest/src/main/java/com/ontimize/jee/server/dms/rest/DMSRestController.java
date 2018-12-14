@@ -118,7 +118,7 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 				FileCopyUtils.copy(fis, response.getOutputStream());
 
 				String fileName = (String) er.getRecordValues(0).get(this.dmsNameConverter.getFileNameColumn());
-				Integer fileSize = (Integer) er.getRecordValues(0).get(this.dmsNameConverter.getFileSizeColumn());
+				Number fileSize = (Number) er.getRecordValues(0).get(this.dmsNameConverter.getFileSizeColumn());
 
 				response.setHeader("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
 				response.setContentLengthLong(fileSize.longValue());
