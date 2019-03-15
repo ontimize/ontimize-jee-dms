@@ -56,6 +56,7 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 	/** The bean property converter. */
 	@Autowired(required = false)
 	private N dmsNameConverter;
+	
 
 	/**
 	 * Get document files. Only active files/versions by default
@@ -320,6 +321,26 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 		}
 	}
 
+	
+	@RequestMapping(path="/createDocument/{name}", method = RequestMethod.GET)
+	public ResponseEntity<Number> createDocument(@PathVariable(required=false) String docName){
+		try {
+			Map<String, Object> av = new HashMap<>();
+			av.put(DMSNaming.DOCUMENT_DOCUMENT_NAME, docName == null ? "docname" : docName);
+			DocumentIdentifier documentIdentifier = this.getService().documentInsert(av);
+			return new ResponseEntity<>((Number)documentIdentifier.getDocumentId(), HttpStatus.OK);
+		}catch (Exception e) {
+			DMSRestController.logger.error("{}", e.getMessage(), e);
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+		
+	
+	
+	
+	
+	
+	
 	// ---------------------------------------------------------------------------------------------------------------------------- //
 	// -------------------------------------------------------- Converters -------------------------------------------------------- //
 	// ---------------------------------------------------------------------------------------------------------------------------- //
