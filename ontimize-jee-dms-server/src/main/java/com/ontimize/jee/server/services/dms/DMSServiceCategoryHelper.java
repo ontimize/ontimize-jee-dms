@@ -64,7 +64,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 		if (attribs == null) {
 			attribs = new ArrayList<>();
 		}
-		this.getColumnHelper().translate(attribs);
+		attribs = this.getColumnHelper().translate(attribs);
 		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryIdColumn());
 		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryNameColumn());
 		ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryParentColumn());
