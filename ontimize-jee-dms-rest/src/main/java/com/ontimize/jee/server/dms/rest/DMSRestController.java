@@ -323,10 +323,10 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 
 	
 	@RequestMapping(path="/createDocument/{name}", method = RequestMethod.GET)
-	public ResponseEntity<Number> createDocument(@PathVariable(required=false) String docName){
+	public ResponseEntity<Number> createDocument(@PathVariable(required=false) String name){
 		try {
 			Map<String, Object> av = new HashMap<>();
-			av.put(DMSNaming.DOCUMENT_DOCUMENT_NAME, docName == null ? "docname" : docName);
+			av.put(DMSNaming.DOCUMENT_DOCUMENT_NAME, name == null ? "docname" : name);
 			DocumentIdentifier documentIdentifier = this.getService().documentInsert(av);
 			return new ResponseEntity<>((Number)documentIdentifier.getDocumentId(), HttpStatus.OK);
 		}catch (Exception e) {
