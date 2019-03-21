@@ -188,7 +188,7 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 		} else {
 			// En este caso hay que crear una nueva versión
 			// Si viene el nombre del fichero lo actualizamos en la tabla de ficheros
-			String fileName = (String) attributesValues.remove(this.getColumnHelper().getFileNameColumn());
+			String fileName = (String) attributesValues.remove(DMSNaming.DOCUMENT_FILE_NAME);
 			if (fileName != null) {
 				Map<String, Object> kv = new HashMap<>();
 				kv.put(this.getColumnHelper().getFileIdColumn(), fileId);

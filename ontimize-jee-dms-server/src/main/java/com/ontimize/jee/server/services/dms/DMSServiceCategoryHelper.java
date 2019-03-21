@@ -1,6 +1,10 @@
 package com.ontimize.jee.server.services.dms;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.sql.JDBCType;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +28,7 @@ import com.ontimize.jee.common.tools.ObjectTools;
 import com.ontimize.jee.server.dao.DefaultOntimizeDaoHelper;
 import com.ontimize.jee.server.services.dms.dao.IDMSCategoryDao;
 import com.ontimize.jee.server.services.dms.dao.IDMSDocumentFileDao;
+import com.ontimize.util.ParseUtils;
 
 /**
  * The Class DMSServiceCategoryHelper.
@@ -101,8 +106,9 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 		filter.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
 
 		// Tenemos que poner a null el id_category_parent de las categorías que tenga a esta como padre
+		//Suponemos que el parent y el idCategory es del mismo tipo
 		Map<String, Object> avUpdate = new HashMap<>();
-		avUpdate.put(this.getColumnHelper().getCategoryParentColumn(), new NullValue());
+		avUpdate.put(this.getColumnHelper().getCategoryParentColumn(), new NullValue(getSQLTypeFromClass(idCategory.getClass())));
 		Map<String, Object> kvUpdate = new HashMap<>();
 		kvUpdate.put(this.getColumnHelper().getCategoryParentColumn(), idCategory);
 		try {
@@ -113,7 +119,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 
 		// Tenemos que quitar todos los ficheros de la categoria
 		avUpdate = new HashMap<>();
-		avUpdate.put(this.getColumnHelper().getCategoryIdColumn(), new NullValue());
+		avUpdate.put(this.getColumnHelper().getCategoryIdColumn(), new NullValue(getSQLTypeFromClass(idCategory.getClass())));
 		kvUpdate = new HashMap<>();
 		kvUpdate.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
 		try {
@@ -122,6 +128,34 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 			DMSServiceCategoryHelper.logger.warn("Warning setting null category files", ex);
 		}
 		this.daoHelper.delete(this.categoryDao, filter);
+	}
+	
+	protected int getSQLTypeFromClass(Class valueClass) {
+		if (valueClass==Integer.class) {
+			return Types.INTEGER;
+		}
+		
+		if (valueClass==BigInteger.class || valueClass==Long.class) {
+			return Types.BIGINT;
+		}
+		
+		if (valueClass==BigDecimal.class) {
+			return Types.DECIMAL;
+		}
+		
+		if (valueClass==Double.class) {
+			return Types.DOUBLE;
+		}
+		
+		if (valueClass==Short.class) {
+			return Types.SMALLINT;
+		}
+		
+		if (valueClass==Float.class) {
+			return Types.FLOAT;
+		}
+		
+		return Types.VARCHAR;
 	}
 
 	/**
