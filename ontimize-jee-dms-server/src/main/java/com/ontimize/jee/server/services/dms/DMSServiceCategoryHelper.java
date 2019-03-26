@@ -91,6 +91,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
 		CheckingTools.failIfNull(idCategory, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
 		Map<String, Object> filter = new HashMap<>();
 		filter.put(this.getColumnHelper().getCategoryIdColumn(), idCategory);
+		av = this.getColumnHelper().translate(av);
 		this.daoHelper.update(this.categoryDao, av, filter);
 	}
 
