@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
+import java.util.Calendar;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -46,6 +48,9 @@ public class DmsDownloader extends AbstractDmsTransferer<DmsDownloadable> {
 				Files.copy(tmpFile, targetFile);
 				FileTools.deleteQuitely(tmpFile);
 			}
+
+			// Force to set creationTime just now (Windows has a internal cache)
+			Files.setAttribute(targetFile, "creationTime", FileTime.fromMillis(Calendar.getInstance().getTimeInMillis()));
 		} catch (Exception ex) {
 			throw new DmsException(ex.getMessage(), ex);
 		}
