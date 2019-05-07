@@ -7,7 +7,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
 import java.nio.file.Files;
+import java.nio.file.OpenOption;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -658,13 +660,13 @@ public class DMSServiceFileHelper extends AbstractDMSServiceHelper {
 		return versionId;
 	}
 
-	private void updateFileContent(Serializable versionId, Path file, InputStream is) throws DmsException {
+	protected void updateFileContent(Serializable versionId, Path file, InputStream is) throws DmsException {
 		try {
 			Files.createDirectories(file.getParent());
 			// TODO ver si es necesario hacer esto antes para no ocupar memoria,
 			// aunque las operaciones anteriores deber?an ser inmediatas
 			long time = System.currentTimeMillis();
-			try (OutputStream output = Files.newOutputStream(file)) {
+			try (OutputStream output = Files.newOutputStream(file, new OpenOption[] { StandardOpenOption.CREATE_NEW })) {
 				IOUtils.copy(is, output);
 			}
 			// update filesize
