@@ -1,0 +1,106 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.ontimize.jee.dms</groupId>
+	<artifactId>ontimize-jee-dms</artifactId>
+	<version>2.0.0</version>
+	<packaging>pom</packaging>
+
+	<parent>
+		<groupId>com.ontimize.jee</groupId>
+		<artifactId>ontimize-jee</artifactId>
+		<version>2.0.0</version>
+	</parent>
+
+
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-javadoc-plugin</artifactId>
+					<version>2.10.4</version>
+					<executions>
+						<execution>
+							<id>attach-javadocs</id>
+							<goals>
+								<goal>jar</goal>
+							</goals>
+						</execution>
+					</executions>
+					<configuration>
+						<failOnError>false</failOnError>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
+	<profiles>
+		<profile>
+			<id>generate-version</id>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+					</plugin>
+					<!-- JavaDoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+
+			<modules>
+				<module>ontimize-jee-dms-common</module>
+				<module>ontimize-jee-dms-server</module>
+				<module>ontimize-jee-dms-rest</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>generate_snapshot_version</id>
+			<build>
+				<plugins>
+					<!-- Source -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-source-plugin</artifactId>
+					</plugin>
+					<!-- JavaDoc -->
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-javadoc-plugin</artifactId>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Ontimize DMS -->
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>ontimize-jee-dms-common</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>${project.groupId}</groupId>
+				<artifactId>ontimize-jee-dms-server</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	<modules>
+		<module>ontimize-jee-dms-common</module>
+		<module>ontimize-jee-dms-server</module>
+		<module>ontimize-jee-dms-rest</module>
+<!-- 		<module>ontimize-jee-dms-desktopclient</module> -->
+	</modules>
+</project>
