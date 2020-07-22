@@ -1,35 +1,26 @@
 package com.ontimize.jee.desktopclient.dms.upload.cloud;
 
 import java.awt.event.ActionEvent;
-import java.util.Hashtable;
+import java.awt.event.ActionListener;
 
-import javax.swing.AbstractButton;
-
+import com.ontimize.gui.button.Button;
 import com.ontimize.jee.desktopclient.dms.upload.IMMultipleFiles;
-import com.utilmize.client.gui.buttons.AbstractActionListenerButton;
-import com.utilmize.client.gui.buttons.IUFormComponent;
-import com.utilmize.client.gui.buttons.UButton;
 
-public class ShowCloudPanelActionListener extends AbstractActionListenerButton {
+public class ShowCloudPanelActionListener implements ActionListener{
 
-	public ShowCloudPanelActionListener() throws Exception {
+	protected Button button;
+	
+	public ShowCloudPanelActionListener(Button button) throws Exception {
 		super();
-	}
-
-	public ShowCloudPanelActionListener(AbstractButton button, IUFormComponent formComponent, Hashtable params) throws Exception {
-		super(button, formComponent, params);
-	}
-
-	public ShowCloudPanelActionListener(Hashtable params) throws Exception {
-		super(params);
-	}
-
-	public ShowCloudPanelActionListener(UButton button, Hashtable params) throws Exception {
-		super(button, params);
+		this.button = button;
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		((IMMultipleFiles) this.getInteractionManager()).showCardPanel("hostingpanel");
+		
+		if (e.getSource() instanceof Button) {
+			this.button = (Button) e.getSource();
+			((IMMultipleFiles) this.button.getParentForm().getInteractionManager()).showCardPanel("hostingpanel");
+		}
 	}
 }

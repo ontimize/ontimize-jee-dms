@@ -20,8 +20,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
+					<source>1.7</source>
+					<target>1.7</target>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -37,17 +37,11 @@
 			<groupId>${project.groupId}</groupId>
 			<artifactId>ontimize-jee-dms-common</artifactId>
 		</dependency>
-
-
+		
 		<dependency>
-			<groupId>com.imatia.utilmize</groupId>
-			<artifactId>utilmize-client</artifactId>
-			<version>${utilmize.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.imatia.utilmize</groupId>
-			<artifactId>utilcapturer</artifactId>
-			<version>${utilmize.version}</version>
+			<groupId>com.ontimize</groupId>
+			<artifactId>ontimize-core-client</artifactId>
+			<version>6.0.3-SNAPSHOT</version>
 		</dependency>
 		
 		<!-- Google Drive API -->

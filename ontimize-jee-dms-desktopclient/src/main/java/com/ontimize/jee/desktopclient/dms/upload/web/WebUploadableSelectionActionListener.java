@@ -4,23 +4,22 @@ import java.awt.event.ActionEvent;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.Hashtable;
 
+import com.ontimize.gui.button.Button;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.transfermanager.AbstractDmsUploadable;
 import com.ontimize.jee.desktopclient.dms.upload.AbstractUploadableSelectionActionListener;
-import com.utilmize.client.gui.buttons.UButton;
 
 public class WebUploadableSelectionActionListener extends AbstractUploadableSelectionActionListener {
 
-	public WebUploadableSelectionActionListener(UButton button, Hashtable params) throws Exception {
-		super(button, params);
+	public WebUploadableSelectionActionListener(Button button) throws Exception {
+		super(button);
 	}
 
 	@Override
 	protected AbstractDmsUploadable acquireTransferable(ActionEvent ev) throws DmsException {
-		String url = (String) this.getForm().getDataFieldValue("URL");
-		String description = (String) this.getForm().getDataFieldValue("URL_DESCRIPTION");
+		String url = (String) this.button.getParentForm().getDataFieldValue("URL");
+		String description = (String) this.button.getParentForm().getDataFieldValue("URL_DESCRIPTION");
 		URI verifiedUrl;
 		try {
 			verifiedUrl = WebUploadableSelectionActionListener.verifyURL(url);
@@ -43,7 +42,8 @@ public class WebUploadableSelectionActionListener extends AbstractUploadableSele
 	 */
 	public static URI verifyURL(String fileURL) throws MalformedURLException, URISyntaxException {
 		// Only allow HTTP or FTP URLs.
-		if (!fileURL.toLowerCase().startsWith("http://") && !fileURL.toLowerCase().startsWith("https://") && !fileURL.toLowerCase().startsWith("ftp://")) {
+		if (!fileURL.toLowerCase().startsWith("http://") && !fileURL.toLowerCase().startsWith("https://")
+				&& !fileURL.toLowerCase().startsWith("ftp://")) {
 			return null;
 		}
 

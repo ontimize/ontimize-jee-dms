@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ontimize.gui.table.RefreshTableEvent;
+import com.ontimize.gui.table.Table.RefreshThread;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
-import com.utilmize.client.gui.field.table.UTableRefreshThread;
 
-public class DocumentationTableRefreshThread extends UTableRefreshThread {
+public class DocumentationTableRefreshThread extends RefreshThread {
 
 	private static final Logger logger = LoggerFactory.getLogger(DocumentationTableRefreshThread.class);
 
@@ -34,7 +34,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 	public void run() {
 		boolean ok = true;
 		try {
-			this.getTable().fireRefreshBackgroundStart();
+			//this.getTable().fireRefreshBackgroundStart();
 			if (this.delay > 0) {
 				Thread.sleep(this.delay);
 			}
@@ -76,7 +76,7 @@ public class DocumentationTableRefreshThread extends UTableRefreshThread {
 					@Override
 					public void run() {
 						synchronized (DocumentationTableRefreshThread.this.getTable().getJTable()) {
-							DocumentationTableRefreshThread.this.getTable().fireRefreshBackgroundFinished();
+							//DocumentationTableRefreshThread.this.getTable().fireRefreshBackgroundFinished();
 							/*
 							 * sin comentarios... ni copiar, ademas encima de usar enumerados meten estaticas...
 							 */

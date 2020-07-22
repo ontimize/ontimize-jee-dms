@@ -1,10 +1,10 @@
 package com.ontimize.jee.desktopclient.dms.upload.web;
 
+import com.ontimize.gui.BasicInteractionManager;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.manager.IFormManager;
-import com.utilmize.client.fim.UBasicFIM;
 
-public class IMWebAddURL extends UBasicFIM {
+public class IMWebAddURL extends BasicInteractionManager {
 
 	@Override
 	public void registerInteractionManager(Form form, IFormManager formManager) {

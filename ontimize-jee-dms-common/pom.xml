@@ -10,11 +10,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>com.ontimize</groupId>
-			<artifactId>ontimize-core</artifactId>
-		</dependency>
-
-		<dependency>
 			<groupId>com.ontimize.jee</groupId>
 			<artifactId>ontimize-jee-common</artifactId>
 		</dependency>

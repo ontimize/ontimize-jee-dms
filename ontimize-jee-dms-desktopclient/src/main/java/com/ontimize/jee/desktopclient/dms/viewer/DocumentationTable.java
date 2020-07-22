@@ -1,6 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.viewer;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -32,6 +33,7 @@ import com.ontimize.gui.ValueEvent;
 import com.ontimize.gui.field.DataField;
 import com.ontimize.gui.field.FormComponent;
 import com.ontimize.gui.table.RefreshTableEvent;
+import com.ontimize.gui.table.Table;
 import com.ontimize.gui.table.TableSorter;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.exceptions.DmsRuntimeException;
@@ -42,15 +44,16 @@ import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.ObjectTools;
 import com.ontimize.jee.common.tools.ParseUtilsExtended;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
+import com.ontimize.jee.desktopclient.components.taskmanager.ByteSizeTableCellRenderer;
 import com.ontimize.jee.desktopclient.dms.upload.OpenUploadableChooserActionListener;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
-import com.utilmize.client.gui.field.table.UTable;
-import com.utilmize.client.gui.field.table.render.UXmlByteSizeCellRenderer;
+//import com.utilmize.client.gui.field.table.UTable;
+//import com.utilmize.client.gui.field.table.render.UXmlByteSizeCellRenderer;
 
 /**
  * The Class DocumentationTable.
  */
-public class DocumentationTable extends UTable implements InteractionManagerModeListener {
+public class DocumentationTable extends Table implements InteractionManagerModeListener {
 
 	private static final Logger									logger						= LoggerFactory.getLogger(DocumentationTable.class);
 	protected static final String								AVOID_PARENT_KEYS_NULL		= "avoidparentkeysnull";
@@ -68,7 +71,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	public DocumentationTable(Hashtable<String, Object> params) throws Exception {
 		super(params);
 		this.getJTable().setFillsViewportHeight(true);
-		this.setRendererForColumn(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, new UXmlByteSizeCellRenderer());
+		this.setRendererForColumn(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, new ByteSizeTableCellRenderer());
 		this.categoryPanel = ParseUtilsExtended.getBoolean((String) params.get("categorypanel"), true);
 
 		this.categoryTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -94,7 +97,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		try {
 			this.buttonPlus2.removeActionListener(this.addRecordListener);
 			this.buttonPlus.removeActionListener(this.addRecordListener);
-			this.addRecordListener = new OpenUploadableChooserActionListener(this, EntityResultTools.keysvalues("documentationtable", "documentationtable"));
+			this.addRecordListener = (ActionListener) new OpenUploadableChooserActionListener();
 			this.buttonPlus.addActionListener(this.addRecordListener);
 			this.buttonPlus2.addActionListener(this.addRecordListener);
 		} catch (Exception e) {
@@ -371,13 +374,13 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 				return;
 			}
 
-			if ((this.uRefreshThread != null) && this.uRefreshThread.isAlive()) {
+			if ((this.refreshThread != null) && this.refreshThread.isAlive()) {
 				DocumentationTable.logger.warn("A thread is already refreshing. Ensure to invoke to checkRefreshThread() to cancel it.");
 			}
 			this.hideInformationPanel();
-			this.uRefreshThread = new DocumentationTableRefreshThread(this);
-			this.uRefreshThread.setDelay(0);
-			this.uRefreshThread.start();
+			this.refreshThread = new DocumentationTableRefreshThread(this);
+			this.refreshThread.setDelay(0);
+			this.refreshThread.start();
 		} catch (Exception error) {
 			DocumentationTable.logger.error(null, error);
 		}

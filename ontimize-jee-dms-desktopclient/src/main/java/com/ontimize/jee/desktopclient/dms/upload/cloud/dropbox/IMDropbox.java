@@ -5,15 +5,15 @@ import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxEntry;
 import com.ontimize.annotation.FormComponent;
+import com.ontimize.gui.BasicInteractionManager;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.container.CardPanel;
 import com.ontimize.gui.manager.IFormManager;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.CloudDrivePanel;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudFileSelectionListener;
-import com.utilmize.client.fim.UBasicFIM;
 
-public class IMDropbox extends UBasicFIM implements ICloudFileSelectionListener<DbxEntry> {
+public class IMDropbox extends BasicInteractionManager implements ICloudFileSelectionListener<DbxEntry> {
 
 	private static final Logger			logger	= LoggerFactory.getLogger(IMDropbox.class);
 
