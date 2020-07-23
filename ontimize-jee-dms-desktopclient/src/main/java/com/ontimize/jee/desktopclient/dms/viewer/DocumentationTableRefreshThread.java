@@ -68,8 +68,8 @@ public class DocumentationTableRefreshThread extends RefreshThread {
 				}
 			});
 		} finally {
-			if (!this.stop) {
-				this.stop = true;
+			if (!this.isStop()) {
+				this.setStop(true);
 				final boolean okFinal = ok;
 				SwingUtilities.invokeLater(new Runnable() {
 
