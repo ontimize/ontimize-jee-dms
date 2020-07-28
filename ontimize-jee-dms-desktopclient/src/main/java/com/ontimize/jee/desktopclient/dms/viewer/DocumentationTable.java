@@ -97,7 +97,7 @@ public class DocumentationTable extends Table implements InteractionManagerModeL
 		try {
 			this.buttonPlus2.removeActionListener(this.addRecordListener);
 			this.buttonPlus.removeActionListener(this.addRecordListener);
-			this.addRecordListener = (ActionListener) new OpenUploadableChooserActionListener();
+			this.addRecordListener = (ActionListener) new OpenUploadableChooserActionListener(this);
 			this.buttonPlus.addActionListener(this.addRecordListener);
 			this.buttonPlus2.addActionListener(this.addRecordListener);
 		} catch (Exception e) {

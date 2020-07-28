@@ -42,7 +42,7 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 	protected static Dimension PREFERRED_SIZE = new Dimension(350, 350);
 	protected Form formDialog = null;
 	protected String documentationTableAttr;
-	DocumentationTable table = null;
+	DocumentationTable table = null;	
 
 	/**
 	 * Parameter to limit button enable when interaction manager is in INSERT_MODE.
@@ -65,8 +65,6 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 	 */
 	public static final String PARAM_ENABLE_FIM_UPDATE = "enable.update";
 
-	protected Button button;
-
 	/** Limit button enable when interaction manager is in INSERT_MODE */
 	protected boolean isInsertModeValidToEnable;
 	/** Limit button enable when interaction manager is in QUERY_MODE */
@@ -75,6 +73,13 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 	protected boolean isQueryInsertModeValidToEnable;
 	/** Limit button enable when interaction manager is in UPDATE_MODE */
 	protected boolean isUpdateModeValidToEnable;
+
+	
+	
+	public OpenUploadableChooserActionListener(DocumentationTable table) {
+		super();
+		this.table = table;
+	}
 
 	protected void init(Map<?, ?> params) throws Exception {
 		this.isInsertModeValidToEnable = ParseUtilsExtended
@@ -92,7 +97,7 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 	public void parentFormSetted() {
 
 		// FIMUtils.injectAnnotatedFields(this, this.button.getParentForm());
-		this.button.getParentForm().addDataNavigationListener((DataNavigationListener) this);
+		this.table.getParentForm().addDataNavigationListener((DataNavigationListener) this);
 
 		final DocumentationTable table = this.getDocumentationTable();
 		if (table != null) {
@@ -116,13 +121,8 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(final ActionEvent ev) {
-
-		if (ev.getSource() instanceof Button) {
-			this.button = (Button) ev.getSource();
-		}
-
 		try {
-			AbstractDmsUploadable uploadable = this.showSelectionDialog(this.button.getParentForm());
+			AbstractDmsUploadable uploadable = this.showSelectionDialog(this.table.getParentForm());
 			if (uploadable != null) {
 				this.upload(uploadable);
 			}
@@ -133,13 +133,13 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 
 	protected void upload(AbstractDmsUploadable uploadable) throws DmsException {
 
-		Serializable idDocument = (Serializable) this.button.getParentForm()
+		Serializable idDocument = (Serializable) this.table.getParentForm()
 				.getDataFieldValue(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
-		Serializable idFile = (Serializable) this.button.getParentForm()
+		Serializable idFile = (Serializable) this.table.getParentForm()
 				.getDataFieldValue(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
-		Serializable idVersion = (Serializable) this.button.getParentForm()
+		Serializable idVersion = (Serializable) this.table.getParentForm()
 				.getDataFieldValue(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
-		Serializable idCategory = (Serializable) this.button.getParentForm()
+		Serializable idCategory = (Serializable) this.table.getParentForm()
 				.getDataFieldValue(DMSNaming.CATEGORY_ID_CATEGORY);
 
 		final DocumentationTable table = this.getDocumentationTable();
@@ -182,7 +182,7 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 
 	public DocumentationTable findDocumentationTable(String attr) {
 		if (attr != null) {
-			for (Object component : this.button.getParentForm().getComponentList()) {
+			for (Object component : this.table.getParentForm().getComponentList()) {
 				if ((component instanceof DocumentationTable)
 						&& ((DocumentationTable) component).getAttribute().toString().equals(attr)) {
 					return (DocumentationTable) component;
@@ -213,7 +213,7 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 
 	protected boolean getEnableValueToSet() {
 		boolean enable = true;
-		int fimMode = this.button.getParentForm().getInteractionManager().getCurrentMode();
+		int fimMode = this.table.getParentForm().getInteractionManager().getCurrentMode();
 		switch (fimMode) {
 		case InteractionManager.INSERT:
 			enable &= this.isInsertModeValidToEnable;
@@ -238,13 +238,4 @@ public class OpenUploadableChooserActionListener implements ActionListener {
 		}
 		return null;
 	}
-
-	public Button getButton() {
-		return button;
-	}
-
-	public void setButton(Button button) {
-		this.button = button;
-	}
-
 }
