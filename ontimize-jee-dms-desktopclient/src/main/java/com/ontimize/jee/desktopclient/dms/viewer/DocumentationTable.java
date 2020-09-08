@@ -40,15 +40,13 @@ import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.IDMSService;
-import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.ObjectTools;
 import com.ontimize.jee.common.tools.ParseUtilsExtended;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.ontimize.jee.desktopclient.components.taskmanager.ByteSizeTableCellRenderer;
 import com.ontimize.jee.desktopclient.dms.upload.OpenUploadableChooserActionListener;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
-//import com.utilmize.client.gui.field.table.UTable;
-//import com.utilmize.client.gui.field.table.render.UXmlByteSizeCellRenderer;
+
 
 /**
  * The Class DocumentationTable.
