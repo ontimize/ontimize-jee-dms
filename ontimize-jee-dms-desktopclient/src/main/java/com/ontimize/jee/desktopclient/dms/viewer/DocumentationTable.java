@@ -115,6 +115,10 @@ public class DocumentationTable extends Table implements InteractionManagerModeL
 		if (!params.containsKey("parentkeys")) {
 			params.put("parentkeys", this.form_id_dms_doc_field + ":" + DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
 		}
+		//Hidden insert button '+' 
+		if (!params.containsKey(Table.DISABLE_INSERT)) {
+			params.put(Table.DISABLE_INSERT, "yes");
+		}
 		super.init(params);
 		if (!this.parentkeys.contains(this.form_id_dms_doc_field)) {
 			this.hParentkeyEquivalences.put(this.form_id_dms_doc_field, DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
