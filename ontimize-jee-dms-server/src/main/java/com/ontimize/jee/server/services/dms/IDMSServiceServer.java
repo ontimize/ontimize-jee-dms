@@ -7,37 +7,31 @@ import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.services.dms.IDMSService;
 
 /**
- * Funcionalidades extendidas del DMS sólo disponibles desde el lado del servidor
+ * Funcionalidades extendidas del DMS sï¿½lo disponibles desde el lado del servidor
  *
  */
 public interface IDMSServiceServer extends IDMSService {
 
-	/**
-	 * Obtiene el path de un fichero.
-	 *
-	 * @param fileId
-	 *            the file id
-	 * @return the input stream
-	 * @throws DmsException
-	 *             the ontimize jee runtime exception
-	 * @throws DmsException
-	 */
-	Path fileGetPath(Serializable fileId) throws DmsException;
+    /**
+     * Obtiene el path de un fichero.
+     * @param fileId the file id
+     * @return the input stream
+     * @throws DmsException the ontimize jee runtime exception
+     * @throws DmsException
+     */
+    Path fileGetPath(Serializable fileId) throws DmsException;
 
-	/**
-	 * Obtiene el path de una versión dada de un fichero.
-	 *
-	 * @param fileVersionId
-	 *            the file version id
-	 * @return the input stream
-	 * @throws DmsException
-	 *             the ontimize jee runtime exception
-	 */
-	Path fileGetPathOfVersion(Serializable fileVersionId) throws DmsException;
+    /**
+     * Obtiene el path de una versiï¿½n dada de un fichero.
+     * @param fileVersionId the file version id
+     * @return the input stream
+     * @throws DmsException the ontimize jee runtime exception
+     */
+    Path fileGetPathOfVersion(Serializable fileVersionId) throws DmsException;
 
-	/**
-	 * Update settings.
-	 */
-	void updateSettings() throws DmsException;
+    /**
+     * Update settings.
+     */
+    void updateSettings() throws DmsException;
 
 }

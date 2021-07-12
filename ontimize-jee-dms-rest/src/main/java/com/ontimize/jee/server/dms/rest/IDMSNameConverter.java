@@ -7,20 +7,20 @@ import com.ontimize.jee.server.dms.model.OFile;
 
 public interface IDMSNameConverter {
 
-	public Object getFileIdColumn();
+    public Object getFileIdColumn();
 
-	public Object getFileNameColumn();
+    public Object getFileNameColumn();
 
-	public Object getFileSizeColumn();
+    public Object getFileSizeColumn();
 
-	public Object getCategoryIdColumn();
+    public Object getCategoryIdColumn();
 
-	public Object getCategoryNameColumn();
+    public Object getCategoryNameColumn();
 
-	public OFile createOFile(Map<?, ?> params);
+    public OFile createOFile(Map<?, ?> params);
 
-	public List<?> getFileColumns(List<?> columns);
+    public List<?> getFileColumns(List<?> columns);
 
-	public List<?> getCategoryColumns(List<?> columns);
+    public List<?> getCategoryColumns(List<?> columns);
 
 }
