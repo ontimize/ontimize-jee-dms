@@ -1,19 +1,32 @@
 package com.ontimize.jee.desktopclient.dms.upload;
 
 import java.awt.event.ActionEvent;
-import java.util.Hashtable;
+import java.awt.event.ActionListener;
 
-import com.utilmize.client.gui.buttons.AbstractActionListenerButton;
-import com.utilmize.client.gui.buttons.UButton;
+import com.ontimize.gui.IDetailForm;
+import com.ontimize.gui.button.Button;
 
-public class CancelActionListener extends AbstractActionListenerButton {
+public class CancelActionListener implements ActionListener {
 
-	public CancelActionListener(UButton button, Hashtable params) throws Exception {
-		super(button, params);
+	protected Button button;
+
+	public CancelActionListener(Button button) {
+		super();
+		this.button = button;
 	}
 
 	@Override
 	public void actionPerformed(final ActionEvent ev) {
-		this.closeDialog();
+		if (ev.getSource() instanceof Button) {
+			this.button = (Button) ev.getSource();
+		}
+		if (this.button.getParentForm() != null) {
+			IDetailForm detailComponent = this.button.getParentForm().getDetailComponent();
+			if (detailComponent != null) {
+				detailComponent.hideDetailForm();
+			} else if (this.button.getParentForm().getJDialog() != null) {
+				this.button.getParentForm().getJDialog().setVisible(false);
+			}
+		}
 	}
 }

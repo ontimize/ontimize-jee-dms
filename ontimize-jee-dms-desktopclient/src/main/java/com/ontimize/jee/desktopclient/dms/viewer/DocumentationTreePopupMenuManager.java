@@ -95,7 +95,7 @@ public class DocumentationTreePopupMenuManager extends MouseAdapter {
 		this.currentPopupCategory = null;
 		this.menuItemAdd.setEnabled(false);
 		this.menuItemDelete.setEnabled(false);
-		if (this.tree.getDocumentationModel().getIdDocument() != null) {
+		if (this.tree.getDocumentationModel().getIdDocument() != null && treePath != null) {
 			if (treePath.getLastPathComponent() instanceof String) {
 				this.menuItemAdd.setEnabled(true);
 			} else if (treePath.getLastPathComponent() instanceof DMSCategory) {

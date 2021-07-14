@@ -9,6 +9,7 @@ import java.util.Stack;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.table.TableCellRenderer;
 
 import org.slf4j.Logger;
@@ -17,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
 import com.ontimize.jee.desktopclient.dms.util.TranslatedTableCellRenderer;
-import com.utilmize.client.gui.tasks.USwingWorker;
 
 /**
  * The Class CloudDriveTable.
@@ -114,7 +114,7 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 	 *            the folder id
 	 */
 	private void browseFolder(final String folderId) {
-		new USwingWorker<List<T>, Void>() {
+		new SwingWorker<List<T>, Void>() {
 
 			@Override
 			protected List<T> doInBackground() throws Exception {
@@ -124,7 +124,7 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 			@Override
 			protected void done() {
 				try {
-					List<T> files = this.uget();
+					List<T> files = this.get();
 					if (!CloudDriveTable.this.cloudManager.getRootFolderId().equals(folderId)) {
 						T backFile = CloudDriveTable.this.cloudManager.getBackFile();
 						files.add(0, backFile);
@@ -135,8 +135,8 @@ public class CloudDriveTable<T extends Serializable> extends JTable {
 					MessageManager.getMessageManager().showExceptionMessage(error, CloudDriveTable.LOGGER);
 				}
 			};
-
-		}.executeOperation(this);
+//		}.executeOperation(this);
+		}.execute();
 	}
 
 	/**

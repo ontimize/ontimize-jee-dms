@@ -12,8 +12,8 @@ import org.slf4j.LoggerFactory;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 
+import com.ontimize.gui.container.Row;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
-import com.utilmize.client.gui.Row;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
