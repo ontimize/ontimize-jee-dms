@@ -1,12 +1,12 @@
 package com.ontimize.jee.desktopclient.dms.upload;
 
 import com.ontimize.annotation.FormComponent;
+import com.ontimize.gui.BasicInteractionManager;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.container.CardPanel;
 import com.ontimize.gui.manager.IFormManager;
-import com.utilmize.client.fim.UBasicFIM;
 
-public class IMMultipleFiles extends UBasicFIM {
+public class IMMultipleFiles extends BasicInteractionManager {
 
 	@FormComponent(attr = "cardpanel")
 	private CardPanel cp;

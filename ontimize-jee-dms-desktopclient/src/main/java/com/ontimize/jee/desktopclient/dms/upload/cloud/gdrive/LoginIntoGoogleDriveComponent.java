@@ -10,8 +10,8 @@ import java.util.Hashtable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ontimize.gui.container.Row;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
-import com.utilmize.client.gui.Row;
 
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;

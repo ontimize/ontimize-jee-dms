@@ -1,6 +1,7 @@
 package com.ontimize.jee.desktopclient.dms.viewer;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Hashtable;
@@ -32,43 +33,44 @@ import com.ontimize.gui.ValueEvent;
 import com.ontimize.gui.field.DataField;
 import com.ontimize.gui.field.FormComponent;
 import com.ontimize.gui.table.RefreshTableEvent;
+import com.ontimize.gui.table.Table;
 import com.ontimize.gui.table.TableSorter;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.common.exceptions.DmsRuntimeException;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.IDMSService;
-import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.ObjectTools;
 import com.ontimize.jee.common.tools.ParseUtilsExtended;
 import com.ontimize.jee.desktopclient.components.messaging.MessageManager;
+import com.ontimize.jee.desktopclient.components.taskmanager.ByteSizeTableCellRenderer;
 import com.ontimize.jee.desktopclient.dms.upload.OpenUploadableChooserActionListener;
 import com.ontimize.jee.desktopclient.spring.BeansFactory;
-import com.utilmize.client.gui.field.table.UTable;
-import com.utilmize.client.gui.field.table.render.UXmlByteSizeCellRenderer;
+
 
 /**
  * The Class DocumentationTable.
  */
-public class DocumentationTable extends UTable implements InteractionManagerModeListener {
+public class DocumentationTable extends Table implements InteractionManagerModeListener {
 
-	private static final Logger									logger						= LoggerFactory.getLogger(DocumentationTable.class);
-	protected static final String								AVOID_PARENT_KEYS_NULL		= "avoidparentkeysnull";
+	private static final Logger logger = LoggerFactory.getLogger(DocumentationTable.class);
+	protected static final String AVOID_PARENT_KEYS_NULL = "avoidparentkeysnull";
 
-	private final DocumentationTree								categoryTree				= new DocumentationTree();
-	private Serializable										currentIdDocument			= null;
-	private Map<? extends Serializable, ? extends Serializable>	currentFilter				= null;
-	// ñapa
-	private boolean												deleting					= false;
-	private boolean												ignoreEvents				= false;
-	private boolean												ignoreCheckRefreshThread	= false;
-	private boolean												categoryPanel				= true;
-	protected String											form_id_dms_doc_field;
+	private final DocumentationTree categoryTree = new DocumentationTree();
+	protected DocumentationTableDetailFormOpener opener = new DocumentationTableDetailFormOpener(
+			new Hashtable<String, Object>());
+	private Serializable currentIdDocument = null;
+	private Map<? extends Serializable, ? extends Serializable> currentFilter = null;
+	private boolean deleting = false;
+	private boolean ignoreEvents = false;
+	private boolean ignoreCheckRefreshThread = false;
+	private boolean categoryPanel = true;
+	protected String form_id_dms_doc_field;
 
 	public DocumentationTable(Hashtable<String, Object> params) throws Exception {
 		super(params);
 		this.getJTable().setFillsViewportHeight(true);
-		this.setRendererForColumn(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, new UXmlByteSizeCellRenderer());
+		this.setRendererForColumn(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, new ByteSizeTableCellRenderer());
 		this.categoryPanel = ParseUtilsExtended.getBoolean((String) params.get("categorypanel"), true);
 
 		this.categoryTree.getSelectionModel().addTreeSelectionListener(new TreeSelectionListener() {
@@ -94,7 +96,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		try {
 			this.buttonPlus2.removeActionListener(this.addRecordListener);
 			this.buttonPlus.removeActionListener(this.addRecordListener);
-			this.addRecordListener = new OpenUploadableChooserActionListener(this, EntityResultTools.keysvalues("documentationtable", "documentationtable"));
+			this.addRecordListener = (ActionListener) new OpenUploadableChooserActionListener(this);
 			this.buttonPlus.addActionListener(this.addRecordListener);
 			this.buttonPlus2.addActionListener(this.addRecordListener);
 		} catch (Exception e) {
@@ -108,9 +110,14 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 			params.put("detailformopener", DocumentationTableDetailFormOpener.class.getName());
 			params.put("form", "dummy");
 		}
-		this.form_id_dms_doc_field = ParseUtilsExtended.getString((String) params.get("form_id_dms_doc_field"), DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
+		this.form_id_dms_doc_field = ParseUtilsExtended.getString((String) params.get("form_id_dms_doc_field"),
+				DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
 		if (!params.containsKey("parentkeys")) {
 			params.put("parentkeys", this.form_id_dms_doc_field + ":" + DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
+		}
+		// Hidden insert button '+'
+		if (!params.containsKey(Table.DISABLE_INSERT)) {
+			params.put(Table.DISABLE_INSERT, "yes");
 		}
 		super.init(params);
 		if (!this.parentkeys.contains(this.form_id_dms_doc_field)) {
@@ -154,8 +161,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	/**
 	 * Refreshes the rows passed as parameter
 	 *
-	 * @param viewRowIndexes
-	 *            the row indexes
+	 * @param viewRowIndexes the row indexes
 	 */
 	@Override
 	public void refreshRows(int[] viewRowIndexes) {
@@ -188,8 +194,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	/**
 	 * Refreshes the row passed as parameter.
 	 *
-	 * @param viewRowIndex
-	 *            the index to refresh
+	 * @param viewRowIndex the index to refresh
 	 * @param oldkv
 	 */
 	@Override
@@ -339,8 +344,7 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	/**
 	 * Deletes from the entity the specified row.
 	 *
-	 * @param rowIndex
-	 *            the row index
+	 * @param rowIndex the row index
 	 * @return the result of the execution of the delete instruction
 	 * @throws Exception
 	 * @see Entity#delete(Hashtable, int)
@@ -371,13 +375,14 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 				return;
 			}
 
-			if ((this.uRefreshThread != null) && this.uRefreshThread.isAlive()) {
-				DocumentationTable.logger.warn("A thread is already refreshing. Ensure to invoke to checkRefreshThread() to cancel it.");
+			if ((this.refreshThread != null) && this.refreshThread.isAlive()) {
+				DocumentationTable.logger
+						.warn("A thread is already refreshing. Ensure to invoke to checkRefreshThread() to cancel it.");
 			}
 			this.hideInformationPanel();
-			this.uRefreshThread = new DocumentationTableRefreshThread(this);
-			this.uRefreshThread.setDelay(0);
-			this.uRefreshThread.start();
+			this.refreshThread = new DocumentationTableRefreshThread(this);
+			this.refreshThread.setDelay(0);
+			this.refreshThread.start();
 		} catch (Exception error) {
 			DocumentationTable.logger.error(null, error);
 		}
@@ -443,7 +448,8 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 	}
 
 	@Override
-	public EntityResult updateTable(Hashtable keysValues, int viewColumnIndex, TableCellEditor tableCellEditor, Hashtable otherData, Object previousData) throws Exception {
+	public EntityResult updateTable(Hashtable keysValues, int viewColumnIndex, TableCellEditor tableCellEditor,
+			Hashtable otherData, Object previousData) throws Exception {
 		Map<String, Object> av = new Hashtable<>();
 		TableSorter model = (TableSorter) this.table.getModel();
 		String col = model.getColumnName(this.table.convertColumnIndexToModel(viewColumnIndex));
@@ -502,5 +508,10 @@ public class DocumentationTable extends UTable implements InteractionManagerMode
 		Serializable fileId = (Serializable) kv.get(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
 		service.fileUpdate(fileId, av, null);
 		return new EntityResult();
+	}
+
+	@Override
+	public void openDetailForm(final int rowIndex) {
+		opener.openDetailForm(this, rowIndex);
 	}
 }

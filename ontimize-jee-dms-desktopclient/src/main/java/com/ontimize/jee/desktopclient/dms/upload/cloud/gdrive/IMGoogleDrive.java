@@ -4,15 +4,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ontimize.annotation.FormComponent;
+import com.ontimize.gui.BasicInteractionManager;
 import com.ontimize.gui.Form;
 import com.ontimize.gui.container.CardPanel;
 import com.ontimize.gui.manager.IFormManager;
 import com.ontimize.jee.common.exceptions.DmsException;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.CloudDrivePanel;
 import com.ontimize.jee.desktopclient.dms.upload.cloud.ICloudFileSelectionListener;
-import com.utilmize.client.fim.UBasicFIM;
 
-public class IMGoogleDrive extends UBasicFIM implements ICloudFileSelectionListener<GoogleFile> {
+public class IMGoogleDrive extends BasicInteractionManager implements ICloudFileSelectionListener<GoogleFile> {
 
 	private static final long				serialVersionUID	= 1L;
 
