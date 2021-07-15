@@ -9,28 +9,28 @@ import com.ontimize.jee.server.dms.model.OFile;
 
 public class UpdateFileParameter implements Serializable {
 
-	private static final long		serialVersionUID	= 1L;
+    private static final long serialVersionUID = 1L;
 
-	@XmlElement
-	protected OFile					file;
+    @XmlElement
+    protected OFile file;
 
-	@XmlElement
-	protected Map<Object, Object>	params;
+    @XmlElement
+    protected Map<Object, Object> params;
 
-	public OFile getFile() {
-		return file;
-	}
+    public OFile getFile() {
+        return file;
+    }
 
-	public void setFile(OFile file) {
-		this.file = file;
-	}
+    public void setFile(OFile file) {
+        this.file = file;
+    }
 
-	public Map<Object, Object> getParams() {
-		return params;
-	}
+    public Map<Object, Object> getParams() {
+        return params;
+    }
 
-	public void setParams(Map<Object, Object> params) {
-		this.params = params;
-	}
+    public void setParams(Map<Object, Object> params) {
+        this.params = params;
+    }
 
 }

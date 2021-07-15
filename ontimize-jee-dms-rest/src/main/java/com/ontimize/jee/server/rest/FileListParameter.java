@@ -10,17 +10,18 @@ import com.ontimize.jee.server.dms.model.OFile;
 
 @XmlRootElement
 public class FileListParameter implements Serializable {
-	private static final long	serialVersionUID	= 1L;
 
-	@XmlElement
-	protected List<OFile>		fileList;
+    private static final long serialVersionUID = 1L;
 
-	public List<OFile> getFileList() {
-		return this.fileList;
-	}
+    @XmlElement
+    protected List<OFile> fileList;
 
-	public void setFileList(List<OFile> filterList) {
-		this.fileList = filterList;
-	}
+    public List<OFile> getFileList() {
+        return this.fileList;
+    }
+
+    public void setFileList(List<OFile> filterList) {
+        this.fileList = filterList;
+    }
 
 }
