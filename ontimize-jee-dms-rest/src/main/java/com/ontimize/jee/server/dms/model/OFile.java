@@ -2,62 +2,69 @@ package com.ontimize.jee.server.dms.model;
 
 public class OFile {
 
-	protected Integer	id;
-	protected String	name;
-	protected String	type;
-	protected Integer	size;
-	protected Long		creationDate;
-	protected boolean	directory;
-	protected Integer	parent;
+    protected Integer id;
 
-	public OFile() {}
+    protected String name;
 
-	public Integer getId() {
-		return id;
-	}
+    protected String type;
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    protected Integer size;
 
-	public String getName() {
-		return name;
-	}
+    protected Long creationDate;
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    protected boolean directory;
 
-	public String getType() {
-		return type;
-	}
+    protected Integer parent;
 
-	public void setType(String type) {
-		this.type = type;
-	}
+    public OFile() {
+    }
 
-	public Integer getSize() {
-		return size;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setSize(Integer size) {
-		this.size = size;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Long getCreationDate() {
-		return creationDate;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setCreationDate(Long creationDate) {
-		this.creationDate = creationDate;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public boolean isDirectory() {
-		return directory;
-	}
+    public String getType() {
+        return type;
+    }
 
-	public void setDirectory(boolean directory) {
-		this.directory = directory;
-	}
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Integer getSize() {
+        return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public Long getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Long creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public boolean isDirectory() {
+        return directory;
+    }
+
+    public void setDirectory(boolean directory) {
+        this.directory = directory;
+    }
 
 }
