@@ -79,6 +79,7 @@
 
 	<properties>
 		<ontimize-jee.version>5.4.0</ontimize-jee.version>
+		<javax.annotation.annotation-api.version>1.3.2</javax.annotation.annotation-api.version>
 	</properties>
 	<build>
 		<pluginManagement>
@@ -203,6 +204,11 @@
 				<groupId>com.ontimize.jee</groupId>
 				<artifactId>ontimize-jee-server-rest</artifactId>
 				<version>${ontimize-jee.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>javax.annotation</groupId>
+				<artifactId>javax.annotation-api</artifactId>
+				<version>${javax.annotation.annotation-api.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

@@ -1,9 +1,9 @@
 package com.ontimize.jee.server.dms.rest;
 
+import com.ontimize.jee.server.dms.model.OFile;
+
 import java.util.List;
 import java.util.Map;
-
-import com.ontimize.jee.server.dms.model.OFile;
 
 public interface IDMSNameConverter {
 
