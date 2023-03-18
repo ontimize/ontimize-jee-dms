@@ -11,18 +11,18 @@ import com.ontimize.jee.server.rest.QueryParameter;
 import com.ontimize.jee.server.rest.UpdateFileParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;
 
-public abstract class DMSRestController<T extends IDMSService, N extends IDMSNameConverter> implements IDMSRestControllerEndpoints {
+public abstract class DMSRestController<T extends IDMSService, N extends IDMSNameConverter> implements IDMSRestControllerEndpoints, InitializingBean {
 
     /** The logger. */
     private static final Logger logger = LoggerFactory.getLogger(DMSRestController.class);
@@ -38,12 +38,13 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
 
     public abstract T getService();
 
+    public DMSRestController(){}
     public DMSRestController( final IDMSRestConstrollerStrategy strategy ){
         this.strategy = strategy;
     }
 
-    @PostConstruct
-    public void strategyConfig(){
+    @Override
+    public void afterPropertiesSet() throws Exception {
         this.strategy.setService( this.getService() );
         this.strategy.setDmsNameConverter( this.dmsNameConverter );
     }

@@ -1,4 +1,4 @@
-package com.ontimize.jee.server.dms.strategy;
+package com.ontimize.jee.server.dms.strategy.database;
 
 import com.ontimize.jee.common.dto.EntityResult;
 import com.ontimize.jee.common.exceptions.DmsException;
@@ -7,6 +7,7 @@ import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
 import com.ontimize.jee.server.dms.model.OFile;
+import com.ontimize.jee.server.dms.strategy.IDMSRestConstrollerStrategy;
 import com.ontimize.jee.server.rest.FileListParameter;
 import com.ontimize.jee.server.rest.InsertParameter;
 import com.ontimize.jee.server.rest.QueryParameter;

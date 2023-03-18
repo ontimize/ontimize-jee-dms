@@ -1,7 +1,8 @@
 package com.ontimize.jee.server.spring.namespace;
 
-import java.util.List;
-
+import com.ontimize.jee.common.spring.parser.DefinitionParserUtil;
+import com.ontimize.jee.server.services.dms.database.DMSConfiguration;
+import com.ontimize.jee.server.services.dms.database.OntimizeDMSDatabaseEngine;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
@@ -10,9 +11,7 @@ import org.springframework.beans.factory.xml.ParserContext;
 import org.springframework.util.xml.DomUtils;
 import org.w3c.dom.Element;
 
-import com.ontimize.jee.common.spring.parser.DefinitionParserUtil;
-import com.ontimize.jee.server.services.dms.DMSConfiguration;
-import com.ontimize.jee.server.services.dms.OntimizeDMSEngine;
+import java.util.List;
 
 /**
  * The Class DMSBeanDefinitionParser.
@@ -69,7 +68,7 @@ public class DMSBeanDefinitionParser extends AbstractSingleBeanDefinitionParser 
          */
         @Override
         protected Class<?> getBeanClass(final Element element) {
-            return OntimizeDMSEngine.class;
+            return OntimizeDMSDatabaseEngine.class;
         }
 
         /**

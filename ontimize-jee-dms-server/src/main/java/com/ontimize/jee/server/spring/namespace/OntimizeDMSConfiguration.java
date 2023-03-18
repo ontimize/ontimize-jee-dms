@@ -1,6 +1,6 @@
 package com.ontimize.jee.server.spring.namespace;
 
-import com.ontimize.jee.server.services.dms.DMSConfiguration;
+import com.ontimize.jee.server.services.dms.database.DMSConfiguration;
 
 public class OntimizeDMSConfiguration {
 

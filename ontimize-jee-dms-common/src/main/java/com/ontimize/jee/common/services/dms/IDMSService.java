@@ -1,12 +1,12 @@
 package com.ontimize.jee.common.services.dms;
 
+import com.ontimize.jee.common.dto.EntityResult;
+import com.ontimize.jee.common.exceptions.DmsException;
+
 import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-
-import com.ontimize.jee.common.dto.EntityResult;
-import com.ontimize.jee.common.exceptions.DmsException;
 
 /**
  * Servicio para la gestion de documentos, propiedades de documentos, ficheros y versiones de

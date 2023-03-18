@@ -1,12 +1,11 @@
 package com.ontimize.jee.server.rest;
 
-import java.io.Serializable;
-import java.util.List;
+import com.ontimize.jee.server.dms.model.OFile;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import com.ontimize.jee.server.dms.model.OFile;
+import java.io.Serializable;
+import java.util.List;
 
 @XmlRootElement
 public class FileListParameter implements Serializable {

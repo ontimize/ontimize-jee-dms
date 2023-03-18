@@ -1,11 +1,12 @@
 package com.ontimize.jee.server.services.dms;
 
-import java.io.InputStream;
-import java.io.Serializable;
-import java.nio.file.Path;
-import java.util.List;
-import java.util.Map;
-
+import com.ontimize.jee.common.dto.EntityResult;
+import com.ontimize.jee.common.exceptions.DmsException;
+import com.ontimize.jee.common.security.PermissionsProviderSecured;
+import com.ontimize.jee.common.services.dms.DMSCategory;
+import com.ontimize.jee.common.services.dms.DocumentIdentifier;
+import com.ontimize.jee.common.tools.CheckingTools;
+import com.ontimize.jee.server.spring.namespace.OntimizeDMSConfiguration;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -14,13 +15,11 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.ontimize.jee.common.dto.EntityResult;
-import com.ontimize.jee.common.exceptions.DmsException;
-import com.ontimize.jee.common.security.PermissionsProviderSecured;
-import com.ontimize.jee.common.services.dms.DMSCategory;
-import com.ontimize.jee.common.services.dms.DocumentIdentifier;
-import com.ontimize.jee.common.tools.CheckingTools;
-import com.ontimize.jee.server.spring.namespace.OntimizeDMSConfiguration;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The DMS service generic facade. This will delegate to configured engine : OntimizeDMSEngine ...
