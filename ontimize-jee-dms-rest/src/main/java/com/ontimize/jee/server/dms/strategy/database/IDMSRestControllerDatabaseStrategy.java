@@ -6,14 +6,17 @@ import com.ontimize.jee.common.gui.SearchValue;
 import com.ontimize.jee.common.naming.DMSNaming;
 import com.ontimize.jee.common.services.dms.DMSCategory;
 import com.ontimize.jee.common.services.dms.DocumentIdentifier;
+import com.ontimize.jee.common.services.dms.IDMSService;
 import com.ontimize.jee.server.dms.model.OFile;
-import com.ontimize.jee.server.dms.strategy.IDMSRestConstrollerStrategy;
+import com.ontimize.jee.server.dms.rest.IDMSNameConverter;
+import com.ontimize.jee.server.dms.strategy.DMSRestConstrollerStrategy;
 import com.ontimize.jee.server.rest.FileListParameter;
 import com.ontimize.jee.server.rest.InsertParameter;
 import com.ontimize.jee.server.rest.QueryParameter;
 import com.ontimize.jee.server.rest.UpdateFileParameter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
@@ -29,7 +32,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrategy {
+public class IDMSRestControllerDatabaseStrategy extends DMSRestConstrollerStrategy {
 
     //CONSTANTS
 
@@ -38,18 +41,27 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
     protected static final String CATEGORY_FILTER_KEY = "FM_FOLDER_PARENT_KEY";
 
+    //PROPERTIES
+
+    /** The bean property service. */
+    private @Autowired() IDMSService dmsService;
+
+    /** The bean property converter. */
+    private @Autowired( required = false ) IDMSNameConverter dmsNameConverter;
+
 // ------------------------------------------------------------------------------------------------------------------ //
 
     /** Constructor. */
     public IDMSRestControllerDatabaseStrategy(){ super(); }
 
-// ------------------------------------------------------------------------------------------------------------------ //
-// ----------------------------------------------| ENDPOINTS |------------------------------------------------------- //
-// ------------------------------------------------------------------------------------------------------------------ //
+// ------------------------------------------------------------------------------------------------------------------ \\
+// -------| FIND DOCUMENTS ENDPOINT |-------------------------------------------------------------------------------- \\
+// ------------------------------------------------------------------------------------------------------------------ \\
 
     @Override
-    public ResponseEntity<List<? extends OFile>> documentGetFiles( final Integer workspaceId, final QueryParameter queryParam ){
+    public ResponseEntity<List<? extends OFile>> documentGetFiles(final String id, final QueryParameter queryParam ){
         try {
+            final Integer workspaceId = Integer.parseInt( this.decodeId( id ));
             List<OFile> files = new ArrayList<>();
             Map<Object, Object> filter = queryParam.getFilter();
             List<Object> columns = queryParam.getColumns();
@@ -63,12 +75,12 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
             }
 
             // Get categories and add them as folders
-            DMSCategory categories = this.service
+            DMSCategory categories = this.dmsService
                     .categoryGetForDocument(workspaceId, this.getCategoryColumns(columns));
             this.getCategoriesAsFiles(categories, parentCategory, files, false);
 
             // Get files and add them
-            EntityResult er = this.service.documentGetFiles(workspaceId, filter, this.getFileColumns(columns));
+            EntityResult er = this.dmsService.documentGetFiles(workspaceId, filter, this.getFileColumns(columns));
             if (EntityResult.OPERATION_WRONG != er.getCode()) {
                 for (int i = 0; i < er.calculateRecordNumber(); i++) {
                     files.add(this.dmsNameConverter.createOFile(er.getRecordValues(i)));
@@ -84,14 +96,15 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
 
     @Override
-    public @ResponseBody void fileGetContent( final Integer fileId, final HttpServletResponse response ) {
+    public @ResponseBody void fileGetContent( final String id, final HttpServletResponse response ) {
         InputStream fis = null;
         try {
+            final Integer fileId = Integer.parseInt( this.decodeId( id ));
             Map<Object, Object> criteria = new HashMap<>();
             criteria.put(this.dmsNameConverter.getFileIdColumn(), fileId);
-            EntityResult er = this.service.fileQuery(criteria, this.getFileColumns(null));
+            EntityResult er = this.dmsService.fileQuery(criteria, this.getFileColumns(null));
             if (EntityResult.OPERATION_WRONG != er.getCode() && er.calculateRecordNumber() > 0) {
-                fis = this.service.fileGetContent(fileId);
+                fis = this.dmsService.fileGetContent(fileId);
                 FileCopyUtils.copy(fis, response.getOutputStream());
 
                 String fileName = (String) er.getRecordValues(0).get(this.dmsNameConverter.getFileNameColumn());
@@ -119,9 +132,10 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
 
     @Override
-    public ResponseEntity<Map<String, String>> fileGetContent( final Integer workspaceId, final List<OFile> files ) {
+    public ResponseEntity<Map<String, String>> fileGetContent( final String id, final List<OFile> files ) {
         ZipOutputStream zos = null;
         try {
+            final Integer workspaceId = Integer.parseInt( this.decodeId( id ));
             File zipFile = File.createTempFile("download_", ".zip");
             zos = new ZipOutputStream(new FileOutputStream(zipFile));
             this.addFilesToZip(workspaceId, files, zos, null);
@@ -180,16 +194,17 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
 
     @Override
-    public ResponseEntity<DocumentIdentifier> fileInsert( final Integer workspaceId, final MultipartFile multipart, final Object folderId ){
+    public ResponseEntity<DocumentIdentifier> fileInsert( final String id, final MultipartFile file, final String metadata, final Object folderId ){
         try {
-            InputStream is = new ByteArrayInputStream(multipart.getBytes());
+            final Integer workspaceId = Integer.parseInt( this.decodeId( id ));
+            InputStream is = new ByteArrayInputStream(file.getBytes());
             Map<Object, Object> av = new HashMap<>();
-            av.put(this.dmsNameConverter.getFileNameColumn(), multipart.getOriginalFilename());
+            av.put(this.dmsNameConverter.getFileNameColumn(), file.getOriginalFilename());
             if (folderId != null) {
                 av.put(this.dmsNameConverter.getCategoryIdColumn(), folderId);
             }
-            DocumentIdentifier id = this.service.fileInsert(workspaceId, av, is);
-            return new ResponseEntity<>(id, HttpStatus.OK);
+            DocumentIdentifier documentIdentifier = this.dmsService.fileInsert(workspaceId, av, is);
+            return new ResponseEntity<>(documentIdentifier, HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.error("{}", e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -199,8 +214,9 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
 
     @Override
-    public ResponseEntity<Void> delete( final Integer workspaceId, final FileListParameter deleteParameter ) throws DmsException {
+    public ResponseEntity<Void> fileDelete( final String id, final FileListParameter deleteParameter ) throws DmsException {
         try {
+            final Integer workspaceId = Integer.parseInt( this.decodeId( id ));
             List<OFile> fileList = deleteParameter.getFileList();
             for (OFile file : fileList) {
                 if (file.isDirectory()) {
@@ -221,14 +237,15 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
 
     @Override
-    public ResponseEntity<Void> folderInsert( final Integer workspaceId, final String name, final InsertParameter insertParam ){
+    public ResponseEntity<Void> folderInsert( final String id, final String name, final InsertParameter insertParam ){
         try {
+            final Integer workspaceId = Integer.parseInt( this.decodeId( id ));
             Map<Object, Object> data = insertParam.getData();
             Object categoryId = null;
             if (data.containsKey(CATEGORY_FILTER_KEY)) {
                 categoryId = data.remove(CATEGORY_FILTER_KEY);
             }
-            this.service.categoryInsert(workspaceId, name, (Serializable) categoryId, null);
+            this.dmsService.categoryInsert(workspaceId, name, (Serializable) categoryId, null);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.error("{}", e.getMessage(), e);
@@ -248,10 +265,10 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
                 if (data.containsKey("name")) {
                     if (file.isDirectory()) {
                         av.put(DMSNaming.CATEGORY_CATEGORY_NAME, data.get("name"));
-                        this.service.categoryUpdate(file.getId(), av);
+                        this.dmsService.categoryUpdate(file.getId(), av);
                     } else {
                         av.put(DMSNaming.DOCUMENT_FILE_NAME, data.get("name"));
-                        this.service.fileUpdate(file.getId(), av, this.service.fileGetContent(file.getId()));
+                        this.dmsService.fileUpdate(file.getId(), av, this.dmsService.fileGetContent(file.getId()));
                     }
                     return new ResponseEntity<>(HttpStatus.OK);
                 }
@@ -270,11 +287,59 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
         try {
             Map<String, Object> av = new HashMap<>();
             av.put(DMSNaming.DOCUMENT_DOCUMENT_NAME, name == null ? "docname" : name);
-            DocumentIdentifier documentIdentifier = this.service.documentInsert(av);
+            DocumentIdentifier documentIdentifier = this.dmsService.documentInsert(av);
             return new ResponseEntity<>((Number) documentIdentifier.getDocumentId(), HttpStatus.OK);
         } catch (Exception e) {
             LOGGER.error("{}", e.getMessage(), e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    // TODO: To be implemented
+    @Override
+    public ResponseEntity<Void> fileCopy( final String sourceId, final String destinationId, final Map<String, Object> data ) {
+        try {
+            //Get Keys from IDs
+            final String sourceKey = this.decodeId( sourceId );
+            final String destinationKey = this.decodeId( destinationId );
+
+            //Initialize metadata
+            Map<String, String> metadata = null;
+
+            //Request...
+            final DocumentIdentifier documentIdentifier = null;
+
+            //Return Result
+            return new ResponseEntity<>( HttpStatus.NOT_IMPLEMENTED );
+        }
+        catch ( final Exception exception ){ //Return Error
+            LOGGER.error( "{}", exception.getMessage(), exception );
+            return new ResponseEntity<>( HttpStatus.INTERNAL_SERVER_ERROR );
+        }
+    }
+
+
+    // TODO: To be implemented
+    @Override
+    public ResponseEntity<Void> fileMove( final String sourceId, final String destinationId, final Map<String, Object> data ) {
+        try {
+            //Get Keys from IDs
+            final String sourceKey = this.decodeId( sourceId );
+            final String destinationKey = this.decodeId( destinationId );
+
+            //Initialize metadata
+            Map<String, String> metadata = null;
+
+            //Request...
+            final DocumentIdentifier documentIdentifier = null;
+
+            //Return Result
+            return new ResponseEntity<>( HttpStatus.NOT_IMPLEMENTED );
+        }
+        catch ( final Exception exception ){ //Return Error
+            LOGGER.error( "{}", exception.getMessage(), exception );
+            return new ResponseEntity<>( HttpStatus.INTERNAL_SERVER_ERROR );
         }
     }
 
@@ -325,9 +390,9 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
     protected void deleteOFile( final OFile file ) throws DmsException {
         if (file.isDirectory()) {
-            this.service.categoryDelete(file.getId());
+            this.dmsService.categoryDelete(file.getId());
         } else {
-            this.service.fileDelete(file.getId());
+            this.dmsService.fileDelete(file.getId());
         }
     }
 
@@ -343,7 +408,7 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
             throws DmsException {
         List<OFile> files = new ArrayList<>();
 
-        DMSCategory categories = this.service.categoryGetForDocument(documentId, this.getCategoryColumns(null));
+        DMSCategory categories = this.dmsService.categoryGetForDocument(documentId, this.getCategoryColumns(null));
         this.getCategoriesAsFiles(categories, categoryId, files, includeSubCategories);
 
         Map<Object, Object> filter = new HashMap<>();
@@ -357,7 +422,7 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
 
         filter.put(this.dmsNameConverter.getCategoryIdColumn(), new SearchValue(SearchValue.IN, categoriesIds));
 
-        EntityResult er = this.service.documentGetFiles(documentId, filter, this.getFileColumns(null));
+        EntityResult er = this.dmsService.documentGetFiles(documentId, filter, this.getFileColumns(null));
         if (EntityResult.OPERATION_WRONG != er.getCode()) {
             for (int i = 0; i < er.calculateRecordNumber(); i++) {
                 files.add(this.dmsNameConverter.createOFile(er.getRecordValues(i)));
@@ -384,9 +449,9 @@ public class IDMSRestControllerDatabaseStrategy extends IDMSRestConstrollerStrat
                 byte[] buffer = new byte[1024];
                 Map<Object, Object> criteria = new HashMap<>();
                 criteria.put(this.dmsNameConverter.getFileIdColumn(), oFile.getId());
-                EntityResult er = this.service.fileQuery(criteria, this.getFileColumns(null));
+                EntityResult er = this.dmsService.fileQuery(criteria, this.getFileColumns(null));
                 if (EntityResult.OPERATION_WRONG != er.getCode() && er.calculateRecordNumber() > 0) {
-                    InputStream fis = this.service.fileGetContent(oFile.getId());
+                    InputStream fis = this.dmsService.fileGetContent(oFile.getId());
                     String fileName = parentPath + oFile.getName();
                     zos.putNextEntry(new ZipEntry(fileName));
                     int length;

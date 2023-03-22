@@ -83,6 +83,7 @@
 		<lombok.version>1.18.24</lombok.version>
 		<amazonaws.version>1.12.382</amazonaws.version>
 		<reflections.version>0.10.2</reflections.version>
+		<json.version>20220924</json.version>
 	</properties>
 	<build>
 		<pluginManagement>
@@ -222,6 +223,11 @@
 				<groupId>org.reflections</groupId>
 				<artifactId>reflections</artifactId>
 				<version>${reflections.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.json</groupId>
+				<artifactId>json</artifactId>
+				<version>${json.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
