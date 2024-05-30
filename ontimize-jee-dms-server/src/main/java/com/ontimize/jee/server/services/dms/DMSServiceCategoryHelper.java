@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ontimize.jee.server.dao.common.INameConvention;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
     private static final Logger logger = LoggerFactory.getLogger(DMSServiceCategoryHelper.class);
 
     @Autowired
+    private INameConvention nameConvention;
+
+    @Autowired
     DefaultOntimizeDaoHelper daoHelper;
 
     /** The category dao. */
@@ -64,7 +68,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
         if (attribs == null) {
             attribs = new ArrayList<>();
         }
-        attribs = this.getColumnHelper().translate(attribs);
+
         ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryIdColumn());
         ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryNameColumn());
         ListTools.safeAdd((List<String>) attribs, this.getColumnHelper().getCategoryParentColumn());
@@ -72,7 +76,7 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
         Map<Object, Object> filter = EntityResultTools.keysvalues(this.getColumnHelper().getDocumentIdColumn(),
                 idDocument);
         EntityResult er = this.daoHelper.query(this.categoryDao, filter, attribs);
-        return this.convertCategoryResultSet(idDocument, this.getColumnHelper().translateResult(er));
+        return this.convertCategoryResultSet(idDocument, er);
     }
 
     /**
@@ -207,14 +211,14 @@ public class DMSServiceCategoryHelper extends AbstractDMSServiceHelper {
      */
     private List<DMSCategory> removeCategoriesForParentId(EntityResult er, DMSCategory parentCategory,
             Serializable idDocument) {
-        List<Serializable> listIdParentCategory = (List<Serializable>) er.get(DMSNaming.CATEGORY_ID_CATEGORY_PARENT);
+        List<Serializable> listIdParentCategory = (List<Serializable>) er.get(this.nameConvention.convertName(DMSNaming.CATEGORY_ID_CATEGORY_PARENT));
         List<DMSCategory> res = new ArrayList<>();
         if (listIdParentCategory != null) {
             for (int i = 0; i < listIdParentCategory.size(); i++) {
                 if (ObjectTools.safeIsEquals(listIdParentCategory.get(i), parentCategory.getIdCategory())) {
                     Map<? extends Serializable, ? extends Serializable> recordValues = er.getRecordValues(i);
-                    Serializable idCategory = recordValues.remove(DMSNaming.CATEGORY_ID_CATEGORY);
-                    String categoryName = (String) recordValues.remove(DMSNaming.CATEGORY_CATEGORY_NAME);
+                    Serializable idCategory = recordValues.remove(this.nameConvention.convertName(DMSNaming.CATEGORY_ID_CATEGORY));
+                    String categoryName = (String) recordValues.remove(this.nameConvention.convertName(DMSNaming.CATEGORY_CATEGORY_NAME));
                     res.add(new DMSCategory(idDocument, idCategory, categoryName, recordValues, parentCategory));
                     er.deleteRecord(i);
                     i--;

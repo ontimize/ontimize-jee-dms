@@ -16,6 +16,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.ontimize.jee.server.dao.common.INameConvention;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -295,10 +296,10 @@ public abstract class DMSRestController<T extends IDMSService, N extends IDMSNam
                 Map<String, Object> av = new HashMap<>();
                 if (data.containsKey("name")) {
                     if (file.isDirectory()) {
-                        av.put(DMSNaming.CATEGORY_CATEGORY_NAME, data.get("name"));
+                        av.put(this.dmsNameConverter.getNameConvention().convertName(DMSNaming.CATEGORY_CATEGORY_NAME), data.get("name"));
                         this.getService().categoryUpdate(file.getId(), av);
                     } else {
-                        av.put(DMSNaming.DOCUMENT_FILE_NAME, data.get("name"));
+                        av.put(this.dmsNameConverter.getNameConvention().convertName(DMSNaming.DOCUMENT_FILE_NAME), data.get("name"));
                         this.getService().fileUpdate(file.getId(), av, this.getService().fileGetContent(file.getId()));
                     }
                     return new ResponseEntity<>(HttpStatus.OK);
