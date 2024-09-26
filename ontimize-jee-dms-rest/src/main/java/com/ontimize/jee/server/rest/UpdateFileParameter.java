@@ -3,7 +3,7 @@ package com.ontimize.jee.server.rest;
 import java.io.Serializable;
 import java.util.Map;
 
-import javax.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import com.ontimize.jee.server.dms.model.OFile;
 

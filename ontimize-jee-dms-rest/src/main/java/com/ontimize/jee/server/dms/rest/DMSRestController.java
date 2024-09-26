@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import com.ontimize.jee.server.dao.common.INameConvention;
 import org.slf4j.Logger;

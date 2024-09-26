@@ -5,11 +5,11 @@
 	<groupId>com.ontimize.jee.dms</groupId>
 	<artifactId>ontimize-jee-dms</artifactId>
 	<packaging>pom</packaging>
-	<version>3.2.0-SNAPSHOT</version>
+	<version>17.0.0-SNAPSHOT</version>
 	<parent>
 		<groupId>com.ontimize.jee</groupId>
 		<artifactId>ontimize-jee</artifactId>
-		<version>5.4.0</version>
+		<version>17.0.0-SNAPSHOT</version>
 	</parent>
 
 	<organization>
@@ -78,7 +78,7 @@
 	</distributionManagement>
 
 	<properties>
-		<ontimize-jee.version>5.4.0</ontimize-jee.version>
+		<ontimize-jee.version>17.0.0-SNAPSHOT</ontimize-jee.version>
 	</properties>
 	<build>
 		<pluginManagement>
@@ -181,12 +181,6 @@
 			<dependency>
 				<groupId>${project.groupId}</groupId>
 				<artifactId>ontimize-jee-dms-common</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>${project.groupId}</groupId>
-				<artifactId>ontimize-jee-dms-server</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 			<dependency>
