@@ -1,6 +1,0 @@
-com/ontimize/jee/common/services/dms/DMSCategory.class
-com/ontimize/jee/common/services/dms/DocumentIdentifier.class
-com/ontimize/jee/common/exceptions/DmsRuntimeException.class
-com/ontimize/jee/common/services/dms/IDMSService.class
-com/ontimize/jee/common/naming/DMSNaming.class
-com/ontimize/jee/common/exceptions/DmsException.class

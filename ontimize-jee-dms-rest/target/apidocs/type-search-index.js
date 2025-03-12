@@ -1,1 +1,0 @@
-typeSearchIndex = [{"l":"All Classes","url":"allclasses-index.html"},{"p":"com.ontimize.jee.server.dms.rest","l":"DMSRestController"},{"p":"com.ontimize.jee.server.rest","l":"FileListParameter"},{"p":"com.ontimize.jee.server.dms.rest","l":"IDMSNameConverter"},{"p":"com.ontimize.jee.server.dms.model","l":"OFile"},{"p":"com.ontimize.jee.server.rest","l":"UpdateFileParameter"}]

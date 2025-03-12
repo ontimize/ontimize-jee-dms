@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"com.ontimize.jee.common.exceptions"},{"l":"com.ontimize.jee.common.naming"},{"l":"com.ontimize.jee.common.services.dms"}]
