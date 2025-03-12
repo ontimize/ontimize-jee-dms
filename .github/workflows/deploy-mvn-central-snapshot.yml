@@ -1,16 +1,16 @@
 name: Generate a version in MVNCentral
-on: 
+on:
   push:
-    branches:    
+    branches:
       - 'develop'
 jobs:
   Generate-a-snapshot-in-MVNCentral:
     runs-on: ubuntu-latest
     steps:
       - name : Checkout repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Java JDK and Maven
-        uses: ontimize/setup-java-maven-gitAction@v3
+        uses: ontimize/setup-java-maven-gitAction@v4
         with:
           distribution: 'temurin'
           java-version: '11'
@@ -18,7 +18,7 @@ jobs:
           server-username: MAVEN_USERNAME
           server-password: MAVEN_CENTRAL_TOKEN
           gpg-private-key: ${{ secrets.MAVEN_GPG_PRIVATE_KEY }}
-          gpg-passphrase: MAVEN_GPG_PASSPHRASE       
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
       - name: Publish to Apache Maven Central
         run: mvn -U clean deploy -Pgenerate-version
         env:
