@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Abstract class implemented bu DMS helpers (docFelper, fileHelper, versionHelper). This ensure to
  * set a default configuration to columnHelper, that manages all relative about columns naming.
  */
+
 public abstract class AbstractDMSServiceHelper implements InitializingBean {
 
     @Autowired(required = false)
@@ -14,12 +15,9 @@ public abstract class AbstractDMSServiceHelper implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        if (this.columnHelper == null) {
-            this.columnHelper = new DMSColumnHelper();
-        }
     }
 
-    protected DMSColumnHelper getColumnHelper() {
+    public DMSColumnHelper getColumnHelper() {
         return this.columnHelper;
     }
 

@@ -14,6 +14,8 @@ import com.ontimize.jee.common.tools.BasicExpressionTools;
 import com.ontimize.jee.common.tools.EntityResultTools;
 import com.ontimize.jee.common.tools.MapTools;
 import com.ontimize.jee.common.tools.ObjectTools;
+import com.ontimize.jee.server.dao.common.INameConvention;
+
 
 /**
  * This class will manage all behaviour around DMS columns naming. <br>
@@ -24,63 +26,68 @@ import com.ontimize.jee.common.tools.ObjectTools;
  * Moreove this allows to have column extensions, indicating extends columns for each dao (document,
  * file, version, ....)
  */
-public class DMSColumnHelper {
+public class DMSColumnHelper{
 
     private Map<String, String> columnsMapping;
 
-    public DMSColumnHelper() {
-        this.initColumnsMapping();
+    private INameConvention nameConvention;
+
+    public DMSColumnHelper(INameConvention nameConvention) {
+        this.nameConvention = nameConvention;
+        initColumnsMapping();
     }
 
+
     protected void initColumnsMapping() {
+
         if (this.columnsMapping == null) {
             this.columnsMapping = new HashMap<>();
         }
 
-        this.addColumnMapping(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, DMSNaming.DOCUMENT_ID_DMS_DOCUMENT);
-        this.addColumnMapping(DMSNaming.DOCUMENT_UPDATE_DATE, DMSNaming.DOCUMENT_UPDATE_DATE);
-        this.addColumnMapping(DMSNaming.DOCUMENT_UPDATE_BY, DMSNaming.DOCUMENT_UPDATE_BY);
-        this.addColumnMapping(DMSNaming.DOCUMENT_DOCUMENT_NAME, DMSNaming.DOCUMENT_DOCUMENT_NAME);
-        this.addColumnMapping(DMSNaming.DOCUMENT_OWNER_ID, DMSNaming.DOCUMENT_OWNER_ID);
-        this.addColumnMapping(DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION, DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION);
-        this.addColumnMapping(DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS, DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS);
+        this.addColumnMapping(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT, this.nameConvention.convertName(DMSNaming.DOCUMENT_ID_DMS_DOCUMENT));
+        this.addColumnMapping(DMSNaming.DOCUMENT_UPDATE_DATE, this.nameConvention.convertName(DMSNaming.DOCUMENT_UPDATE_DATE));
+        this.addColumnMapping(DMSNaming.DOCUMENT_UPDATE_BY, this.nameConvention.convertName(DMSNaming.DOCUMENT_UPDATE_BY));
+        this.addColumnMapping(DMSNaming.DOCUMENT_DOCUMENT_NAME, this.nameConvention.convertName(DMSNaming.DOCUMENT_DOCUMENT_NAME));
+        this.addColumnMapping(DMSNaming.DOCUMENT_OWNER_ID, this.nameConvention.convertName(DMSNaming.DOCUMENT_OWNER_ID));
+        this.addColumnMapping(DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION, this.nameConvention.convertName(DMSNaming.DOCUMENT_DOCUMENT_DESCRIPTION));
+        this.addColumnMapping(DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS, this.nameConvention.convertName(DMSNaming.DOCUMENT_DOCUMENT_KEYWORDS));
 
         this.addColumnMapping(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE,
-                DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_NAME, DMSNaming.DOCUMENT_FILE_NAME);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_TYPE, DMSNaming.DOCUMENT_FILE_TYPE);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_ID_DMS_DOCUMENT_FILE));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_NAME, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_NAME));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_TYPE, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_TYPE));
 
         this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION,
-                DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH, DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_VERSION, DMSNaming.DOCUMENT_FILE_VERSION_VERSION);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_ID_DMS_DOCUMENT_FILE_VERSION));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_FILE_PATH));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_VERSION, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_VERSION));
         this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION,
-                DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE);
-        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL, DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_FILE_DESCRIPTION));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_FILE_SIZE));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_IS_ACTIVE));
+        this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL, this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_THUMBNAIL));
         this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_DATE,
-                DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_DATE);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_DATE));
         this.addColumnMapping(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_USER,
-                DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_USER);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_FILE_VERSION_FILE_ADDED_USER));
 
         this.addColumnMapping(DMSNaming.RELATED_DOCUMENT_ID_DMS_RELATED_DOCUMENT,
-                DMSNaming.RELATED_DOCUMENT_ID_DMS_RELATED_DOCUMENT);
+                this.nameConvention.convertName(DMSNaming.RELATED_DOCUMENT_ID_DMS_RELATED_DOCUMENT));
         this.addColumnMapping(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER,
-                DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER);
+                this.nameConvention.convertName(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_MASTER));
         this.addColumnMapping(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD,
-                DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD);
+                this.nameConvention.convertName(DMSNaming.RELATED_DOCUMENT_ID_DMS_DOCUMENT_CHILD));
 
         this.addColumnMapping(DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY,
-                DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_PROPERTY_ID_DMS_DOCUMENT_PROPERTY));
         this.addColumnMapping(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY,
-                DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_KEY));
         this.addColumnMapping(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE,
-                DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE);
+                this.nameConvention.convertName(DMSNaming.DOCUMENT_PROPERTY_DOCUMENT_PROPERTY_VALUE));
 
-        this.addColumnMapping(DMSNaming.CATEGORY_ID_CATEGORY, DMSNaming.CATEGORY_ID_CATEGORY);
-        this.addColumnMapping(DMSNaming.CATEGORY_CATEGORY_NAME, DMSNaming.CATEGORY_CATEGORY_NAME);
-        this.addColumnMapping(DMSNaming.CATEGORY_ID_CATEGORY_PARENT, DMSNaming.CATEGORY_ID_CATEGORY_PARENT);
+        this.addColumnMapping(DMSNaming.CATEGORY_ID_CATEGORY, this.nameConvention.convertName(DMSNaming.CATEGORY_ID_CATEGORY));
+        this.addColumnMapping(DMSNaming.CATEGORY_CATEGORY_NAME, this.nameConvention.convertName(DMSNaming.CATEGORY_CATEGORY_NAME));
+        this.addColumnMapping(DMSNaming.CATEGORY_ID_CATEGORY_PARENT, this.nameConvention.convertName(DMSNaming.CATEGORY_ID_CATEGORY_PARENT));
     }
 
     public Map<String, String> getColumnsMapping() {

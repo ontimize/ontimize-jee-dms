@@ -67,9 +67,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
      * @return the entity result
      */
     public EntityResult documentQuery(List<?> attributes, Map<?, ?> criteria) {
-        return this.getColumnHelper()
-            .translateResult(this.daoHelper.query(this.documentDao, this.getColumnHelper().translate(criteria),
-                    this.getColumnHelper().translate(attributes)));
+        return this.daoHelper.query(this.documentDao, criteria, attributes);
     }
 
     /**
@@ -86,7 +84,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
             ((Map<Object, Object>) av).put(this.getColumnHelper().getDocumentOwnerColumn(), Integer.valueOf(1));
         }
 
-        EntityResult res = this.daoHelper.insert(this.documentDao, this.getColumnHelper().translate(av));
+        EntityResult res = this.daoHelper.insert(this.documentDao, av);
 
         DocumentIdentifier result = new DocumentIdentifier(
                 (Serializable) res.get(this.getColumnHelper().getDocumentIdColumn()));
@@ -102,7 +100,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
         CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
         Map<String, Object> kv = new HashMap<>();
         kv.put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-        this.daoHelper.update(this.documentDao, this.getColumnHelper().translate(attributesValues), kv);
+        this.daoHelper.update(this.documentDao, attributesValues, kv);
     }
 
     /**
@@ -233,7 +231,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
     public Map<String, String> documentGetProperties(Serializable documentId, Map<?, ?> kv) {
         CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
         ((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-        EntityResult rs = this.daoHelper.query(this.documentPropertyDao, this.getColumnHelper().translate(kv),
+        EntityResult rs = this.daoHelper.query(this.documentPropertyDao, kv,
                 this.getColumnHelper().getPropertyColumns());
         Map<String, String> res = new HashMap<>();
         int nregs = rs.calculateRecordNumber();
@@ -255,9 +253,8 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
     public EntityResult documentGetFiles(Serializable documentId, Map<?, ?> kv, List<?> attributes) {
         CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
         ((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-        return this.getColumnHelper()
-            .translateResult(this.daoHelper.query(this.documentFileDao, this.getColumnHelper().translate(kv),
-                    this.getColumnHelper().translate(attributes)));
+        return this.daoHelper.query(this.documentFileDao,kv,
+                    attributes);
     }
 
     /**
@@ -272,9 +269,7 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
             throws DmsException {
         CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
         ((Map<Object, Object>) kv).put(this.getColumnHelper().getDocumentIdColumn(), documentId);
-        return this.getColumnHelper()
-            .translateResult(this.daoHelper.query(this.documentFileDao, this.getColumnHelper().translate(kv),
-                    this.getColumnHelper().translate(attributes), "allfiles"));
+        return this.daoHelper.query(this.documentFileDao, kv, attributes, "allfiles");
     }
 
     /**
@@ -286,9 +281,8 @@ public class DMSServiceDocumentHelper extends AbstractDMSServiceHelper {
         CheckingTools.failIfNull(documentId, DMSNaming.ERROR_DOCUMENT_ID_MANDATORY);
         Map<String, Object> kv = new HashMap<>();
         kv.put(this.getColumnHelper().getDocumentRelatedMasterColumn(), documentId);
-        return this.getColumnHelper()
-            .translateResult(this.daoHelper.query(this.relatedDocumentDao, kv,
-                    this.getColumnHelper().getDocumentRelatedColumns()));
+        return this.daoHelper.query(this.relatedDocumentDao, kv,
+                    this.getColumnHelper().getDocumentRelatedColumns());
     }
 
     /**
