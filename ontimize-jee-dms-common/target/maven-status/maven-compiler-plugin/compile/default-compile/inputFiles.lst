@@ -1,0 +1,6 @@
+/home/runner/work/ontimize-jee-dms/ontimize-jee-dms/ontimize-jee-dms-common/src/main/java/com/ontimize/jee/common/naming/DMSNaming.java
+/home/runner/work/ontimize-jee-dms/ontimize-jee-dms/ontimize-jee-dms-common/src/main/java/com/ontimize/jee/common/exceptions/DmsRuntimeException.java
+/home/runner/work/ontimize-jee-dms/ontimize-jee-dms/ontimize-jee-dms-common/src/main/java/com/ontimize/jee/common/exceptions/DmsException.java
+/home/runner/work/ontimize-jee-dms/ontimize-jee-dms/ontimize-jee-dms-common/src/main/java/com/ontimize/jee/common/services/dms/IDMSService.java
+/home/runner/work/ontimize-jee-dms/ontimize-jee-dms/ontimize-jee-dms-common/src/main/java/com/ontimize/jee/common/services/dms/DMSCategory.java
+/home/runner/work/ontimize-jee-dms/ontimize-jee-dms/ontimize-jee-dms-common/src/main/java/com/ontimize/jee/common/services/dms/DocumentIdentifier.java
