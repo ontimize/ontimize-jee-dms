@@ -96,6 +96,18 @@
 	<profiles>
 		<profile>
 			<id>generate-local-version</id>
+			<repositories>
+				<repository>
+					<id>central-portal-snapshots</id>
+					<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
 			<build>
 				<plugins>
 					<!-- Source -->
@@ -113,6 +125,18 @@
 		</profile>
 		<profile>
 			<id>generate-version</id>
+						<repositories>
+				<repository>
+					<id>central-portal-snapshots</id>
+					<url>https://central.sonatype.com/repository/maven-snapshots/</url>
+					<releases>
+						<enabled>false</enabled>
+					</releases>
+					<snapshots>
+						<enabled>true</enabled>
+					</snapshots>
+				</repository>
+			</repositories>
 			<build>
 				<plugins>
 					<!-- Source -->
